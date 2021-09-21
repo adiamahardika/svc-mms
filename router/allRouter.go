@@ -20,6 +20,7 @@ func AllRouter(db *gorm.DB) {
 	v1 := router.Group("/v1")
 
 	v1.GET("/get-all-ticket", tikcetController.FindAll)
+	v1.GET("/get-count-ticket-status", tikcetController.CountTicketByStatus)
 	v1.POST("/get-ticket", tikcetController.FindTicket)
 	
 	router.Run(":8888")

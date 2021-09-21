@@ -10,6 +10,7 @@ import (
 type TicketRepositoryInterface interface {
 	FindAll() 									([]entity.Ticket, error)
 	FindTicket(request model.GetTicketRequest)	([]entity.Ticket, error)
+	CountTicketByStatus()						([]model.CountTicketByStatusResponse, error)
 }
 
 type repository struct {
@@ -23,9 +24,15 @@ func TicketRepository(db *gorm.DB) *repository {
 func (repo *repository) FindAll() ([]entity.Ticket, error) {
 	var ticket []entity.Ticket
 
-	error := repo.db.Raw("SELECT * FROM ticket ORDER BY tgl_dibuat ASC").Scan(&ticket).Error
-	fmt.Println(ticket) 
+	error := repo.db.Raw("SELECT * FROM ticket ORDER BY tgl_dibuat ASC").Scan(&ticket).Error 
 	return ticket, error
+}
+
+func (repo *repository) CountTicketByStatus() ([]model.CountTicketByStatusResponse, error) {
+	var status []model.CountTicketByStatusResponse
+	
+	error := repo.db.Raw("SELECT status, COUNT(*) as total FROM ticket GROUP BY status").Find(&status).Error
+	return status, error
 }
 
 func (repo *repository) FindTicket(request model.GetTicketRequest) ([]entity.Ticket, error) {

@@ -108,3 +108,35 @@ func (controller *ticketController) FindTicket(context *gin.Context) {
 
 	}
 }
+
+func (controller *ticketController) CountTicketByStatus(context *gin.Context) {
+
+	list_status, error := controller.ticketService.CountTicketByStatus()
+	
+	description := []string{}
+
+	if (error == nil) {
+		description = append(description, "Success")
+
+		status := model.StandardResponse{
+			HttpStatus: http.StatusOK,
+			StatusCode: general.SuccessStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusOK, gin.H{
+			"status" : status,
+			"result" : list_status,
+		})
+	} else {
+		description = append(description, error.Error())
+
+		status := model.StandardResponse{
+			HttpStatus: http.StatusBadRequest,
+			StatusCode: general.ErrorStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusBadRequest, gin.H{
+			"status" : status,
+		})
+	}
+}

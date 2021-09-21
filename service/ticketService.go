@@ -9,6 +9,7 @@ import (
 type TicketServiceInterface interface {
 	FindAll()									([]entity.Ticket, error)
 	FindTicket(request model.GetTicketRequest)	([]entity.Ticket, error)
+	CountTicketByStatus()						([]model.CountTicketByStatusResponse, error)
 }
 
 type ticketService struct {
@@ -27,4 +28,8 @@ func (ticketService *ticketService) FindTicket(request model.GetTicketRequest) (
 	list_ticket, error := ticketService.repository.FindTicket(request)
 
 	return list_ticket, error
+}
+
+func (ticketService *ticketService) CountTicketByStatus() ([]model.CountTicketByStatusResponse, error){
+	return ticketService.repository.CountTicketByStatus()
 }
