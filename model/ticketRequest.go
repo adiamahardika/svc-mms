@@ -14,6 +14,6 @@ type GetTicketRequest struct {
 	AssignedTo		string `json:"assigned_to"`
 	AssignedToTeam	string `json:"assigned_to_team"`
 	UsernamePembuat string `json:"username_pembuat"`
-	StartDate 		string `json:"start_date"`
-	EndDate 		string `json:"end_date"`
+	StartDate 		string `json:"start_date" binding:"required"`
+	EndDate 		string `json:"end_date" binding:"required"`
 }
