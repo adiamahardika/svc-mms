@@ -1,24 +1,13 @@
 package repository
 
 import (
-	"fmt"
 	"svc-ticket-monitoring/entity"
 	"svc-ticket-monitoring/model"
-
-	"gorm.io/gorm"
 )
 type TicketRepositoryInterface interface {
-	FindAll() 									([]entity.Ticket, error)
-	FindTicket(request model.GetTicketRequest)	([]entity.Ticket, error)
-	CountTicketByStatus()						([]model.CountTicketByStatusResponse, error)
-}
-
-type repository struct {
-	db *gorm.DB
-}
-
-func TicketRepository(db *gorm.DB) *repository {
-	return &repository{db}
+	FindAll() 										([]entity.Ticket, error)
+	FindTicket(request model.GetTicketRequest)		([]entity.Ticket, error)
+	CountTicketByStatus()							([]model.CountTicketByStatusResponse, error)
 }
 
 func (repo *repository) FindAll() ([]entity.Ticket, error) {
@@ -51,8 +40,9 @@ func (repo *repository) FindTicket(request model.GetTicketRequest) ([]entity.Tic
 		StartDate: 		request.StartDate,
 		EndDate: 		request.EndDate,
 		}).Find(&ticket).Error
-	
-	fmt.Println(len(ticket))
 		
 		return ticket, error
-	}
+}
+
+
+
