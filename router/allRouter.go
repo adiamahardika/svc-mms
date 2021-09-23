@@ -20,12 +20,19 @@ func AllRouter(db *gorm.DB) {
 	taskListService := service.TaskListService(Repository)
 	taskListController := controller.TaskListController(taskListService)
 	
+	userService := service.UserService(Repository)
+	userController := controller.UserController(userService)
+
+
 	v1 := router.Group("/v1")
 
 	v1.GET("/get-all-ticket", tikcetController.FindAll)
 	v1.GET("/get-count-ticket-status", tikcetController.CountTicketByStatus)
 	v1.POST("/get-ticket", tikcetController.FindTicket)
+	
 	v1.POST("/get-task-list", taskListController.FindTaskList)
+	
+	v1.POST("/get-user", userController.GetUser)
 	
 	router.Run(":8888")
 }
