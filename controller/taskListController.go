@@ -19,7 +19,7 @@ func TaskListController(taskListService service.TaskListServiceInterface) *taskL
 	return &taskListController{taskListService}
 }
 
-func (controller *taskListController) FindTaskList(context *gin.Context) {
+func (controller *taskListController) GetTaskList(context *gin.Context) {
 	var request model.GetTaskListRequest
 
 	error := context.ShouldBindJSON(&request)
@@ -41,7 +41,7 @@ func (controller *taskListController) FindTaskList(context *gin.Context) {
 		})
 	} else {
 
-		task_list, error := controller.taskListService.FindTaskList(&request)
+		task_list, error := controller.taskListService.GetTaskList(&request)
 
 		if (error == nil) {
 			

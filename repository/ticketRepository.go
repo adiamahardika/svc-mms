@@ -5,12 +5,12 @@ import (
 	"svc-ticket-monitoring/model"
 )
 type TicketRepositoryInterface interface {
-	FindAll() 										([]entity.Ticket, error)
-	FindTicket(request model.GetTicketRequest)		([]entity.Ticket, error)
+	GetAll() 										([]entity.Ticket, error)
+	GetTicket(request model.GetTicketRequest)		([]entity.Ticket, error)
 	CountTicketByStatus()							([]model.CountTicketByStatusResponse, error)
 }
 
-func (repo *repository) FindAll() ([]entity.Ticket, error) {
+func (repo *repository) GetAll() ([]entity.Ticket, error) {
 	var ticket []entity.Ticket
 
 	error := repo.db.Raw("SELECT * FROM ticket ORDER BY tgl_dibuat ASC").Scan(&ticket).Error 
@@ -24,7 +24,7 @@ func (repo *repository) CountTicketByStatus() ([]model.CountTicketByStatusRespon
 	return status, error
 }
 
-func (repo *repository) FindTicket(request model.GetTicketRequest) ([]entity.Ticket, error) {
+func (repo *repository) GetTicket(request model.GetTicketRequest) ([]entity.Ticket, error) {
 	var ticket []entity.Ticket
 	
 	error := repo.db.Raw("SELECT * FROM (SELECT * FROM ticket WHERE prioritas LIKE @Priority AND status LIKE @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam AND username_pembuat LIKE @UsernamePembuat AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate ORDER BY tgl_diperbarui DESC) as tbl WHERE judul LIKE @Search OR kode_ticket LIKE @Search OR lokasi LIKE @Search OR terminal_id LIKE @Search OR email LIKE @Search", model.GetTicketRequest{

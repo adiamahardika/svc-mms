@@ -20,9 +20,9 @@ func TicketController(ticketService service.TicketServiceInterface) *ticketContr
 	return &ticketController{ticketService}
 }
 
-func (controller *ticketController) FindAll(context *gin.Context) {
+func (controller *ticketController) GetAll(context *gin.Context) {
 
-	list_ticket, error := controller.ticketService.FindAll()
+	list_ticket, error := controller.ticketService.GetAll()
 	description := []string{}
 
 	if (error == nil) {
@@ -51,7 +51,7 @@ func (controller *ticketController) FindAll(context *gin.Context) {
 	}
 }
 
-func (controller *ticketController) FindTicket(context *gin.Context) {
+func (controller *ticketController) GetTicket(context *gin.Context) {
 	var request model.GetTicketRequest
 
 	error := context.ShouldBindJSON(&request)
@@ -75,7 +75,7 @@ func (controller *ticketController) FindTicket(context *gin.Context) {
 
 	} else {
 		
-		list_ticket, error := controller.ticketService.FindTicket(request)
+		list_ticket, error := controller.ticketService.GetTicket(request)
 
 		if (error == nil) {
 			

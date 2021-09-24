@@ -7,8 +7,8 @@ import (
 )
 
 type TicketServiceInterface interface {
-	FindAll()									([]entity.Ticket, error)
-	FindTicket(request model.GetTicketRequest)	([]entity.Ticket, error)
+	GetAll()									([]entity.Ticket, error)
+	GetTicket(request model.GetTicketRequest)	([]entity.Ticket, error)
 	CountTicketByStatus()						([]model.CountTicketByStatusResponse, error)
 }
 
@@ -20,12 +20,12 @@ func TicketService(repository repository.TicketRepositoryInterface) *ticketServi
 	return &ticketService{repository}
 }
 
-func (ticketService *ticketService) FindAll() ([]entity.Ticket, error){
-	return ticketService.repository.FindAll()
+func (ticketService *ticketService) GetAll() ([]entity.Ticket, error){
+	return ticketService.repository.GetAll()
 }
 
-func (ticketService *ticketService) FindTicket(request model.GetTicketRequest) ([]entity.Ticket, error) {
-	list_ticket, error := ticketService.repository.FindTicket(request)
+func (ticketService *ticketService) GetTicket(request model.GetTicketRequest) ([]entity.Ticket, error) {
+	list_ticket, error := ticketService.repository.GetTicket(request)
 
 	return list_ticket, error
 }

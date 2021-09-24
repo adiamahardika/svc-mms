@@ -7,7 +7,7 @@ import (
 )
 
 type TaskListServiceInterface interface {
-	FindTaskList(request *model.GetTaskListRequest) ([]entity.TaskList, error)
+	GetTaskList(request *model.GetTaskListRequest) ([]entity.TaskList, error)
 }
 
 type taskListService struct {
@@ -18,6 +18,6 @@ func TaskListService(repository repository.TaskListRepositoryInterface) *taskLis
 	return &taskListService{repository}
 }
 
-func (taskListService *taskListService) FindTaskList(request *model.GetTaskListRequest) ([]entity.TaskList, error) {
-	return taskListService.repository.FindTaskList(request)
+func (taskListService *taskListService) GetTaskList(request *model.GetTaskListRequest) ([]entity.TaskList, error) {
+	return taskListService.repository.GetTaskList(request)
 }
