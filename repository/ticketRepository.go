@@ -7,7 +7,7 @@ import (
 
 type TicketRepositoryInterface interface {
 	GetAll() 										([]entity.Ticket, error)
-	GetTicket(request model.GetTicketRequest)		([]entity.Ticket, error)
+	GetTicket(request model.GetTicketRequest)		([]model.GetTicketResponse, error)
 	CountTicketByStatus()							([]model.CountTicketByStatusResponse, error)
 	CreateTicket(request entity.Ticket)				(entity.Ticket, error)
 	CreateTicketIsi(request entity.TicketIsi) (entity.TicketIsi, error)
@@ -27,10 +27,10 @@ func (repo *repository) CountTicketByStatus() ([]model.CountTicketByStatusRespon
 	return status, error
 }
 
-func (repo *repository) GetTicket(request model.GetTicketRequest) ([]entity.Ticket, error) {
-	var ticket []entity.Ticket
+func (repo *repository) GetTicket(request model.GetTicketRequest) ([]model.GetTicketResponse, error) {
+	var ticket []model.GetTicketResponse
 	
-	error := repo.db.Raw("SELECT * FROM (SELECT * FROM ticket WHERE prioritas LIKE @Priority AND status LIKE @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam AND username_pembuat LIKE @UsernamePembuat AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate ORDER BY tgl_diperbarui DESC) as tbl WHERE judul LIKE @Search OR kode_ticket LIKE @Search OR lokasi LIKE @Search OR terminal_id LIKE @Search OR email LIKE @Search", model.GetTicketRequest{
+	error := repo.db.Raw("SELECT * FROM (SELECT ticket.*, users.name as user_name, team.name as team_name FROM ticket LEFT OUTER JOIN users ON (ticket.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (ticket.assigned_to_team = CAST(team.id AS varchar(10))) WHERE prioritas LIKE @Priority AND status LIKE @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam AND username_pembuat LIKE @UsernamePembuat AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate ORDER BY tgl_diperbarui DESC) as tbl WHERE judul LIKE @Search OR kode_ticket LIKE @Search OR lokasi LIKE @Search OR terminal_id LIKE @Search OR email LIKE @Search", model.GetTicketRequest{
 		PageNo:          request.PageNo,
 		PageSize:        request.PageSize,
 		SortBy:          "%" + request.SortBy + "%",

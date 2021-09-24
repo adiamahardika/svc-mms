@@ -9,7 +9,7 @@ import (
 
 type TicketServiceInterface interface {
 	GetAll()									([]entity.Ticket, error)
-	GetTicket(request model.GetTicketRequest)	([]entity.Ticket, error)
+	GetTicket(request model.GetTicketRequest)	([]model.GetTicketResponse, error)
 	CountTicketByStatus()						([]model.CountTicketByStatusResponse, error)
 	CreateTicket(request model.CreateTicketRequest)			(model.CreateTicketRequest, error)
 }
@@ -26,7 +26,7 @@ func (ticketService *ticketService) GetAll() ([]entity.Ticket, error){
 	return ticketService.repository.GetAll()
 }
 
-func (ticketService *ticketService) GetTicket(request model.GetTicketRequest) ([]entity.Ticket, error) {
+func (ticketService *ticketService) GetTicket(request model.GetTicketRequest) ([]model.GetTicketResponse, error) {
 	list_ticket, error := ticketService.repository.GetTicket(request)
 
 	return list_ticket, error
