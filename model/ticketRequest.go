@@ -17,3 +17,19 @@ type GetTicketRequest struct {
 	StartDate 		string `json:"start_date" binding:"required"`
 	EndDate 		string `json:"end_date" binding:"required"`
 }
+
+type CreateTicketRequest struct {
+	Judul 			string `json:"judul"`
+	UserPembuat 	string `json:"user_pembuat"`
+	Prioritas 		string `json:"prioritas"`
+	TotalWaktu		string `json:"total_waktu"`
+	Status			string `json:"status"`
+	Isi				string `json:"isi"`
+	Lokasi			string `json:"lokasi"`
+	TerminalId		string `json:"terminal_id"`
+	Kategori		string `json:"kategori"`
+	Email			string `json:"email"`
+	AssignedTo		string `json:"assigned_to"`
+	AssignedToTeam	string `json:"assigned_to_team"`
+	TicketCode		string `json:"ticket_code"`
+}

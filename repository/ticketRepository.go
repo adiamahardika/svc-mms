@@ -4,10 +4,13 @@ import (
 	"svc-ticket-monitoring/entity"
 	"svc-ticket-monitoring/model"
 )
+
 type TicketRepositoryInterface interface {
 	GetAll() 										([]entity.Ticket, error)
 	GetTicket(request model.GetTicketRequest)		([]entity.Ticket, error)
 	CountTicketByStatus()							([]model.CountTicketByStatusResponse, error)
+	CreateTicket(request entity.Ticket)				(entity.Ticket, error)
+	CreateTicketIsi(request entity.TicketIsi) (entity.TicketIsi, error)
 }
 
 func (repo *repository) GetAll() ([]entity.Ticket, error) {
@@ -44,5 +47,19 @@ func (repo *repository) GetTicket(request model.GetTicketRequest) ([]entity.Tick
 		return ticket, error
 }
 
+func (repo *repository) CreateTicket(request entity.Ticket) (entity.Ticket, error) {
+	var ticket entity.Ticket
 
+	error := repo.db.Table("ticket").Create(&request).Error
+
+	return ticket, error
+}
+
+func (repo *repository) CreateTicketIsi(request entity.TicketIsi) (entity.TicketIsi, error) {
+	var ticket_isi entity.TicketIsi
+
+	error := repo.db.Table("ticket_isi").Create(&request).Error
+
+	return ticket_isi, error
+}
 

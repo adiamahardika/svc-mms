@@ -4,12 +4,14 @@ import (
 	"svc-ticket-monitoring/entity"
 	"svc-ticket-monitoring/model"
 	"svc-ticket-monitoring/repository"
+	"time"
 )
 
 type TicketServiceInterface interface {
 	GetAll()									([]entity.Ticket, error)
 	GetTicket(request model.GetTicketRequest)	([]entity.Ticket, error)
 	CountTicketByStatus()						([]model.CountTicketByStatusResponse, error)
+	CreateTicket(request model.CreateTicketRequest)			(model.CreateTicketRequest, error)
 }
 
 type ticketService struct {
@@ -32,4 +34,52 @@ func (ticketService *ticketService) GetTicket(request model.GetTicketRequest) ([
 
 func (ticketService *ticketService) CountTicketByStatus() ([]model.CountTicketByStatusResponse, error){
 	return ticketService.repository.CountTicketByStatus()
+}
+
+type errorStruct struct {
+	errorMessage error
+}
+func (ticketService *ticketService) CreateTicket(request model.CreateTicketRequest) (model.CreateTicketRequest, error) {
+	date_now := time.Now()
+
+	ticket_request := entity.Ticket{
+		Judul: request.Judul,
+		UsernamePembuat: request.UserPembuat,
+		UsernamePembalas: request.UserPembuat,
+		Prioritas: request.Prioritas,
+		TotalWaktu: request.TotalWaktu,
+		Status: request.Status,
+		KodeTicket: request.TicketCode,
+		Kategori: request.Kategori,
+		Lokasi: request.Lokasi,
+		TerminalId: request.TerminalId,
+		Email: request.Email,
+		AssignedTo: request.AssignedTo,
+		AssignedToTeam: request.AssignedToTeam,
+		TglDibuat: date_now,
+		TglDiperbarui: date_now,
+	}
+
+	ticket_isi_request := entity.TicketIsi{
+		UsernamePengirim: request.UserPembuat,
+		Isi: request.Isi,
+		KodeTicket: request.TicketCode,
+		Attachment1: "-",
+		UrlAttachment1: "-",
+		Attachment2: "-",
+		UrlAttachment2: "-",
+		TglDibuat: date_now,
+	}
+	
+	_, ticket_error := ticketService.repository.CreateTicket(ticket_request)
+
+	
+	_, ticket_isi_error := ticketService.repository.CreateTicketIsi(ticket_isi_request)
+	
+
+	if (ticket_error != nil) {
+		return request, ticket_error
+	} else {
+		return request, ticket_isi_error
+	}
 }
