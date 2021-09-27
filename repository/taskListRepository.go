@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"svc-ticket-monitoring/entity"
-	"svc-ticket-monitoring/model"
+	"svc-monitoring-maintenance/entity"
+	"svc-monitoring-maintenance/model"
 )
 
 type TaskListRepositoryInterface interface {

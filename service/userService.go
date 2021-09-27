@@ -1,9 +1,9 @@
 package service
 
 import (
-	"svc-ticket-monitoring/entity"
-	"svc-ticket-monitoring/model"
-	"svc-ticket-monitoring/repository"
+	"svc-monitoring-maintenance/entity"
+	"svc-monitoring-maintenance/model"
+	"svc-monitoring-maintenance/repository"
 )
 
 type UserServiceInterface interface {

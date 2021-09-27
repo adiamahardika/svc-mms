@@ -7,9 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 
-	"svc-ticket-monitoring/general"
-	"svc-ticket-monitoring/model"
-	"svc-ticket-monitoring/service"
+	"svc-monitoring-maintenance/general"
+	"svc-monitoring-maintenance/model"
+	"svc-monitoring-maintenance/service"
 )
 
 type ticketController struct {

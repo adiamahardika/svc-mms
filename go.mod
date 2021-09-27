@@ -1,4 +1,4 @@
-module svc-ticket-monitoring
+module svc-monitoring-maintenance
 
 go 1.17
 

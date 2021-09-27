@@ -1,9 +1,9 @@
 package router
 
 import (
-	"svc-ticket-monitoring/controller"
-	"svc-ticket-monitoring/repository"
-	"svc-ticket-monitoring/service"
+	"svc-monitoring-maintenance/controller"
+	"svc-monitoring-maintenance/repository"
+	"svc-monitoring-maintenance/service"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"svc-ticket-monitoring/router"
+	"svc-monitoring-maintenance/router"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 func main() {
-	dsn := "host=localhost user=postgres search_path='ticket_monitoring' password=maisenpai dbname=dashboardoa port=5433 sslmode=disable TimeZone=Asia/Jakarta"
+	dsn := "host=localhost user=postgres search_path='monitoring_maintenance' password=maisenpai dbname=dashboardoa port=5433 sslmode=disable TimeZone=Asia/Jakarta"
 
 	db, error := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 

@@ -3,9 +3,9 @@ package controller
 import (
 	"fmt"
 	"net/http"
-	"svc-ticket-monitoring/general"
-	"svc-ticket-monitoring/model"
-	"svc-ticket-monitoring/service"
+	"svc-monitoring-maintenance/general"
+	"svc-monitoring-maintenance/model"
+	"svc-monitoring-maintenance/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
