@@ -35,6 +35,11 @@ type CreateTicketRequest struct {
 }
 
 type AssignTicketToMemberRequest struct {
-	Id		json.Number	`json:"id"`
-	UserId	json.Number	`json:"user_id"`
+	Id		json.Number	`json:"id" binding:"required"`
+	UserId	json.Number	`json:"user_id" binding:"required"`
+}
+
+type UpdateTicketStatusRequest struct {
+	Id		json.Number	`json:"id" binding:"required"`
+	Status	string	`json:"status" binding:"required"`
 }

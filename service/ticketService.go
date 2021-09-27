@@ -13,6 +13,7 @@ type TicketServiceInterface interface {
 	CountTicketByStatus()											([]model.CountTicketByStatusResponse, error)
 	CreateTicket(request model.CreateTicketRequest)					(model.CreateTicketRequest, error)
 	AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error)
+	UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error)
 }
 
 type ticketService struct {
@@ -87,6 +88,13 @@ func (ticketService *ticketService) CreateTicket(request model.CreateTicketReque
 
 func (ticketService *ticketService) AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error) {
 	ticket, error := ticketService.repository.AssignTicketToMember(request)
+
+	return ticket, error
+}
+
+func (ticketService *ticketService) UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error) {
+
+	ticket, error := ticketService.repository.UpdateTicketStatus(request)
 
 	return ticket, error
 }
