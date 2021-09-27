@@ -5,8 +5,8 @@ import (
 )
 
 type GetTicketRequest struct {
-	PageNo 			json.Number `json:"page_no" binding:"required"`
-	PageSize 		json.Number `json:"page_size" binding:"required"`
+	PageNo 			json.Number `json:"page_no"`
+	PageSize 		json.Number `json:"page_size"`
 	SortBy 			string `json:"sort_by"`
 	Search 			string `json:"search"`
 	Status 			string `json:"status"`
@@ -32,4 +32,9 @@ type CreateTicketRequest struct {
 	AssignedTo		string `json:"assigned_to"`
 	AssignedToTeam	string `json:"assigned_to_team"`
 	TicketCode		string `json:"ticket_code"`
+}
+
+type AssignTicketToMemberRequest struct {
+	Id		json.Number	`json:"id"`
+	UserId	json.Number	`json:"user_id"`
 }

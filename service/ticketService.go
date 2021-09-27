@@ -8,10 +8,11 @@ import (
 )
 
 type TicketServiceInterface interface {
-	GetAll()									([]entity.Ticket, error)
-	GetTicket(request model.GetTicketRequest)	([]model.GetTicketResponse, error)
-	CountTicketByStatus()						([]model.CountTicketByStatusResponse, error)
-	CreateTicket(request model.CreateTicketRequest)			(model.CreateTicketRequest, error)
+	GetAll()														([]entity.Ticket, error)
+	GetTicket(request model.GetTicketRequest)						([]model.GetTicketResponse, error)
+	CountTicketByStatus()											([]model.CountTicketByStatusResponse, error)
+	CreateTicket(request model.CreateTicketRequest)					(model.CreateTicketRequest, error)
+	AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error)
 }
 
 type ticketService struct {
@@ -82,4 +83,10 @@ func (ticketService *ticketService) CreateTicket(request model.CreateTicketReque
 	} else {
 		return request, ticket_isi_error
 	}
+}
+
+func (ticketService *ticketService) AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error) {
+	ticket, error := ticketService.repository.AssignTicketToMember(request)
+
+	return ticket, error
 }

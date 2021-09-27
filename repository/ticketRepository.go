@@ -10,7 +10,8 @@ type TicketRepositoryInterface interface {
 	GetTicket(request model.GetTicketRequest)		([]model.GetTicketResponse, error)
 	CountTicketByStatus()							([]model.CountTicketByStatusResponse, error)
 	CreateTicket(request entity.Ticket)				(entity.Ticket, error)
-	CreateTicketIsi(request entity.TicketIsi) (entity.TicketIsi, error)
+	CreateTicketIsi(request entity.TicketIsi) 		(entity.TicketIsi, error)
+	AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error)
 }
 
 func (repo *repository) GetAll() ([]entity.Ticket, error) {
@@ -63,3 +64,13 @@ func (repo *repository) CreateTicketIsi(request entity.TicketIsi) (entity.Ticket
 	return ticket_isi, error
 }
 
+func (repo *repository) AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error) {
+	var ticket entity.Ticket
+
+	error := repo.db.Raw("UPDATE ticket SET assigned_to = @UserId WHERE id = @Id RETURNING ticket.*", model.AssignTicketToMemberRequest{
+		Id: request.Id,
+		UserId: request.UserId,
+	}).Find(&ticket).Error
+
+	return ticket, error
+}
