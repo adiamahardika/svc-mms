@@ -68,9 +68,10 @@ func (repo *repository) CreateTicketIsi(request entity.TicketIsi) (entity.Ticket
 func (repo *repository) AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error) {
 	var ticket entity.Ticket
 
-	error := repo.db.Raw("UPDATE ticket SET assigned_to = @UserId WHERE id = @Id RETURNING ticket.*", model.AssignTicketToMemberRequest{
+	error := repo.db.Raw("UPDATE ticket SET assigned_to = @UserId, tgl_diperbarui = @UpdateAt WHERE id = @Id RETURNING ticket.*", model.AssignTicketToMemberRequest{
 		Id: request.Id,
 		UserId: request.UserId,
+		UpdateAt: request.UpdateAt,
 	}).Find(&ticket).Error
 
 	return ticket, error
@@ -79,9 +80,10 @@ func (repo *repository) AssignTicketToMember(request model.AssignTicketToMemberR
 func (repo *repository) UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error) {
 	var ticket entity.Ticket
 
-	error := repo.db.Raw("UPDATE ticket SET status = @Status WHERE id = @Id RETURNING ticket.*", model.UpdateTicketStatusRequest{
+	error := repo.db.Raw("UPDATE ticket SET status = @Status, tgl_diperbarui = @UpdateAt WHERE id = @Id RETURNING ticket.*", model.UpdateTicketStatusRequest{
 		Id: request.Id,
 		Status: request.Status,
+		UpdateAt: request.UpdateAt,
 	}).Find(&ticket).Error
 
 	return ticket, error

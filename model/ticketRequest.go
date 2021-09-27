@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"time"
 )
 
 type GetTicketRequest struct {
@@ -37,9 +38,11 @@ type CreateTicketRequest struct {
 type AssignTicketToMemberRequest struct {
 	Id		json.Number	`json:"id" binding:"required"`
 	UserId	json.Number	`json:"user_id" binding:"required"`
+	UpdateAt time.Time `json:"update_at"`
 }
 
 type UpdateTicketStatusRequest struct {
 	Id		json.Number	`json:"id" binding:"required"`
 	Status	string	`json:"status" binding:"required"`
+	UpdateAt time.Time `json:"update_at"`
 }
