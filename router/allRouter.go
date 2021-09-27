@@ -23,7 +23,10 @@ func AllRouter(db *gorm.DB) {
 	userService := service.UserService(Repository)
 	userController := controller.UserController(userService)
 
+	teamService := service.TeamService(Repository)
+	teamController :=  controller.TeamController(teamService)
 
+	
 	v1 := router.Group("/v1")
 
 	v1.GET("/get-all-ticket", tikcetController.GetAll)
@@ -34,6 +37,8 @@ func AllRouter(db *gorm.DB) {
 	v1.POST("/get-task-list", taskListController.GetTaskList)
 	
 	v1.POST("/get-user", userController.GetUser)
+	
+	v1.GET("/get-team", teamController.GetAll)
 	
 	router.Run(":8888")
 }
