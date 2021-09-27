@@ -12,20 +12,22 @@ import (
 func AllRouter(db *gorm.DB) {
 	
 	router := gin.Default()
-	Repository := repository.Repository(db)
+	repository := repository.Repository(db)
 
-	ticketService := service.TicketService(Repository)
+	ticketService := service.TicketService(repository)
 	tikcetController := controller.TicketController(ticketService)
 
-	taskListService := service.TaskListService(Repository)
+	taskListService := service.TaskListService(repository)
 	taskListController := controller.TaskListController(taskListService)
 	
-	userService := service.UserService(Repository)
+	userService := service.UserService(repository)
 	userController := controller.UserController(userService)
 
-	teamService := service.TeamService(Repository)
+	teamService := service.TeamService(repository)
 	teamController :=  controller.TeamController(teamService)
 
+	roleService := service.RoleService(repository)
+	roleController := controller.RoleController(roleService)
 	
 	v1 := router.Group("/v1")
 
@@ -39,6 +41,8 @@ func AllRouter(db *gorm.DB) {
 	v1.POST("/get-user", userController.GetUser)
 	
 	v1.GET("/get-team", teamController.GetAll)
+
+	v1.GET("/get-role", roleController.GetAll)
 	
 	router.Run(":8888")
 }
