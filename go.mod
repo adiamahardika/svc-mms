@@ -34,5 +34,6 @@ require (
 	github.com/jackc/pgx/v4 v4.13.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.2 // indirect
+	github.com/joho/godotenv v1.4.0 // indirect
 	gorm.io/gorm v1.21.15 // indirect
 )

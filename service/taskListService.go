@@ -1,6 +1,7 @@
 package service
 
 import (
+	"os"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/repository"
@@ -23,20 +24,28 @@ func TaskListService(repository repository.TaskListRepositoryInterface) *taskLis
 }
 
 func (taskListService *taskListService) GetTaskList(request *model.GetTaskListRequest) ([]entity.TaskList, error) {
-	return taskListService.repository.GetTaskList(request)
+	
+	task_list, error := taskListService.repository.GetTaskList(request)
+
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("PORT")
+
+	for index := range task_list {
+		task_list[index].Attachment = "http://" + host + port + "/assets/" + task_list[index].Attachment
+	}
+
+	return task_list, error
 }
 
 func (taskListService *taskListService) UpdateTaskList(request model.UpdateTaskListRequest, context *gin.Context) (entity.TaskList, error) {
 	date_now := time.Now()
-
-	path := "D:/monitoring_maintenance/" + request.Attachment.Filename
 	
-	error_upload := context.SaveUploadedFile(request.Attachment, path)
+	error_upload := context.SaveUploadedFile(request.Attachment, request.Attachment.Filename)
 
 	new_request := entity.TaskList {
 		KodeTicket: request.KodeTicket,
 		Description: request.Description,
-		Attachment: path,
+		Attachment: request.Attachment.Filename,
 		TaskName: request.TaskName,
 		Longitude: request.Latitude,
 		Latitude: request.Latitude,

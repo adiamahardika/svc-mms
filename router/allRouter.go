@@ -1,6 +1,7 @@
 package router
 
 import (
+	"os"
 	"svc-monitoring-maintenance/controller"
 	"svc-monitoring-maintenance/repository"
 	"svc-monitoring-maintenance/service"
@@ -29,9 +30,10 @@ func AllRouter(db *gorm.DB) {
 	roleService := service.RoleService(repository)
 	roleController := controller.RoleController(roleService)
 	
+	dir := os.Getenv("FILE_DIR")
 	v1 := router.Group("/v1")
 
-	v1.Static("/assets", "D:/monitoring_maintenance/")
+	router.Static("/assets", dir)
 	v1.GET("/get-all-ticket", tikcetController.GetAll)
 	v1.GET("/get-count-ticket-status", tikcetController.CountTicketByStatus)
 	v1.POST("/get-ticket", tikcetController.GetTicket)
@@ -48,5 +50,5 @@ func AllRouter(db *gorm.DB) {
 
 	v1.GET("/get-role", roleController.GetAll)
 	
-	router.Run(":8888")
+	router.Run(os.Getenv("PORT"))
 }
