@@ -12,5 +12,5 @@ type TaskList struct {
 	Latitude    string `json:"latitude"`
 	AssignedBy  string `json:"assigned_by"`
 	Status      string `json:"status"`
-	CreatedBy   time.Time `json:"created_by"`
+	CreatedAt   time.Time `json:"created_at"`
 }

@@ -31,6 +31,7 @@ func AllRouter(db *gorm.DB) {
 	
 	v1 := router.Group("/v1")
 
+	v1.Static("/assets", "D:/monitoring_maintenance/")
 	v1.GET("/get-all-ticket", tikcetController.GetAll)
 	v1.GET("/get-count-ticket-status", tikcetController.CountTicketByStatus)
 	v1.POST("/get-ticket", tikcetController.GetTicket)
@@ -39,6 +40,7 @@ func AllRouter(db *gorm.DB) {
 	v1.PUT("/update-ticket-status", tikcetController.UpdateTicketStatus)
 	
 	v1.POST("/get-task-list", taskListController.GetTaskList)
+	v1.POST("/update-task-list", taskListController.UpdateTaskListController)
 	
 	v1.POST("/get-user", userController.GetUser)
 	
