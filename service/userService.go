@@ -25,7 +25,13 @@ func UserService(repository repository.UserRepositoryInterface) *userService {
 }
 
 func (userService *userService) GetUser(request model.GetUserRequest) ([]entity.User, error) {
-	return userService.repository.GetUser(request)
+	user, error := userService.repository.GetUser(request)
+
+	for index := range user {
+		user[index].Password = "-"
+	}
+	
+	return user, error
 }
 
 func (userService *userService) Login(request model.LoginRequest) ([]entity.User, error) {
@@ -35,12 +41,13 @@ func (userService *userService) Login(request model.LoginRequest) ([]entity.User
 	if (len(user) < 1) {
 		error = fmt.Errorf("Username Not Found!")
 		} else {
-		check_pass := bcrypt.CompareHashAndPassword([]byte(user[0].Password), []byte(request.Password))
-		if (check_pass != nil) {
+		error_check_pass := bcrypt.CompareHashAndPassword([]byte(user[0].Password), []byte(request.Password))
+		if (error_check_pass != nil) {
 			error = fmt.Errorf("Password Not Match")
 		}
+		user[0].Password = "-"
 	}
-	
+
 	return user, error
 }
 
@@ -48,21 +55,29 @@ func (userService *userService) ChangePassword(request model.ChangePassRequest) 
 	var user entity.User
 	date_now := time.Now()
 	
-	request.UpdateAt = date_now
-	
 	users, error := userService.repository.CheckUsername(request.Username)
 	
 	if (len(users) < 1) {
 		error = fmt.Errorf("Username Not Found!")
 		} else {
 			
-			check_pass := bcrypt.CompareHashAndPassword([]byte(users[0].Password), []byte(request.OldPassword))
-			if (check_pass != nil) {
+			error_check_pass := bcrypt.CompareHashAndPassword([]byte(users[0].Password), []byte(request.OldPassword))
+			if (error_check_pass != nil) {
 				error = fmt.Errorf("Wrong Old Password!")
 			} else {
+				
+				new_pass, error_hash_pass := bcrypt.GenerateFromPassword([]byte(request.NewPassword), bcrypt.DefaultCost)
+				
+				if (error_hash_pass) != nil {
+					error = fmt.Errorf("There was an error creating new password!")
+				}
+				request.UpdateAt = date_now
+				request.NewPassword = string(new_pass)
+
 				user, error = userService.repository.ChangePassword(request)
 			}
 	}
+	user.Password = "-"
 
 	return user, error
 }
