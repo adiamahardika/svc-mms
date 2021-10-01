@@ -134,6 +134,7 @@ func (userService *userService) Register(request model.RegisterRequest) (entity.
 			request.CreatedAt = date_now
 			request.UpdatedAt = date_now
 			request.Password = string(new_pass)
+			request.Changepass = "0"
 		
 			user, error = userService.repository.Register(request)
 		}
