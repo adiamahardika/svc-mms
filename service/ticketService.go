@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/repository"
@@ -72,18 +73,21 @@ func (ticketService *ticketService) CreateTicket(request model.CreateTicketReque
 		UrlAttachment2: "-",
 		TglDibuat: date_now,
 	}
-	
-	_, ticket_error := ticketService.repository.CreateTicket(ticket_request)
 
+	ticket, error := ticketService.repository.CheckTicketCode(request.TicketCode)
 	
-	_, ticket_isi_error := ticketService.repository.CreateTicketIsi(ticket_isi_request)
-	
-
-	if (ticket_error != nil) {
-		return request, ticket_error
+	if (len(ticket) > 1) {
+		error = fmt.Errorf("Ticket code already exist!")
 	} else {
-		return request, ticket_isi_error
+		
+		_, error = ticketService.repository.CreateTicket(ticket_request)
+	
+		
+		_, error = ticketService.repository.CreateTicketIsi(ticket_isi_request)
 	}
+	
+	return request, error
+	
 }
 
 func (ticketService *ticketService) AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error) {

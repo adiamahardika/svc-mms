@@ -13,6 +13,7 @@ type TicketRepositoryInterface interface {
 	CreateTicketIsi(request entity.TicketIsi) 		(entity.TicketIsi, error)
 	AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error)
 	UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error)
+	CheckTicketCode(request string) ([]entity.Ticket, error)
 }
 
 func (repo *repository) GetAll() ([]entity.Ticket, error) {
@@ -84,6 +85,16 @@ func (repo *repository) UpdateTicketStatus(request model.UpdateTicketStatusReque
 		TicketCode: request.TicketCode,
 		Status: request.Status,
 		UpdateAt: request.UpdateAt,
+	}).Find(&ticket).Error
+
+	return ticket, error
+}
+
+func (repo *repository) CheckTicketCode(request string) ([]entity.Ticket, error) {
+	var ticket []entity.Ticket
+
+	error := repo.db.Raw("SELECT * FROM ticket WHERE ticket_code = @TicketCode", model.CreateTicketRequest{
+		TicketCode: request,
 	}).Find(&ticket).Error
 
 	return ticket, error
