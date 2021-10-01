@@ -35,10 +35,10 @@ func (repo *repository) CheckUsername(request string) ([]entity.User, error) {
 func (repo *repository) ChangePassword(request model.ChangePassRequest) (entity.User, error) {
 	var user entity.User
 
-	error := repo.db.Raw("UPDATE users SET password = @NewPassword, update_at = @UpdateAt WHERE username = @Username RETURNING users.*", model.ChangePassRequest{
+	error := repo.db.Raw("UPDATE users SET password = @NewPassword, updated_at = @UpdateAt WHERE username = @Username RETURNING users.*", model.ChangePassRequest{
 		Username: request.Username,
 		NewPassword: request.NewPassword,
-		UpdateAt: request.UpdateAt,
+		UpdatedAt: request.UpdatedAt,
 	}).Find(&user).Error
 
 	return user, error

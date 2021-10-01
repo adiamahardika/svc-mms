@@ -71,7 +71,7 @@ func (userService *userService) ChangePassword(request model.ChangePassRequest) 
 				if (error_hash_pass) != nil {
 					error = fmt.Errorf("There was an error creating new password!")
 				}
-				request.UpdateAt = date_now
+				request.UpdatedAt = date_now
 				request.NewPassword = string(new_pass)
 
 				user, error = userService.repository.ChangePassword(request)

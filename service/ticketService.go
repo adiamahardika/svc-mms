@@ -51,7 +51,7 @@ func (ticketService *ticketService) CreateTicket(request model.CreateTicketReque
 		Prioritas: request.Prioritas,
 		TotalWaktu: request.TotalWaktu,
 		Status: request.Status,
-		KodeTicket: request.TicketCode,
+		TicketCode: request.TicketCode,
 		Kategori: request.Kategori,
 		Lokasi: request.Lokasi,
 		TerminalId: request.TerminalId,
@@ -65,7 +65,7 @@ func (ticketService *ticketService) CreateTicket(request model.CreateTicketReque
 	ticket_isi_request := entity.TicketIsi{
 		UsernamePengirim: request.UserPembuat,
 		Isi: request.Isi,
-		KodeTicket: request.TicketCode,
+		TicketCode: request.TicketCode,
 		Attachment1: "-",
 		UrlAttachment1: "-",
 		Attachment2: "-",

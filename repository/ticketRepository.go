@@ -32,7 +32,7 @@ func (repo *repository) CountTicketByStatus() ([]model.CountTicketByStatusRespon
 func (repo *repository) GetTicket(request model.GetTicketRequest) ([]model.GetTicketResponse, error) {
 	var ticket []model.GetTicketResponse
 	
-	error := repo.db.Raw("SELECT * FROM (SELECT ticket.*, users.name as user_name, team.name as team_name FROM ticket LEFT OUTER JOIN users ON (ticket.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (ticket.assigned_to_team = CAST(team.id AS varchar(10))) WHERE prioritas LIKE @Priority AND status LIKE @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam AND username_pembuat LIKE @UsernamePembuat AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate ORDER BY tgl_diperbarui DESC) as tbl WHERE judul LIKE @Search OR kode_ticket LIKE @Search OR lokasi LIKE @Search OR terminal_id LIKE @Search OR email LIKE @Search", model.GetTicketRequest{
+	error := repo.db.Raw("SELECT * FROM (SELECT ticket.*, users.name as user_name, team.name as team_name FROM ticket LEFT OUTER JOIN users ON (ticket.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (ticket.assigned_to_team = CAST(team.id AS varchar(10))) WHERE prioritas LIKE @Priority AND status LIKE @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam AND username_pembuat LIKE @UsernamePembuat AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate ORDER BY tgl_diperbarui DESC) as tbl WHERE judul LIKE @Search OR ticket_code LIKE @Search OR lokasi LIKE @Search OR terminal_id LIKE @Search OR email LIKE @Search", model.GetTicketRequest{
 		PageNo:          request.PageNo,
 		PageSize:        request.PageSize,
 		SortBy:          "%" + request.SortBy + "%",
@@ -68,8 +68,8 @@ func (repo *repository) CreateTicketIsi(request entity.TicketIsi) (entity.Ticket
 func (repo *repository) AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error) {
 	var ticket entity.Ticket
 
-	error := repo.db.Raw("UPDATE ticket SET assigned_to = @UserId, tgl_diperbarui = @UpdateAt WHERE id = @Id RETURNING ticket.*", model.AssignTicketToMemberRequest{
-		Id: request.Id,
+	error := repo.db.Raw("UPDATE ticket SET assigned_to = @UserId, tgl_diperbarui = @UpdateAt WHERE ticket_code = @TicketCode RETURNING ticket.*", model.AssignTicketToMemberRequest{
+		TicketCode: request.TicketCode,
 		UserId: request.UserId,
 		UpdateAt: request.UpdateAt,
 	}).Find(&ticket).Error
@@ -80,8 +80,8 @@ func (repo *repository) AssignTicketToMember(request model.AssignTicketToMemberR
 func (repo *repository) UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error) {
 	var ticket entity.Ticket
 
-	error := repo.db.Raw("UPDATE ticket SET status = @Status, tgl_diperbarui = @UpdateAt WHERE id = @Id RETURNING ticket.*", model.UpdateTicketStatusRequest{
-		Id: request.Id,
+	error := repo.db.Raw("UPDATE ticket SET status = @Status, tgl_diperbarui = @UpdateAt WHERE ticket_code = @TicketCode RETURNING ticket.*", model.UpdateTicketStatusRequest{
+		TicketCode: request.TicketCode,
 		Status: request.Status,
 		UpdateAt: request.UpdateAt,
 	}).Find(&ticket).Error

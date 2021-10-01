@@ -6,7 +6,7 @@ type TicketIsi struct {
 	Id               int    `json:"id" gorm:"primaryKey"`
 	UsernamePengirim string `json:"username_pengirim"`
 	Isi              string `json:"isi"`
-	KodeTicket       string `json:"kode_ticket"`
+	TicketCode       string `json:"ticket_code"`
 	Attachment1      string `json:"attachment1"`
 	UrlAttachment1   string `json:"url_attachment1"`
 	Attachment2      string `json:"attachment2"`

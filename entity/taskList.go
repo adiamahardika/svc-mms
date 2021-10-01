@@ -4,7 +4,7 @@ import "time"
 
 type TaskList struct {
 	Id          int    `json:"id" gorm:"primaryKey"`
-	KodeTicket  string `json:"kode_ticket"`
+	TicketCode  string `json:"ticket_code"`
 	Attachment  string `json:"attachment"`
 	Description string `json:"description"`
 	TaskName    string `json:"task_name"`

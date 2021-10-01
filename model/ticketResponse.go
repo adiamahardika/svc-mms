@@ -17,7 +17,7 @@ type GetTicketResponse struct {
 	TglDiperbarui    time.Time `json:"tgl_diperbarui"`
 	TotalWaktu       string    `json:"total_waktu"`
 	Status           string    `json:"status"`
-	KodeTicket       string    `json:"kode_ticket"`
+	TicketCode       string    `json:"ticket_code"`
 	Kategori         string    `json:"kategori"`
 	Lokasi           string    `json:"lokasi"`
 	TerminalId       string    `json:"terminal_id"`

@@ -16,5 +16,5 @@ type ChangePassRequest struct {
 	Username    string 		`json:"username"`
 	OldPassword string 		`json:"old_password"`
 	NewPassword string 		`json:"new_password"`
-	UpdateAt    time.Time   `json:"update_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
 }

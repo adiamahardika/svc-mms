@@ -45,7 +45,7 @@ func (taskListService *taskListService) UpdateTaskList(request model.UpdateTaskL
 	error_upload := context.SaveUploadedFile(request.Attachment, dir + request.Attachment.Filename)
 
 	new_request := entity.TaskList {
-		KodeTicket: request.KodeTicket,
+		TicketCode: request.TicketCode,
 		Description: request.Description,
 		Attachment: request.Attachment.Filename,
 		TaskName: request.TaskName,

@@ -5,11 +5,11 @@ import (
 )
 
 type GetTaskListRequest struct {
-	KodeTicket string `json:"kode_ticket"`
+	TicketCode string `json:"ticket_code"`
 }
 
 type UpdateTaskListRequest struct {
-	KodeTicket  string    `json:"kode_ticket" form:"kode_ticket"`
+	TicketCode  string    `json:"ticket_code" form:"ticket_code"`
 	Attachment  *multipart.FileHeader `json:"attachment" form:"attachment"`
 	Description string    `json:"description" form:"description"`
 	TaskName    string    `json:"task_name" form:"task_name"`
