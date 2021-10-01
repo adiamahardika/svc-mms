@@ -182,3 +182,58 @@ func (controller *userController) ChangePassword(context *gin.Context) {
 		}
 	}
 }
+
+func (controller *userController) ResetPassword(context *gin.Context) {
+	var request model.ResetPassword
+
+	error := context.ShouldBindJSON(&request)
+	description := []string{}
+
+	if (error != nil) {
+		for _, value := range error.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", value.Field(), value.ActualTag())
+			description = append(description, errorMessage)
+		}
+
+		status := model.StandardResponse{
+			HttpStatus: http.StatusBadRequest,
+			StatusCode: general.ErrorStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusBadRequest, gin.H{
+			"status" : status,
+		})
+	} else {
+		
+		user, error := controller.userService.ResetPassword(request)
+
+		if (error == nil) {
+			
+			description = append(description, "Success")
+
+			status := model.StandardResponse{
+				HttpStatus: http.StatusOK,
+				StatusCode: general.SuccessStatusCode,
+				Description: description,
+			}
+			context.JSON(http.StatusOK, gin.H{
+				"status" : status,
+				"result" : user,
+			})
+
+		} else {
+
+			description = append(description, error.Error())
+
+			status := model.StandardResponse{
+				HttpStatus: http.StatusBadRequest,
+				StatusCode: general.ErrorStatusCode,
+				Description: description,
+			}
+			context.JSON(http.StatusBadRequest, gin.H{
+				"status" : status,
+			})
+
+		}
+	}
+}

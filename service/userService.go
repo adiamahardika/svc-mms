@@ -14,6 +14,7 @@ type UserServiceInterface interface {
 	GetUser(request model.GetUserRequest) ([]entity.User, error)
 	Login(request model.LoginRequest) ([]entity.User, error)
 	ChangePassword(request model.ChangePassRequest) (entity.User, error)
+	ResetPassword(request model.ResetPassword) (entity.User, error)
 }
 
 type userService struct {
@@ -76,6 +77,36 @@ func (userService *userService) ChangePassword(request model.ChangePassRequest) 
 
 				user, error = userService.repository.ChangePassword(request)
 			}
+	}
+	user.Password = "-"
+
+	return user, error
+}
+
+func (userService *userService) ResetPassword(request model.ResetPassword) (entity.User, error) {
+	var user entity.User
+	date_now := time.Now()
+	
+	users, error := userService.repository.CheckUsername(request.Username)
+	
+	if (len(users) < 1) {
+		error = fmt.Errorf("Username Not Found!")
+		} else {
+				
+			new_pass, error_hash_pass := bcrypt.GenerateFromPassword([]byte(request.NewPassword), bcrypt.DefaultCost)
+			
+			if (error_hash_pass) != nil {
+				error = fmt.Errorf("There was an error creating new password!")
+			}
+
+			new_request := model.ChangePassRequest{
+				Username: request.Username,
+				NewPassword: string(new_pass),
+				UpdatedAt: date_now,
+			}
+
+			user, error = userService.repository.ChangePassword(new_request)
+			
 	}
 	user.Password = "-"
 
