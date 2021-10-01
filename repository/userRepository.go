@@ -7,7 +7,8 @@ import (
 
 type UserRepositoryInterface interface {
 	GetUser(request model.GetUserRequest) ([]entity.User, error)
-	CheckUsername(request model.LoginRequest) ([]entity.User, error)
+	CheckUsername(request string) ([]entity.User, error)
+	ChangePassword(request model.ChangePassRequest) (entity.User, error)
 }
 
 func (repo *repository) GetUser(request model.GetUserRequest) ([]entity.User, error){
@@ -21,11 +22,23 @@ func (repo *repository) GetUser(request model.GetUserRequest) ([]entity.User, er
 	return user, error
 }
 
-func (repo *repository) CheckUsername(request model.LoginRequest) ([]entity.User, error) {
+func (repo *repository) CheckUsername(request string) ([]entity.User, error) {
 	var user []entity.User
 
 	error := repo.db.Raw("SELECT * FROM users WHERE username = @Username", model.LoginRequest{
+		Username: request,
+	}).Find(&user).Error
+
+	return user, error
+}
+
+func (repo *repository) ChangePassword(request model.ChangePassRequest) (entity.User, error) {
+	var user entity.User
+
+	error := repo.db.Raw("UPDATE users SET password = @NewPassword, update_at = @UpdateAt WHERE username = @Username RETURNING users.*", model.ChangePassRequest{
 		Username: request.Username,
+		NewPassword: request.NewPassword,
+		UpdateAt: request.UpdateAt,
 	}).Find(&user).Error
 
 	return user, error
