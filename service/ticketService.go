@@ -75,15 +75,16 @@ func (ticketService *ticketService) CreateTicket(request model.CreateTicketReque
 	}
 
 	ticket, error := ticketService.repository.CheckTicketCode(request.TicketCode)
-	
-	if (len(ticket) > 1) {
+
+	if (len(ticket) > 0) {
 		error = fmt.Errorf("Ticket code already exist!")
-	} else {
+	} else if (error != nil) {
 		
 		_, error = ticketService.repository.CreateTicket(ticket_request)
 	
-		
-		_, error = ticketService.repository.CreateTicketIsi(ticket_isi_request)
+		if (error != nil) {
+			_, error = ticketService.repository.CreateTicketIsi(ticket_isi_request)
+		}
 	}
 	
 	return request, error
