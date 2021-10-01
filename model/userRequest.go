@@ -24,3 +24,14 @@ type ResetPassword struct {
 	NewPassword string 		`json:"new_password"`
 	UpdatedAt   time.Time 	`json:"updated_at"`
 }
+
+type RegisterRequest struct {
+	Name      string 	`json:"name"`
+	Username  string 	`json:"username"`
+	Password  string 	`json:"password"`
+	Email     string 	`json:"email"`
+	Team 	  string 	`json:"team"`
+	Role 	  string 	`json:"role"`
+	UpdatedAt time.Time	`json:"updated_at"`
+	CreatedAt time.Time	`json:"created_at"`
+}

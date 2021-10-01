@@ -15,6 +15,7 @@ type UserServiceInterface interface {
 	Login(request model.LoginRequest) ([]entity.User, error)
 	ChangePassword(request model.ChangePassRequest) (entity.User, error)
 	ResetPassword(request model.ResetPassword) (entity.User, error)
+	Register(request model.RegisterRequest) (entity.User, error)
 }
 
 type userService struct {
@@ -69,13 +70,14 @@ func (userService *userService) ChangePassword(request model.ChangePassRequest) 
 				
 				new_pass, error_hash_pass := bcrypt.GenerateFromPassword([]byte(request.NewPassword), bcrypt.DefaultCost)
 				
-				if (error_hash_pass) != nil {
+				if (error_hash_pass != nil) {
 					error = fmt.Errorf("There was an error creating new password!")
+				} else {
+					request.UpdatedAt = date_now
+					request.NewPassword = string(new_pass)
+	
+					user, error = userService.repository.ChangePassword(request)
 				}
-				request.UpdatedAt = date_now
-				request.NewPassword = string(new_pass)
-
-				user, error = userService.repository.ChangePassword(request)
 			}
 	}
 	user.Password = "-"
@@ -95,20 +97,47 @@ func (userService *userService) ResetPassword(request model.ResetPassword) (enti
 				
 			new_pass, error_hash_pass := bcrypt.GenerateFromPassword([]byte(request.NewPassword), bcrypt.DefaultCost)
 			
-			if (error_hash_pass) != nil {
+			if (error_hash_pass != nil) {
 				error = fmt.Errorf("There was an error creating new password!")
+			} else {
+				new_request := model.ChangePassRequest{
+					Username: request.Username,
+					NewPassword: string(new_pass),
+					UpdatedAt: date_now,
+				}
+	
+				user, error = userService.repository.ChangePassword(new_request)
 			}
 
-			new_request := model.ChangePassRequest{
-				Username: request.Username,
-				NewPassword: string(new_pass),
-				UpdatedAt: date_now,
-			}
-
-			user, error = userService.repository.ChangePassword(new_request)
 			
 	}
 	user.Password = "-"
+
+	return user, error
+}
+
+func (userService *userService) Register(request model.RegisterRequest) (entity.User, error) {
+	var user entity.User
+	date_now := time.Now()
+
+	users, error := userService.repository.CheckUsername(request.Username)
+
+	if (len(users) > 0) {
+		error = fmt.Errorf("Username already exist!")
+		} else {
+			new_pass, error_hash_pass := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+			
+			if (error_hash_pass != nil) {
+				error = fmt.Errorf("There was an error creating new password!")
+			} else {
+				
+			request.CreatedAt = date_now
+			request.UpdatedAt = date_now
+			request.Password = string(new_pass)
+		
+			user, error = userService.repository.Register(request)
+		}
+	}
 
 	return user, error
 }

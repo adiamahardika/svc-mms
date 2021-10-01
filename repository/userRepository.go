@@ -9,6 +9,7 @@ type UserRepositoryInterface interface {
 	GetUser(request model.GetUserRequest) ([]entity.User, error)
 	CheckUsername(request string) ([]entity.User, error)
 	ChangePassword(request model.ChangePassRequest) (entity.User, error)
+	Register(request model.RegisterRequest) (entity.User, error)
 }
 
 func (repo *repository) GetUser(request model.GetUserRequest) ([]entity.User, error){
@@ -40,6 +41,14 @@ func (repo *repository) ChangePassword(request model.ChangePassRequest) (entity.
 		NewPassword: request.NewPassword,
 		UpdatedAt: request.UpdatedAt,
 	}).Find(&user).Error
+
+	return user, error
+}
+
+func (repo *repository) Register(request model.RegisterRequest) (entity.User, error) {
+	var user entity.User
+
+	error := repo.db.Table("users").Create(&request).Error
 
 	return user, error
 }
