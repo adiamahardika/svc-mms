@@ -89,12 +89,10 @@ func (ticketService *ticketService) CreateTicket(request model.CreateTicketReque
 func (ticketService *ticketService) AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error) {
 
 	date_now := time.Now()
-	new_request := model.AssignTicketToMemberRequest {
-		Id: request.Id,
-		UserId: request.UserId,
-		UpdateAt: date_now,
-	}
-	ticket, error := ticketService.repository.AssignTicketToMember(new_request)
+	
+	request.UpdateAt = date_now
+
+	ticket, error := ticketService.repository.AssignTicketToMember(request)
 
 	return ticket, error
 }
@@ -102,12 +100,10 @@ func (ticketService *ticketService) AssignTicketToMember(request model.AssignTic
 func (ticketService *ticketService) UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error) {
 
 	date_now := time.Now()
-	new_request := model.UpdateTicketStatusRequest {
-		Id: request.Id,
-		Status: request.Status,
-		UpdateAt: date_now,
-	}
-	ticket, error := ticketService.repository.UpdateTicketStatus(new_request)
+
+	request.UpdateAt = date_now
+
+	ticket, error := ticketService.repository.UpdateTicketStatus(request)
 
 	return ticket, error
 }
