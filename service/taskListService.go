@@ -40,7 +40,9 @@ func (taskListService *taskListService) GetTaskList(request *model.GetTaskListRe
 func (taskListService *taskListService) UpdateTaskList(request model.UpdateTaskListRequest, context *gin.Context) (entity.TaskList, error) {
 	date_now := time.Now()
 	
-	error_upload := context.SaveUploadedFile(request.Attachment, request.Attachment.Filename)
+	dir := os.Getenv("FILE_DIR")
+
+	error_upload := context.SaveUploadedFile(request.Attachment, dir + request.Attachment.Filename)
 
 	new_request := entity.TaskList {
 		KodeTicket: request.KodeTicket,
