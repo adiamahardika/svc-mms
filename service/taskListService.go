@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"os"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
@@ -27,11 +28,13 @@ func (taskListService *taskListService) GetTaskList(request *model.GetTaskListRe
 	
 	task_list, error := taskListService.repository.GetTaskList(request)
 
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("PORT")
+	url := os.Getenv("FILE_URL")
 
 	for index := range task_list {
-		task_list[index].Attachment = "http://" + host + port + "/assets/" + task_list[index].Attachment
+		date := task_list[index].CreatedAt.Format("2006-01-02")
+		ticket_code := task_list[index].TicketCode
+		file_name := task_list[index].Attachment
+		task_list[index].Attachment = url + date + "/" + ticket_code + "/" + file_name
 	}
 
 	return task_list, error
@@ -39,10 +42,20 @@ func (taskListService *taskListService) GetTaskList(request *model.GetTaskListRe
 
 func (taskListService *taskListService) UpdateTaskList(request model.UpdateTaskListRequest, context *gin.Context) (entity.TaskList, error) {
 	date_now := time.Now()
-	
 	dir := os.Getenv("FILE_DIR")
+	path := dir + date_now.Format("2006-01-02") + "/" + request.TicketCode + "/"
+	error := fmt.Errorf("")
 
-	error_upload := context.SaveUploadedFile(request.Attachment, dir + request.Attachment.Filename)
+	_, check_dir_error := os.Stat(path)
+	if (os.IsNotExist(check_dir_error)) {
+		check_dir_error := os.Mkdir(path, 0755)
+		
+		if (check_dir_error != nil) {
+			error = check_dir_error
+		}
+	}
+
+	error = context.SaveUploadedFile(request.Attachment, path + request.Attachment.Filename)
 
 	new_request := entity.TaskList {
 		TicketCode: request.TicketCode,
@@ -58,12 +71,6 @@ func (taskListService *taskListService) UpdateTaskList(request model.UpdateTaskL
 
 	ticket, error := taskListService.repository.UpdateTaskList(new_request)
 
-	if (error_upload != nil) {
-		
-		return ticket, error_upload
-		
-	} else {
-
-		return ticket, error
-	}
+	return ticket, error
+	
 }
