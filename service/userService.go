@@ -11,10 +11,10 @@ import (
 )
 
 type UserServiceInterface interface {
-	GetUser(request model.GetUserRequest) ([]entity.User, error)
-	Login(request model.LoginRequest) ([]entity.User, error)
-	ChangePassword(request model.ChangePassRequest) (entity.User, error)
-	ResetPassword(request model.ResetPassword) (entity.User, error)
+	GetUser(request model.GetUserRequest) ([]model.GetUserResponse, error)
+	Login(request model.LoginRequest) (model.GetUserResponse, error)
+	ChangePassword(request model.ChangePassRequest) (model.GetUserResponse, error)
+	ResetPassword(request model.ResetPassword) (model.GetUserResponse, error)
 	Register(request model.RegisterRequest) (entity.User, error)
 }
 
@@ -26,35 +26,43 @@ func UserService(repository repository.UserRepositoryInterface) *userService {
 	return &userService{repository}
 }
 
-func (userService *userService) GetUser(request model.GetUserRequest) ([]entity.User, error) {
+func (userService *userService) GetUser(request model.GetUserRequest) ([]model.GetUserResponse, error) {
 	user, error := userService.repository.GetUser(request)
-
-	for index := range user {
-		user[index].Password = "-"
-	}
 	
 	return user, error
 }
 
-func (userService *userService) Login(request model.LoginRequest) ([]entity.User, error) {
-	
+func (userService *userService) Login(request model.LoginRequest) (model.GetUserResponse, error) {
+	var user_response model.GetUserResponse
 	user, error := userService.repository.CheckUsername(request.Username)
 	
 	if (len(user) < 1) {
 		error = fmt.Errorf("Username Not Found!")
 		} else {
 		error_check_pass := bcrypt.CompareHashAndPassword([]byte(user[0].Password), []byte(request.Password))
+		
 		if (error_check_pass != nil) {
 			error = fmt.Errorf("Password Not Match")
 		}
-		user[0].Password = "-"
+		user_response = model.GetUserResponse{
+			Id: user[0].Id,
+			Name: user[0].Name,
+			Username: user[0].Username,
+			Email: user[0].Email,
+			Team: user[0].Team,
+			TeamName: user[0].TeamName,
+			Role: user[0].Role,
+			RoleName: user[0].RoleName,
+			UpdatedAt: user[0].UpdatedAt,
+			CreatedAt: user[0].CreatedAt,
+		}
 	}
 
-	return user, error
+	return user_response, error
 }
 
-func (userService *userService) ChangePassword(request model.ChangePassRequest) (entity.User, error) {
-	var user entity.User
+func (userService *userService) ChangePassword(request model.ChangePassRequest) (model.GetUserResponse, error) {
+	var user model.GetUserResponse
 	date_now := time.Now()
 	
 	users, error := userService.repository.CheckUsername(request.Username)
@@ -80,13 +88,12 @@ func (userService *userService) ChangePassword(request model.ChangePassRequest) 
 				}
 			}
 	}
-	user.Password = "-"
 
 	return user, error
 }
 
-func (userService *userService) ResetPassword(request model.ResetPassword) (entity.User, error) {
-	var user entity.User
+func (userService *userService) ResetPassword(request model.ResetPassword) (model.GetUserResponse, error) {
+	var user model.GetUserResponse
 	date_now := time.Now()
 	
 	users, error := userService.repository.CheckUsername(request.Username)
@@ -111,7 +118,6 @@ func (userService *userService) ResetPassword(request model.ResetPassword) (enti
 
 			
 	}
-	user.Password = "-"
 
 	return user, error
 }
