@@ -116,11 +116,11 @@ func (controller *userController) Login(context *gin.Context) {
 			description = append(description, error.Error())
 
 			status := model.StandardResponse{
-				HttpStatus: http.StatusBadRequest,
+				HttpStatus: http.StatusOK,
 				StatusCode: general.ErrorStatusCode,
 				Description: description,
 			}
-			context.JSON(http.StatusBadRequest, gin.H{
+			context.JSON(http.StatusOK, gin.H{
 				"status" : status,
 			})
 

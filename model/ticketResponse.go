@@ -18,7 +18,8 @@ type GetTicketResponse struct {
 	TotalWaktu       string    `json:"total_waktu"`
 	Status           string    `json:"status"`
 	TicketCode       string    `json:"ticket_code"`
-	Kategori         string    `json:"kategori"`
+	Category         string    `json:"category"`
+	CategoryName     string    `json:"category_name"`
 	Lokasi           string    `json:"lokasi"`
 	TerminalId       string    `json:"terminal_id"`
 	Email            string    `json:"email"`

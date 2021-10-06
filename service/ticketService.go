@@ -53,7 +53,7 @@ func (ticketService *ticketService) CreateTicket(request model.CreateTicketReque
 		TotalWaktu: request.TotalWaktu,
 		Status: request.Status,
 		TicketCode: request.TicketCode,
-		Kategori: request.Kategori,
+		Category: request.Category,
 		Lokasi: request.Lokasi,
 		TerminalId: request.TerminalId,
 		Email: request.Email,

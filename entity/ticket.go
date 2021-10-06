@@ -13,7 +13,7 @@ type Ticket struct {
 	TotalWaktu		 string		`json:"total_waktu"`
 	Status			 string		`json:"status"`
 	TicketCode		 string		`json:"ticket_code"`
-	Kategori		 string		`json:"kategori"`
+	Category		 string		`json:"category"`
 	Lokasi			 string		`json:"lokasi"`
 	TerminalId		 string		`json:"terminal_id"`
 	Email			 string		`json:"email"`

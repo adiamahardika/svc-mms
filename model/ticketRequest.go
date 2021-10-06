@@ -6,9 +6,6 @@ import (
 )
 
 type GetTicketRequest struct {
-	PageNo 			json.Number `json:"page_no"`
-	PageSize 		json.Number `json:"page_size"`
-	SortBy 			string `json:"sort_by"`
 	Search 			string `json:"search"`
 	Status 			string `json:"status"`
 	Priority 		string `json:"priority"`
@@ -28,7 +25,7 @@ type CreateTicketRequest struct {
 	Isi				string `json:"isi"`
 	Lokasi			string `json:"lokasi"`
 	TerminalId		string `json:"terminal_id"`
-	Kategori		string `json:"kategori"`
+	Category		string `json:"category"`
 	Email			string `json:"email"`
 	AssignedTo		string `json:"assigned_to"`
 	AssignedToTeam	string `json:"assigned_to_team"`
