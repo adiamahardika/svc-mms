@@ -17,4 +17,5 @@ type UpdateTaskListRequest struct {
 	Latitude    string    `json:"latitude" form:"latitude"`
 	AssignedBy  string    `json:"assigned_by" form:"assigned_by"`
 	Status      string    `json:"status" form:"status"`
+	Index		string	`json:"index" form:"index"`
 }

@@ -41,35 +41,41 @@ func (taskListService *taskListService) GetTaskList(request *model.GetTaskListRe
 }
 
 func (taskListService *taskListService) UpdateTaskList(request model.UpdateTaskListRequest, context *gin.Context) (entity.TaskList, error) {
+	var ticket entity.TaskList
 	date_now := time.Now()
 	dir := os.Getenv("FILE_DIR")
-	path := dir + date_now.Format("2006-01-02") + "/" + request.TicketCode + "/"
-	error := fmt.Errorf("")
+	path := dir + date_now.Format("2006-01-02") + "/" + request.TicketCode 
+	error := fmt.Errorf("error")
 
 	_, check_dir_error := os.Stat(path)
+
 	if (os.IsNotExist(check_dir_error)) {
-		check_dir_error := os.Mkdir(path, 0755)
+		check_dir_error := os.MkdirAll(path, 0755)
 		
 		if (check_dir_error != nil) {
 			error = check_dir_error
 		}
 	}
 
-	error = context.SaveUploadedFile(request.Attachment, path + request.Attachment.Filename)
-
-	new_request := entity.TaskList {
-		TicketCode: request.TicketCode,
-		Description: request.Description,
-		Attachment: request.Attachment.Filename,
-		TaskName: request.TaskName,
-		Longitude: request.Latitude,
-		Latitude: request.Latitude,
-		AssignedBy: request.AssignedBy,
-		Status: request.Status,
-		CreatedAt: date_now,
+	save_file_error := context.SaveUploadedFile(request.Attachment, path + "/" + request.Attachment.Filename)
+	if (save_file_error != nil) {
+		error = save_file_error
+	} else {
+		new_request := entity.TaskList {
+			TicketCode: request.TicketCode,
+			Description: request.Description,
+			Attachment: request.Attachment.Filename,
+			TaskName: request.TaskName,
+			Longitude: request.Latitude,
+			Latitude: request.Latitude,
+			AssignedBy: request.AssignedBy,
+			Status: request.Status,
+			Index: request.Index,
+			CreatedAt: date_now,
+		}
+	
+		ticket, error = taskListService.repository.UpdateTaskList(new_request)
 	}
-
-	ticket, error := taskListService.repository.UpdateTaskList(new_request)
 
 	return ticket, error
 	

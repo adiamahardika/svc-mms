@@ -13,7 +13,7 @@ type TaskListRepositoryInterface interface {
 func (repo *repository) GetTaskList(request *model.GetTaskListRequest) ([]entity.TaskList, error) {
 	var task_list []entity.TaskList
 
-	error := repo.db.Raw("SELECT * FROM task_list WHERE ticket_code LIKE @TicketCode", model.GetTaskListRequest{
+	error := repo.db.Raw("SELECT * FROM task_list WHERE ticket_code LIKE @TicketCode ORDER BY index", model.GetTaskListRequest{
 		TicketCode: "%" + request.TicketCode + "%",
 	}).Find(&task_list).Error
 
