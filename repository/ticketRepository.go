@@ -11,7 +11,7 @@ type TicketRepositoryInterface interface {
 	CountTicketByStatus()							([]model.CountTicketByStatusResponse, error)
 	CreateTicket(request entity.Ticket)				(entity.Ticket, error)
 	CreateTicketIsi(request entity.TicketIsi) 		(entity.TicketIsi, error)
-	AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error)
+	AssignTicket(request model.AssignTicketRequest) (entity.Ticket, error)
 	UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error)
 	CheckTicketCode(request string) ([]entity.Ticket, error)
 }
@@ -63,12 +63,13 @@ func (repo *repository) CreateTicketIsi(request entity.TicketIsi) (entity.Ticket
 	return ticket_isi, error
 }
 
-func (repo *repository) AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error) {
+func (repo *repository) AssignTicket(request model.AssignTicketRequest) (entity.Ticket, error) {
 	var ticket entity.Ticket
 
-	error := repo.db.Raw("UPDATE ticket SET assigned_to = @UserId, tgl_diperbarui = @UpdateAt WHERE ticket_code = @TicketCode RETURNING ticket.*", model.AssignTicketToMemberRequest{
+	error := repo.db.Raw("UPDATE ticket SET assigned_to = @UserId, assigned_to_team = @TeamId, tgl_diperbarui = @UpdateAt WHERE ticket_code = @TicketCode RETURNING ticket.*", model.AssignTicketRequest{
 		TicketCode: request.TicketCode,
 		UserId: request.UserId,
+		TeamId: request.TeamId,
 		UpdateAt: request.UpdateAt,
 	}).Find(&ticket).Error
 

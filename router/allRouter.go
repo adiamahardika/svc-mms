@@ -39,7 +39,7 @@ func AllRouter(db *gorm.DB) {
 		v1.GET("/get-count-ticket-status", tikcetController.CountTicketByStatus)
 		v1.POST("/get-ticket", tikcetController.GetTicket)
 		v1.POST("/create-ticket", tikcetController.CreateTicket)
-		v1.PUT("/assign-ticket", tikcetController.AssignTicketToMember)
+		v1.PUT("/assign-ticket", tikcetController.AssignTicket)
 		v1.PUT("/update-ticket-status", tikcetController.UpdateTicketStatus)
 		
 		v1.POST("/get-task-list", taskListController.GetTaskList)

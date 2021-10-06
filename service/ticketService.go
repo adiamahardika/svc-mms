@@ -9,11 +9,11 @@ import (
 )
 
 type TicketServiceInterface interface {
-	GetAll()														([]entity.Ticket, error)
-	GetTicket(request model.GetTicketRequest)						([]model.GetTicketResponse, error)
-	CountTicketByStatus()											([]model.CountTicketByStatusResponse, error)
-	CreateTicket(request model.CreateTicketRequest)					(model.CreateTicketRequest, error)
-	AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error)
+	GetAll()													([]entity.Ticket, error)
+	GetTicket(request model.GetTicketRequest)					([]model.GetTicketResponse, error)
+	CountTicketByStatus()										([]model.CountTicketByStatusResponse, error)
+	CreateTicket(request model.CreateTicketRequest)				(model.CreateTicketRequest, error)
+	AssignTicket(request model.AssignTicketRequest) 			(entity.Ticket, error)
 	UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error)
 }
 
@@ -91,13 +91,13 @@ func (ticketService *ticketService) CreateTicket(request model.CreateTicketReque
 	
 }
 
-func (ticketService *ticketService) AssignTicketToMember(request model.AssignTicketToMemberRequest) (entity.Ticket, error) {
+func (ticketService *ticketService) AssignTicket(request model.AssignTicketRequest) (entity.Ticket, error) {
 
 	date_now := time.Now()
 	
 	request.UpdateAt = date_now
 
-	ticket, error := ticketService.repository.AssignTicketToMember(request)
+	ticket, error := ticketService.repository.AssignTicket(request)
 
 	return ticket, error
 }

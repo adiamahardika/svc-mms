@@ -197,8 +197,8 @@ func (controller *ticketController) CreateTicket(context *gin.Context) {
 	
 }
 
-func (controller *ticketController) AssignTicketToMember(context *gin.Context) {
-	var request model.AssignTicketToMemberRequest
+func (controller *ticketController) AssignTicket(context *gin.Context) {
+	var request model.AssignTicketRequest
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
@@ -219,7 +219,7 @@ func (controller *ticketController) AssignTicketToMember(context *gin.Context) {
 		})
 	} else {
 		
-		ticket, error := controller.ticketService.AssignTicketToMember(request)
+		ticket, error := controller.ticketService.AssignTicket(request)
 
 		if (error == nil) {
 			

@@ -32,9 +32,10 @@ type CreateTicketRequest struct {
 	TicketCode		string `json:"ticket_code"`
 }
 
-type AssignTicketToMemberRequest struct {
+type AssignTicketRequest struct {
 	TicketCode	string	`json:"ticket_code" binding:"required"`
 	UserId		json.Number	`json:"user_id" binding:"required"`
+	TeamId		json.Number	`json:"team_id" binding:"required"`
 	UpdateAt 	time.Time `json:"update_at"`
 }
 
