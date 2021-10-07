@@ -6,14 +6,14 @@ import (
 )
 
 type TaskListRepositoryInterface interface {
-	GetTaskList(request *model.GetTaskListRequest) 	([]entity.TaskList, error)
+	GetTaskList(request *model.GetTaskListRequest) 	([]model.GetTaskListResponse, error)
 	UpdateTaskList(request entity.TaskList) 		(entity.TaskList, error)
 }
 
-func (repo *repository) GetTaskList(request *model.GetTaskListRequest) ([]entity.TaskList, error) {
-	var task_list []entity.TaskList
+func (repo *repository) GetTaskList(request *model.GetTaskListRequest) ([]model.GetTaskListResponse, error) {
+	var task_list []model.GetTaskListResponse
 
-	error := repo.db.Raw("SELECT * FROM task_list WHERE ticket_code LIKE @TicketCode ORDER BY index", model.GetTaskListRequest{
+	error := repo.db.Raw("SELECT task_list.*, users.name as user_name FROM task_list LEFT OUTER JOIN users ON (task_list.assigned_by = CAST(users.id AS varchar(10))) WHERE ticket_code LIKE @TicketCode ORDER BY index", model.GetTaskListRequest{
 		TicketCode: "%" + request.TicketCode + "%",
 	}).Find(&task_list).Error
 

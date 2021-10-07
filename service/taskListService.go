@@ -12,7 +12,7 @@ import (
 )
 
 type TaskListServiceInterface interface {
-	GetTaskList(request *model.GetTaskListRequest) ([]entity.TaskList, error)
+	GetTaskList(request *model.GetTaskListRequest) ([]model.GetTaskListResponse, error)
 	UpdateTaskList(request model.UpdateTaskListRequest, context *gin.Context)	(entity.TaskList, error)
 }
 
@@ -24,7 +24,7 @@ func TaskListService(repository repository.TaskListRepositoryInterface) *taskLis
 	return &taskListService{repository}
 }
 
-func (taskListService *taskListService) GetTaskList(request *model.GetTaskListRequest) ([]entity.TaskList, error) {
+func (taskListService *taskListService) GetTaskList(request *model.GetTaskListRequest) ([]model.GetTaskListResponse, error) {
 	
 	task_list, error := taskListService.repository.GetTaskList(request)
 
@@ -57,10 +57,8 @@ func (taskListService *taskListService) UpdateTaskList(request model.UpdateTaskL
 		}
 	}
 
-	save_file_error := context.SaveUploadedFile(request.Attachment, path + "/" + request.Attachment.Filename)
-	if (save_file_error != nil) {
-		error = save_file_error
-	} else {
+	error = context.SaveUploadedFile(request.Attachment, path + "/" + request.Attachment.Filename)
+	if (error == nil) {
 		new_request := entity.TaskList {
 			TicketCode: request.TicketCode,
 			Description: request.Description,
@@ -78,5 +76,4 @@ func (taskListService *taskListService) UpdateTaskList(request model.UpdateTaskL
 	}
 
 	return ticket, error
-	
 }
