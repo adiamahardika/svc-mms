@@ -91,7 +91,7 @@ func (repo *repository) UpdateTicketStatus(request model.UpdateTicketStatusReque
 func (repo *repository) CheckTicketCode(request string) ([]entity.Ticket, error) {
 	var ticket []entity.Ticket
 
-	error := repo.db.Raw("SELECT * FROM ticket WHERE ticket_code = @TicketCode", model.CreateTicketRequest{
+	error := repo.db.Raw("SELECT ticket.*, users.name as user_name, team.name as team_name, category.name as category_name FROM ticket LEFT OUTER JOIN users ON (ticket.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (ticket.assigned_to_team = CAST(team.id AS varchar(10))) LEFT OUTER JOIN category ON (ticket.category = CAST(category.id AS varchar(10))) WHERE ticket_code = @TicketCode", model.CreateTicketRequest{
 		TicketCode: request,
 	}).Find(&ticket).Error
 

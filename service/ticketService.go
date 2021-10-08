@@ -15,6 +15,7 @@ type TicketServiceInterface interface {
 	CreateTicket(request model.CreateTicketRequest)				(model.CreateTicketRequest, error)
 	AssignTicket(request model.AssignTicketRequest) 			(entity.Ticket, error)
 	UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error)
+	GetDetailTicket(request string) 							([]entity.Ticket, error)
 }
 
 type ticketService struct {
@@ -109,6 +110,13 @@ func (ticketService *ticketService) UpdateTicketStatus(request model.UpdateTicke
 	request.UpdateAt = date_now
 
 	ticket, error := ticketService.repository.UpdateTicketStatus(request)
+
+	return ticket, error
+}
+
+func (ticketService *ticketService) GetDetailTicket(request string) ([]entity.Ticket, error) {
+
+	ticket, error := ticketService.repository.CheckTicketCode(request)
 
 	return ticket, error
 }
