@@ -8,7 +8,7 @@ import (
 type TicketRepositoryInterface interface {
 	GetAll() 										([]entity.Ticket, error)
 	GetTicket(request model.GetTicketRequest)		([]model.GetTicketResponse, error)
-	CountTicketByStatus()							([]model.CountTicketByStatusResponse, error)
+	CountTicketByStatus(request model.CountTicketByStatusRequest)	([]model.CountTicketByStatusResponse, error)
 	CreateTicket(request entity.Ticket)				(entity.Ticket, error)
 	CreateTicketIsi(request entity.TicketIsi) 		(entity.TicketIsi, error)
 	AssignTicket(request model.AssignTicketRequest) (entity.Ticket, error)
@@ -23,10 +23,15 @@ func (repo *repository) GetAll() ([]entity.Ticket, error) {
 	return ticket, error
 }
 
-func (repo *repository) CountTicketByStatus() ([]model.CountTicketByStatusResponse, error) {
+func (repo *repository) CountTicketByStatus(request model.CountTicketByStatusRequest) ([]model.CountTicketByStatusResponse, error) {
 	var status []model.CountTicketByStatusResponse
 	
-	error := repo.db.Raw("SELECT status, COUNT(*) as total FROM ticket GROUP BY status").Find(&status).Error
+	error := repo.db.Raw("SELECT status, COUNT(*) as total FROM ticket WHERE assigned_to LIKE @AssignedTo AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate GROUP BY status", model.CountTicketByStatusRequest{
+		AssignedTo: "%" + request.AssignedTo + "%",
+		StartDate: request.StartDate,
+		EndDate: request.EndDate,
+	}).Find(&status).Error
+
 	return status, error
 }
 

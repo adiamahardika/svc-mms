@@ -44,3 +44,9 @@ type UpdateTicketStatusRequest struct {
 	Status		string	`json:"status" binding:"required"`
 	UpdateAt 	time.Time `json:"update_at"`
 }
+
+type CountTicketByStatusRequest struct {
+	AssignedTo		string `json:"assigned_to"`
+	StartDate 		string `json:"start_date" binding:"required"`
+	EndDate 		string `json:"end_date" binding:"required"`
+}

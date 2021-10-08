@@ -11,7 +11,7 @@ import (
 type TicketServiceInterface interface {
 	GetAll()													([]entity.Ticket, error)
 	GetTicket(request model.GetTicketRequest)					([]model.GetTicketResponse, error)
-	CountTicketByStatus()										([]model.CountTicketByStatusResponse, error)
+	CountTicketByStatus(request model.CountTicketByStatusRequest)	([]model.CountTicketByStatusResponse, error)
 	CreateTicket(request model.CreateTicketRequest)				(model.CreateTicketRequest, error)
 	AssignTicket(request model.AssignTicketRequest) 			(entity.Ticket, error)
 	UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error)
@@ -31,13 +31,15 @@ func (ticketService *ticketService) GetAll() ([]entity.Ticket, error){
 }
 
 func (ticketService *ticketService) GetTicket(request model.GetTicketRequest) ([]model.GetTicketResponse, error) {
-	list_ticket, error := ticketService.repository.GetTicket(request)
+	status, error := ticketService.repository.GetTicket(request)
 
-	return list_ticket, error
+	return status, error
 }
 
-func (ticketService *ticketService) CountTicketByStatus() ([]model.CountTicketByStatusResponse, error){
-	return ticketService.repository.CountTicketByStatus()
+func (ticketService *ticketService) CountTicketByStatus(request model.CountTicketByStatusRequest) ([]model.CountTicketByStatusResponse, error){
+	count_ticket, error := ticketService.repository.CountTicketByStatus(request)
+	
+	return count_ticket, error
 }
 
 type errorStruct struct {
