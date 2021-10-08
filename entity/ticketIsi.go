@@ -8,8 +8,6 @@ type TicketIsi struct {
 	Isi              string `json:"isi"`
 	TicketCode       string `json:"ticket_code"`
 	Attachment1      string `json:"attachment1"`
-	UrlAttachment1   string `json:"url_attachment1"`
 	Attachment2      string `json:"attachment2"`
-	UrlAttachment2   string `json:"url_attachment2"`
 	TglDibuat        time.Time `json:"tgl_dibuat"`
 }

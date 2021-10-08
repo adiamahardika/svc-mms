@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"svc-monitoring-maintenance/entity"
+	"time"
+)
 
 type CountTicketByStatusResponse struct {
 	Status string `json:"status"`
@@ -27,4 +30,5 @@ type GetTicketResponse struct {
 	UserName 		 string	   `json:"user_name"`
 	AssignedToTeam   string    `json:"assigned_to_team"`
 	TeamName 		 string	   `json:"team_name"`
+	TicketIsi		 []entity.TicketIsi `json:"ticket_isi" gorm:"foreignKey:TicketCode"`
 }

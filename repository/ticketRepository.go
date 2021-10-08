@@ -11,9 +11,10 @@ type TicketRepositoryInterface interface {
 	CountTicketByStatus(request model.CountTicketByStatusRequest)	([]model.CountTicketByStatusResponse, error)
 	CreateTicket(request entity.Ticket)				(entity.Ticket, error)
 	CreateTicketIsi(request entity.TicketIsi) 		(entity.TicketIsi, error)
+	GetTicketIsi(request string) ([]entity.TicketIsi, error)
 	AssignTicket(request model.AssignTicketRequest) (entity.Ticket, error)
 	UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error)
-	CheckTicketCode(request string) ([]entity.Ticket, error)
+	CheckTicketCode(request string) ([]model.GetTicketResponse, error)
 }
 
 func (repo *repository) GetAll() ([]entity.Ticket, error) {
@@ -68,6 +69,16 @@ func (repo *repository) CreateTicketIsi(request entity.TicketIsi) (entity.Ticket
 	return ticket_isi, error
 }
 
+func (repo *repository) GetTicketIsi(request string) ([]entity.TicketIsi, error) {
+	var ticket_isi []entity.TicketIsi
+
+	error := repo.db.Raw("SELECT * FROM ticket_isi WHERE ticket_code LIKE @TicketCode", entity.TicketIsi{
+		TicketCode: "%" + request + "%",
+	}).Find(&ticket_isi).Error
+
+	return ticket_isi, error
+}
+
 func (repo *repository) AssignTicket(request model.AssignTicketRequest) (entity.Ticket, error) {
 	var ticket entity.Ticket
 
@@ -93,8 +104,8 @@ func (repo *repository) UpdateTicketStatus(request model.UpdateTicketStatusReque
 	return ticket, error
 }
 
-func (repo *repository) CheckTicketCode(request string) ([]entity.Ticket, error) {
-	var ticket []entity.Ticket
+func (repo *repository) CheckTicketCode(request string) ([]model.GetTicketResponse, error) {
+	var ticket []model.GetTicketResponse
 
 	error := repo.db.Raw("SELECT ticket.*, users.name as user_name, team.name as team_name, category.name as category_name FROM ticket LEFT OUTER JOIN users ON (ticket.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (ticket.assigned_to_team = CAST(team.id AS varchar(10))) LEFT OUTER JOIN category ON (ticket.category = CAST(category.id AS varchar(10))) WHERE ticket_code = @TicketCode", model.CreateTicketRequest{
 		TicketCode: request,
