@@ -46,6 +46,7 @@ func (taskListService *taskListService) UpdateTaskList(request model.UpdateTaskL
 	dir := os.Getenv("FILE_DIR")
 	path := dir + date_now.Format("2006-01-02") + "/" + request.TicketCode 
 	error := fmt.Errorf("error")
+	attachment := "-"
 
 	_, check_dir_error := os.Stat(path)
 
@@ -57,12 +58,18 @@ func (taskListService *taskListService) UpdateTaskList(request model.UpdateTaskL
 		}
 	}
 
-	error = context.SaveUploadedFile(request.Attachment, path + "/" + request.Attachment.Filename)
+	if (request.Attachment != nil) {
+		attachment = request.Attachment.Filename
+		error = context.SaveUploadedFile(request.Attachment, path + "/" + attachment)
+	} else {
+		error = nil
+	}
+
 	if (error == nil) {
 		new_request := entity.TaskList {
 			TicketCode: request.TicketCode,
 			Description: request.Description,
-			Attachment: request.Attachment.Filename,
+			Attachment: attachment,
 			TaskName: request.TaskName,
 			Longitude: request.Latitude,
 			Latitude: request.Latitude,

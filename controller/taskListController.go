@@ -87,9 +87,6 @@ func (controller *taskListController) UpdateTaskListController(context *gin.Cont
 			description = append(description, errorMessage)
 		}
 
-		fmt.Println(error)
-		description = append(description, "Bad Request")
-
 		status := model.StandardResponse{
 			HttpStatus: http.StatusBadRequest,
 			StatusCode: general.ErrorStatusCode,
