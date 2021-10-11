@@ -2,7 +2,7 @@ package repository
 
 import "svc-monitoring-maintenance/entity"
 
-type RoleRepository interface {
+type RoleRepositoryInteface interface {
 	GetRole() ([]entity.Role, error)
 }
 

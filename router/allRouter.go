@@ -29,6 +29,9 @@ func AllRouter(db *gorm.DB) {
 
 	roleService := service.RoleService(repository)
 	roleController := controller.RoleController(roleService)
+
+	categoryService := service.CategoryService(repository)
+	categoryController := controller.CategoryController(categoryService)
 	
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
@@ -55,6 +58,8 @@ func AllRouter(db *gorm.DB) {
 		v1.GET("/get-team", teamController.GetAll)
 	
 		v1.GET("/get-role", roleController.GetAll)
+
+		v1.GET("/get-category", categoryController.GetCategory)
 	}
 
 	

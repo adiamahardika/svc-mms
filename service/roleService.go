@@ -10,10 +10,10 @@ type RoleServiceInterface interface {
 }
 
 type roleService struct {
-	repository repository.RoleRepository
+	repository repository.RoleRepositoryInteface
 }
 
-func RoleService(repository repository.RoleRepository) *roleService {
+func RoleService(repository repository.RoleRepositoryInteface) *roleService {
 	return &roleService{repository}
 }
 
