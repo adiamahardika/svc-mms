@@ -55,7 +55,7 @@ func (repo *repository) GetTicket(request model.GetTicketRequest) ([]model.GetTi
 
 func (repo *repository) CreateTicket(request entity.Ticket) (entity.Ticket, error) {
 	var ticket entity.Ticket
-
+	
 	error := repo.db.Table("ticket").Create(&request).Error
 
 	return ticket, error
@@ -63,7 +63,7 @@ func (repo *repository) CreateTicket(request entity.Ticket) (entity.Ticket, erro
 
 func (repo *repository) CreateTicketIsi(request entity.TicketIsi) (entity.TicketIsi, error) {
 	var ticket_isi entity.TicketIsi
-
+	
 	error := repo.db.Table("ticket_isi").Create(&request).Error
 
 	return ticket_isi, error

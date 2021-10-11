@@ -31,12 +31,14 @@ func (ticketService *ticketService) GetAll() ([]entity.Ticket, error){
 }
 
 func (ticketService *ticketService) GetTicket(request model.GetTicketRequest) ([]model.GetTicketResponse, error) {
+	request.EndDate = request.EndDate + " 23:59:59"
 	list_ticket, error := ticketService.repository.GetTicket(request)
 
 	return list_ticket, error
 }
 
 func (ticketService *ticketService) CountTicketByStatus(request model.CountTicketByStatusRequest) ([]model.CountTicketByStatusResponse, error){
+	request.EndDate = request.EndDate + " 23:59:59"
 	count_ticket, error := ticketService.repository.CountTicketByStatus(request)
 	
 	return count_ticket, error
@@ -48,6 +50,7 @@ type errorStruct struct {
 func (ticketService *ticketService) CreateTicket(request model.CreateTicketRequest) (model.CreateTicketRequest, error) {
 	date_now := time.Now()
 
+	fmt.Printf(request.Category)
 	ticket_request := entity.Ticket{
 		Judul: request.Judul,
 		UsernamePembuat: request.UserPembuat,
@@ -79,11 +82,11 @@ func (ticketService *ticketService) CreateTicket(request model.CreateTicketReque
 
 	if (len(ticket) > 0) {
 		error = fmt.Errorf("Ticket code already exist!")
-	} else if (error != nil) {
-		
+	} else if (error == nil) {
+
 		_, error = ticketService.repository.CreateTicket(ticket_request)
-	
-		if (error != nil) {
+
+		if (error == nil) {
 			_, error = ticketService.repository.CreateTicketIsi(ticket_isi_request)
 		}
 	}
