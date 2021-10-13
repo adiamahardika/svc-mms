@@ -50,6 +50,7 @@ func AllRouter(db *gorm.DB) {
 		v1.POST("/update-task-list", taskListController.UpdateTaskListController)
 		
 		v1.POST("/get-user", userController.GetUser)
+		v1.POST("/get-user-detail/:user-id", userController.GetDetailUser)
 		v1.POST("/login", userController.Login)
 		v1.POST("/register", userController.Register)
 		v1.POST("/change-pass", userController.ChangePassword)

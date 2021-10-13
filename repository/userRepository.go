@@ -10,6 +10,7 @@ type UserRepositoryInterface interface {
 	CheckUsername(request string) ([]entity.User, error)
 	ChangePassword(request model.ChangePassRequest) (model.GetUserResponse, error)
 	Register(request model.RegisterRequest) (entity.User, error)
+	GetDetailUser(request int) ([]model.GetUserResponse, error)
 }
 
 func (repo *repository) GetUser(request model.GetUserRequest) ([]model.GetUserResponse, error){
@@ -49,6 +50,16 @@ func (repo *repository) Register(request model.RegisterRequest) (entity.User, er
 	var user entity.User
 
 	error := repo.db.Table("users").Create(&request).Error
+
+	return user, error
+}
+
+func (repo *repository) GetDetailUser(request int) ([]model.GetUserResponse, error) {
+	var user []model.GetUserResponse
+
+	error := repo.db.Raw("SELECT users.*, role.name as role_name, team.name as team_name FROM users LEFT OUTER JOIN role ON (users.role = CAST(role.id AS varchar(10))) LEFT OUTER JOIN team ON (users.team = CAST(team.id AS varchar(10))) WHERE users.id = @Id", entity.User{
+		Id: request,
+	}).Find(&user).Error
 
 	return user, error
 }

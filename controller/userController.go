@@ -292,3 +292,41 @@ func (controller *userController) Register(context *gin.Context) {
 		}
 	}
 }
+
+func (controller *userController) GetDetailUser(context *gin.Context) {
+	user_id := context.Param("user-id")
+
+	description := []string{}
+		
+	user, error := controller.userService.GetDetailUser(user_id)
+
+	if (error == nil) {
+		
+		description = append(description, "Success")
+
+		status := model.StandardResponse{
+			HttpStatus: http.StatusOK,
+			StatusCode: general.SuccessStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusOK, gin.H{
+			"status" : status,
+			"result" : user,
+		})
+
+	} else {
+
+		description = append(description, error.Error())
+
+		status := model.StandardResponse{
+			HttpStatus: http.StatusBadRequest,
+			StatusCode: general.ErrorStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusBadRequest, gin.H{
+			"status" : status,
+		})
+
+	}
+	
+}

@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"strconv"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/repository"
@@ -16,6 +17,7 @@ type UserServiceInterface interface {
 	ChangePassword(request model.ChangePassRequest) (model.GetUserResponse, error)
 	ResetPassword(request model.ResetPassword) (model.GetUserResponse, error)
 	Register(request model.RegisterRequest) (entity.User, error)
+	GetDetailUser(request string) ([]model.GetUserResponse, error)
 }
 
 type userService struct {
@@ -146,5 +148,13 @@ func (userService *userService) Register(request model.RegisterRequest) (entity.
 		}
 	}
 
+	return user, error
+}
+
+func (userService *userService) GetDetailUser(request string) ([]model.GetUserResponse, error) {
+
+	user_id, _ := strconv.Atoi(request)
+	user, error := userService.repository.GetDetailUser(user_id)
+	
 	return user, error
 }
