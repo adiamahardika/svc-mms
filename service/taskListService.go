@@ -71,7 +71,7 @@ func (taskListService *taskListService) UpdateTaskList(request model.UpdateTaskL
 			Description: request.Description,
 			Attachment: attachment,
 			TaskName: request.TaskName,
-			Longitude: request.Latitude,
+			Longitude: request.Longitude,
 			Latitude: request.Latitude,
 			AssignedBy: request.AssignedBy,
 			Status: request.Status,
