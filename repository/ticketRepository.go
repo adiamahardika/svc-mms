@@ -27,8 +27,9 @@ func (repo *repository) GetAll() ([]entity.Ticket, error) {
 func (repo *repository) CountTicketByStatus(request model.CountTicketByStatusRequest) ([]model.CountTicketByStatusResponse, error) {
 	var status []model.CountTicketByStatusResponse
 	
-	error := repo.db.Raw("SELECT status, COUNT(*) as total FROM ticket WHERE assigned_to LIKE @AssignedTo AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate GROUP BY status", model.CountTicketByStatusRequest{
+	error := repo.db.Raw("SELECT status, COUNT(*) as total FROM ticket WHERE assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate GROUP BY status", model.CountTicketByStatusRequest{
 		AssignedTo: "%" + request.AssignedTo + "%",
+		AssignedToTeam: "%" + request.AssignedToTeam + "%",
 		StartDate: request.StartDate,
 		EndDate: request.EndDate,
 	}).Find(&status).Error
