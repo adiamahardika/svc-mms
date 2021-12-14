@@ -12,6 +12,7 @@ import (
 
 func AllRouter(db *gorm.DB) {
 	
+	// gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	repository := repository.Repository(db)
 
@@ -61,6 +62,7 @@ func AllRouter(db *gorm.DB) {
 		v1.GET("/get-role", roleController.GetAll)
 
 		v1.GET("/get-category", categoryController.GetCategory)
+		v1.POST("/create-category", categoryController.CreateCategory)
 	}
 
 	

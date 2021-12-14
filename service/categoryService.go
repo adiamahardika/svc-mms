@@ -2,11 +2,14 @@ package service
 
 import (
 	"svc-monitoring-maintenance/entity"
+	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/repository"
+	"time"
 )
 
 type CategoryServiceInterface interface {
 	GetCategory() ([]entity.Category, error)
+	CreateCategory(request model.CreateCategoryRequest) (entity.Category, error)
 }
 
 type categoryService struct {
@@ -19,4 +22,22 @@ func CategoryService(repository repository.CategoryRepositoryInterface) *categor
 
 func (categoryService *categoryService) GetCategory() ([]entity.Category, error) {
 	return categoryService.repository.GetCategory()
+}
+
+func (categoryService  *categoryService) CreateCategory(request model.CreateCategoryRequest) (entity.Category, error) {
+	date_now := time.Now()
+	
+	category_request := entity.Category{
+		Name: request.Name,
+		CodeLevel: request.CodeLevel,
+		Parent: request.Parent,
+		AdditionalInput_1: request.AdditionalInput1,
+		AdditionalInput_2: request.AdditionalInput2,
+		AdditionalInput_3: request.AdditionalInput3,
+		UpdateAt: date_now,
+	}
+
+	_, error := categoryService.repository.CreateCategory(category_request)
+
+	return category_request, error
 }

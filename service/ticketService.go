@@ -50,7 +50,6 @@ type errorStruct struct {
 func (ticketService *ticketService) CreateTicket(request model.CreateTicketRequest) (model.CreateTicketRequest, error) {
 	date_now := time.Now()
 
-	fmt.Printf(request.Category)
 	ticket_request := entity.Ticket{
 		Judul: request.Judul,
 		UsernamePembuat: request.UserPembuat,
