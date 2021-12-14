@@ -11,3 +11,7 @@ type CreateCategoryRequest struct {
 	AdditionalInput2 string    `json:"additional_input_2"`
 	AdditionalInput3 string    `json:"additional_input_3"`
 }
+
+type GetCategoryRequest struct {
+	IsActive string `json:"is_active"`
+}
