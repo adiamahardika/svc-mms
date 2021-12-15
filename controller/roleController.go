@@ -22,23 +22,16 @@ func RoleController(roleService service.RoleServiceInterface) *roleController {
 }
 
 func (controller *roleController) GetAll(context *gin.Context) {
-	role, error := controller.roleService.GetRole()
+	var request model.GetRoleRequest
+
+	error := context.ShouldBindJSON(&request)
 	description := []string{}
 
-	if error == nil {
-		description = append(description, "Success")
-
-		status := model.StandardResponse{
-			HttpStatus:  http.StatusOK,
-			StatusCode:  general.SuccessStatusCode,
-			Description: description,
+	if error != nil {
+		for _, value := range error.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", value.Field(), value.ActualTag())
+			description = append(description, errorMessage)
 		}
-		context.JSON(http.StatusOK, gin.H{
-			"status": status,
-			"result": role,
-		})
-	} else {
-		description = append(description, error.Error())
 
 		status := model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
@@ -48,6 +41,34 @@ func (controller *roleController) GetAll(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"status": status,
 		})
+	} else {
+
+		role, error := controller.roleService.GetRole(request)
+
+		if error == nil {
+			description = append(description, "Success")
+
+			status := model.StandardResponse{
+				HttpStatus:  http.StatusOK,
+				StatusCode:  general.SuccessStatusCode,
+				Description: description,
+			}
+			context.JSON(http.StatusOK, gin.H{
+				"status": status,
+				"result": role,
+			})
+		} else {
+			description = append(description, error.Error())
+
+			status := model.StandardResponse{
+				HttpStatus:  http.StatusBadRequest,
+				StatusCode:  general.ErrorStatusCode,
+				Description: description,
+			}
+			context.JSON(http.StatusBadRequest, gin.H{
+				"status": status,
+			})
+		}
 	}
 }
 

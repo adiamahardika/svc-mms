@@ -7,7 +7,7 @@ import (
 )
 
 type RoleServiceInterface interface {
-	GetRole() ([]entity.Role, error)
+	GetRole(request model.GetRoleRequest) ([]entity.Role, error)
 	CreateRole(request model.CreateRoleRequest) (entity.Role, error)
 	UpdateRole(request entity.Role) (entity.Role, error)
 	DeleteRole(Id int) error
@@ -21,8 +21,8 @@ func RoleService(repository repository.RoleRepositoryInteface) *roleService {
 	return &roleService{repository}
 }
 
-func (roleService *roleService) GetRole() ([]entity.Role, error) {
-	return roleService.repository.GetRole()
+func (roleService *roleService) GetRole(request model.GetRoleRequest) ([]entity.Role, error) {
+	return roleService.repository.GetRole(request)
 }
 
 func (roleService *roleService) CreateRole(request model.CreateRoleRequest) (entity.Role, error) {

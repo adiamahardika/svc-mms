@@ -2,19 +2,22 @@ package repository
 
 import (
 	"svc-monitoring-maintenance/entity"
+	"svc-monitoring-maintenance/model"
 )
 
 type RoleRepositoryInteface interface {
-	GetRole() ([]entity.Role, error)
+	GetRole(request model.GetRoleRequest) ([]entity.Role, error)
 	CreateRole(entity.Role) (entity.Role, error)
 	UpdateRole(request entity.Role) (entity.Role, error)
 	DeleteRole(Id int) error
 }
 
-func (repo *repository) GetRole() ([]entity.Role, error) {
+func (repo *repository) GetRole(request model.GetRoleRequest) ([]entity.Role, error) {
 	var role []entity.Role
 
-	error := repo.db.Raw("SELECT * FROM role ORDER BY name").Find(&role).Error
+	error := repo.db.Raw("SELECT * FROM role WHERE is_active LIKE @IsActive ORDER BY name", model.GetRoleRequest{
+		IsActive: "%" + request.IsActive + "%",
+	}).Find(&role).Error
 
 	return role, error
 }
