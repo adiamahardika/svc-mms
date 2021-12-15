@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/general"
 	"svc-monitoring-maintenance/model"
@@ -147,5 +148,41 @@ func (controller *roleController) UpdateRole(context *gin.Context) {
 				"status": status,
 			})
 		}
+	}
+}
+
+func (controller *roleController) DeleteRole(context *gin.Context) {
+
+	id, error := strconv.Atoi(context.Param("role-id"))
+	description := []string{}
+
+	error = controller.roleService.DeleteRole(id)
+
+	if error == nil {
+
+		description = append(description, "Success")
+
+		status := model.StandardResponse{
+			HttpStatus:  http.StatusOK,
+			StatusCode:  general.SuccessStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusOK, gin.H{
+			"status": status,
+		})
+
+	} else {
+
+		description = append(description, error.Error())
+
+		status := model.StandardResponse{
+			HttpStatus:  http.StatusBadRequest,
+			StatusCode:  general.ErrorStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusBadRequest, gin.H{
+			"status": status,
+		})
+
 	}
 }
