@@ -7,6 +7,7 @@ import (
 type RoleRepositoryInteface interface {
 	GetRole() ([]entity.Role, error)
 	CreateRole(entity.Role) (entity.Role, error)
+	UpdateRole(request entity.Role) (entity.Role, error)
 }
 
 func (repo *repository) GetRole() ([]entity.Role, error) {
@@ -21,6 +22,14 @@ func (repo *repository) CreateRole(request entity.Role) (entity.Role, error) {
 	var role entity.Role
 
 	error := repo.db.Table("role").Create(&request).Error
+
+	return role, error
+}
+
+func (repo *repository) UpdateRole(request entity.Role) (entity.Role, error) {
+	var role entity.Role
+
+	error := repo.db.Raw("UPDATE role SET name = @Name WHERE id = @Id RETURNING role.*", request).Find(&role).Error
 
 	return role, error
 }

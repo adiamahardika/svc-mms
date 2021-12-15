@@ -9,6 +9,7 @@ import (
 type RoleServiceInterface interface {
 	GetRole() ([]entity.Role, error)
 	CreateRole(request model.CreateRoleRequest) (entity.Role, error)
+	UpdateRole(request entity.Role) (entity.Role, error)
 }
 
 type roleService struct {
@@ -29,6 +30,17 @@ func (roleService *roleService) CreateRole(request model.CreateRoleRequest) (ent
 	}
 
 	_, error := roleService.repository.CreateRole(role_request)
+
+	return role_request, error
+}
+
+func (roleService *roleService) UpdateRole(request entity.Role) (entity.Role, error) {
+	role_request := entity.Role{
+		Id:   request.Id,
+		Name: request.Name,
+	}
+
+	_, error := roleService.repository.UpdateRole(role_request)
 
 	return role_request, error
 }

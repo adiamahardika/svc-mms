@@ -61,6 +61,7 @@ func AllRouter(db *gorm.DB) {
 
 		v1.GET("/get-role", roleController.GetAll)
 		v1.POST("/create-role", roleController.CreateRole)
+		v1.PUT("/update-role", roleController.UpdateRole)
 
 		v1.POST("/get-category", categoryController.GetCategory)
 		v1.POST("/create-category", categoryController.CreateCategory)
