@@ -58,6 +58,7 @@ func AllRouter(db *gorm.DB) {
 		v1.POST("/reset-pass", userController.ResetPassword)
 
 		v1.GET("/get-team", teamController.GetAll)
+		v1.POST("/create-team", teamController.CreateTeam)
 
 		v1.POST("/get-role", roleController.GetAll)
 		v1.POST("/create-role", roleController.CreateRole)
