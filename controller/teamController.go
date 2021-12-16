@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/general"
 	"svc-monitoring-maintenance/model"
@@ -158,5 +159,42 @@ func (controller *teamController) UpdateTeam(context *gin.Context) {
 			})
 
 		}
+	}
+}
+
+func (controller *teamController) DeleteTeam(context *gin.Context) {
+
+	id, error := strconv.Atoi(context.Param("team-id"))
+
+	description := []string{}
+
+	error = controller.teamService.DeleteService(id)
+
+	if error == nil {
+
+		description = append(description, "Success")
+
+		status := model.StandardResponse{
+			HttpStatus:  http.StatusOK,
+			StatusCode:  general.SuccessStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusOK, gin.H{
+			"status": status,
+		})
+
+	} else {
+
+		description = append(description, error.Error())
+
+		status := model.StandardResponse{
+			HttpStatus:  http.StatusBadRequest,
+			StatusCode:  general.ErrorStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusBadRequest, gin.H{
+			"status": status,
+		})
+
 	}
 }

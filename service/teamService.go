@@ -11,6 +11,7 @@ type TeamServiceInterface interface {
 	GetTeam() ([]entity.Team, error)
 	CreateTeam(request model.CreateTeamRequest) (entity.Team, error)
 	UpdateTeam(request entity.Team) (entity.Team, error)
+	DeleteService(Id int) error
 }
 
 type teamService struct {
@@ -43,4 +44,10 @@ func (teamService *teamService) UpdateTeam(request entity.Team) (entity.Team, er
 	team, error := teamService.repository.UpdateTeam(request)
 
 	return team, error
+}
+
+func (teamService *teamService) DeleteService(Id int) error {
+	error := teamService.repository.DeleteTeam(Id)
+
+	return error
 }
