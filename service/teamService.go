@@ -10,6 +10,7 @@ import (
 type TeamServiceInterface interface {
 	GetTeam() ([]entity.Team, error)
 	CreateTeam(request model.CreateTeamRequest) (entity.Team, error)
+	UpdateTeam(request entity.Team) (entity.Team, error)
 }
 
 type teamService struct {
@@ -35,4 +36,11 @@ func (teamService *teamService) CreateTeam(request model.CreateTeamRequest) (ent
 	_, error := teamService.repository.CreateTeam(team_request)
 
 	return team_request, error
+}
+
+func (teamService *teamService) UpdateTeam(request entity.Team) (entity.Team, error) {
+
+	team, error := teamService.repository.UpdateTeam(request)
+
+	return team, error
 }
