@@ -57,7 +57,7 @@ func AllRouter(db *gorm.DB) {
 		v1.POST("/change-pass", userController.ChangePassword)
 		v1.POST("/reset-pass", userController.ResetPassword)
 
-		v1.GET("/get-team", teamController.GetAll)
+		v1.POST("/get-team", teamController.GetAll)
 		v1.POST("/create-team", teamController.CreateTeam)
 		v1.PUT("/update-team", teamController.UpdateTeam)
 		v1.DELETE("/delete-team/:team-id", teamController.DeleteTeam)

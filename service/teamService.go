@@ -8,7 +8,7 @@ import (
 )
 
 type TeamServiceInterface interface {
-	GetTeam() ([]entity.Team, error)
+	GetTeam(request model.GetTeamRequest) ([]entity.Team, error)
 	CreateTeam(request model.CreateTeamRequest) (entity.Team, error)
 	UpdateTeam(request entity.Team) (entity.Team, error)
 	DeleteService(Id int) error
@@ -22,8 +22,8 @@ func TeamService(repository repository.TeamRepositoryInterface) *teamService {
 	return &teamService{repository}
 }
 
-func (teamService *teamService) GetTeam() ([]entity.Team, error) {
-	return teamService.repository.GetTeam()
+func (teamService *teamService) GetTeam(request model.GetTeamRequest) ([]entity.Team, error) {
+	return teamService.repository.GetTeam(request)
 }
 
 func (teamService *teamService) CreateTeam(request model.CreateTeamRequest) (entity.Team, error) {

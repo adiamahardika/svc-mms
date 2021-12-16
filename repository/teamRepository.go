@@ -1,18 +1,23 @@
 package repository
 
-import "svc-monitoring-maintenance/entity"
+import (
+	"svc-monitoring-maintenance/entity"
+	"svc-monitoring-maintenance/model"
+)
 
 type TeamRepositoryInterface interface {
-	GetTeam() ([]entity.Team, error)
+	GetTeam(request model.GetTeamRequest) ([]entity.Team, error)
 	CreateTeam(request entity.Team) (entity.Team, error)
 	UpdateTeam(request entity.Team) (entity.Team, error)
 	DeleteTeam(Id int) error
 }
 
-func (repo *repository) GetTeam() ([]entity.Team, error) {
+func (repo *repository) GetTeam(request model.GetTeamRequest) ([]entity.Team, error) {
 	var team []entity.Team
 
-	error := repo.db.Raw("SELECT * FROM team ORDER BY name").Find(&team).Error
+	error := repo.db.Raw("SELECT * FROM team WHERE is_active LIKE @IsActive ORDER BY name", model.GetTeamRequest{
+		IsActive: "%" + request.IsActive + "%",
+	}).Find(&team).Error
 
 	return team, error
 }

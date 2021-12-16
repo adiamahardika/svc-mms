@@ -22,24 +22,16 @@ func TeamController(teamService service.TeamServiceInterface) *teamController {
 }
 
 func (controller *teamController) GetAll(context *gin.Context) {
+	var request model.GetTeamRequest
 
-	team, error := controller.teamService.GetTeam()
+	error := context.ShouldBindJSON(&request)
 	description := []string{}
 
-	if error == nil {
-		description = append(description, "Success")
-
-		status := model.StandardResponse{
-			HttpStatus:  http.StatusOK,
-			StatusCode:  general.SuccessStatusCode,
-			Description: description,
+	if error != nil {
+		for _, value := range error.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", value.Field(), value.ActualTag())
+			description = append(description, errorMessage)
 		}
-		context.JSON(http.StatusOK, gin.H{
-			"status": status,
-			"result": team,
-		})
-	} else {
-		description = append(description, error.Error())
 
 		status := model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
@@ -49,6 +41,34 @@ func (controller *teamController) GetAll(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"status": status,
 		})
+	} else {
+
+		team, error := controller.teamService.GetTeam(request)
+
+		if error == nil {
+			description = append(description, "Success")
+
+			status := model.StandardResponse{
+				HttpStatus:  http.StatusOK,
+				StatusCode:  general.SuccessStatusCode,
+				Description: description,
+			}
+			context.JSON(http.StatusOK, gin.H{
+				"status": status,
+				"result": team,
+			})
+		} else {
+			description = append(description, error.Error())
+
+			status := model.StandardResponse{
+				HttpStatus:  http.StatusBadRequest,
+				StatusCode:  general.ErrorStatusCode,
+				Description: description,
+			}
+			context.JSON(http.StatusBadRequest, gin.H{
+				"status": status,
+			})
+		}
 	}
 }
 
