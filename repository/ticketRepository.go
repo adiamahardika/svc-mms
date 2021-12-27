@@ -92,8 +92,8 @@ func (repo *repository) CreateTicketIsi(request entity.TicketIsi) (entity.Ticket
 func (repo *repository) GetTicketIsi(request string) ([]entity.TicketIsi, error) {
 	var ticket_isi []entity.TicketIsi
 
-	error := repo.db.Raw("SELECT * FROM ticket_isi WHERE ticket_code LIKE @TicketCode", entity.TicketIsi{
-		TicketCode: "%" + request + "%",
+	error := repo.db.Raw("SELECT * FROM ticket_isi WHERE ticket_code = @TicketCode", entity.TicketIsi{
+		TicketCode: request,
 	}).Find(&ticket_isi).Error
 
 	return ticket_isi, error
