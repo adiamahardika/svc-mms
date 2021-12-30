@@ -34,6 +34,9 @@ func AllRouter(db *gorm.DB) {
 	categoryService := service.CategoryService(repository)
 	categoryController := controller.CategoryController(categoryService)
 
+	preventiveService := service.PreventiveService(repository)
+	preventiveController := controller.PreventiveController(preventiveService)
+
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
@@ -72,6 +75,8 @@ func AllRouter(db *gorm.DB) {
 		v1.POST("/create-category", categoryController.CreateCategory)
 		v1.PUT("/update-category", categoryController.UpdateCategory)
 		v1.DELETE("/delete-category/:category-id", categoryController.DeleteCategory)
+
+		v1.POST("/create-preventive", preventiveController.CreatePreventive)
 	}
 
 	router.Run(os.Getenv("PORT"))
