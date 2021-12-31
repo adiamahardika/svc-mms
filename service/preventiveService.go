@@ -10,6 +10,7 @@ import (
 
 type PreventiveServiceInterface interface {
 	CreatePreventive(request []model.CreatePreventiveRequest) ([]entity.Preventive, error)
+	GetPreventive(request model.GetPreventiveRequest) ([]model.GetPreventiveResponse, error)
 }
 
 type preventiveService struct {
@@ -45,4 +46,13 @@ func (preventiveService *preventiveService) CreatePreventive(request []model.Cre
 	}
 
 	return result, error
+}
+
+func (preventiveService *preventiveService) GetPreventive(request model.GetPreventiveRequest) ([]model.GetPreventiveResponse, error) {
+	request.EndDate = request.EndDate + " 23:59:59"
+
+	preventive, error := preventiveService.repository.GetPreventive(request)
+
+	return preventive, error
+
 }

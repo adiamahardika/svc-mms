@@ -77,6 +77,7 @@ func AllRouter(db *gorm.DB) {
 		v1.DELETE("/delete-category/:category-id", categoryController.DeleteCategory)
 
 		v1.POST("/create-preventive", preventiveController.CreatePreventive)
+		v1.POST("/get-preventive", preventiveController.GetPreventive)
 	}
 
 	router.Run(os.Getenv("PORT"))
