@@ -8,6 +8,7 @@ import (
 type PreventiveRepositoryInterface interface {
 	CreatePreventive(request entity.Preventive) (entity.Preventive, error)
 	GetPreventive(request model.GetPreventiveRequest) ([]model.GetPreventiveResponse, error)
+	UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error)
 }
 
 func (repo *repository) CreatePreventive(request entity.Preventive) (entity.Preventive, error) {
@@ -27,6 +28,22 @@ func (repo *repository) GetPreventive(request model.GetPreventiveRequest) ([]mod
 		AssignedTo: "%" + request.AssignedTo + "%",
 		StartDate:  request.StartDate,
 		EndDate:    request.EndDate,
+	}).Find(&preventive).Error
+
+	return preventive, error
+}
+
+func (repo *repository) UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error) {
+	var preventive entity.Preventive
+
+	error := repo.db.Raw("UPDATE preventive SET visit_date = @VisitDate, terminal_id = @TerminalId, assigned_to = @AssignedTo, updated_by = @UpdatedBy, updated_at = @UpdatedAt, status = @Status WHERE prev_code = @PrevCode RETURNING preventive.*", entity.Preventive{
+		VisitDate:  request.VisitDate,
+		TerminalId: request.TerminalId,
+		AssignedTo: request.AssignedTo,
+		UpdatedBy:  request.UpdatedBy,
+		UpdatedAt:  request.UpdatedAt,
+		Status:     request.Status,
+		PrevCode:   request.PrevCode,
 	}).Find(&preventive).Error
 
 	return preventive, error

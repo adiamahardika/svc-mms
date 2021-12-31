@@ -78,6 +78,7 @@ func AllRouter(db *gorm.DB) {
 
 		v1.POST("/create-preventive", preventiveController.CreatePreventive)
 		v1.POST("/get-preventive", preventiveController.GetPreventive)
+		v1.PUT("/update-preventive", preventiveController.UpdatePreventive)
 	}
 
 	router.Run(os.Getenv("PORT"))

@@ -11,6 +11,7 @@ import (
 type PreventiveServiceInterface interface {
 	CreatePreventive(request []model.CreatePreventiveRequest) ([]entity.Preventive, error)
 	GetPreventive(request model.GetPreventiveRequest) ([]model.GetPreventiveResponse, error)
+	UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error)
 }
 
 type preventiveService struct {
@@ -55,4 +56,14 @@ func (preventiveService *preventiveService) GetPreventive(request model.GetPreve
 
 	return preventive, error
 
+}
+
+func (preventiveService *preventiveService) UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error) {
+	date_now := time.Now()
+
+	request.UpdatedAt = date_now
+
+	preventive, error := preventiveService.repository.UpdatePreventive(request)
+
+	return preventive, error
 }
