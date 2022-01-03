@@ -12,6 +12,7 @@ type PreventiveServiceInterface interface {
 	CreatePreventive(request []model.CreatePreventiveRequest) ([]entity.Preventive, error)
 	GetPreventive(request model.GetPreventiveRequest) ([]model.GetPreventiveResponse, error)
 	UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error)
+	GetDetailPreventive(request string) ([]model.GetPreventiveResponse, error)
 }
 
 type preventiveService struct {
@@ -64,6 +65,13 @@ func (preventiveService *preventiveService) UpdatePreventive(request model.Updat
 	request.UpdatedAt = date_now
 
 	preventive, error := preventiveService.repository.UpdatePreventive(request)
+
+	return preventive, error
+}
+
+func (preventiveService *preventiveService) GetDetailPreventive(request string) ([]model.GetPreventiveResponse, error) {
+
+	preventive, error := preventiveService.repository.GetDetailPreventive(request)
 
 	return preventive, error
 }

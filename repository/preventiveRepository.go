@@ -9,6 +9,7 @@ type PreventiveRepositoryInterface interface {
 	CreatePreventive(request entity.Preventive) (entity.Preventive, error)
 	GetPreventive(request model.GetPreventiveRequest) ([]model.GetPreventiveResponse, error)
 	UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error)
+	GetDetailPreventive(request string) ([]model.GetPreventiveResponse, error)
 }
 
 func (repo *repository) CreatePreventive(request entity.Preventive) (entity.Preventive, error) {
@@ -44,6 +45,16 @@ func (repo *repository) UpdatePreventive(request model.UpdatePreventiveRequest) 
 		UpdatedAt:  request.UpdatedAt,
 		Status:     request.Status,
 		PrevCode:   request.PrevCode,
+	}).Find(&preventive).Error
+
+	return preventive, error
+}
+
+func (repo *repository) GetDetailPreventive(request string) ([]model.GetPreventiveResponse, error) {
+	var preventive []model.GetPreventiveResponse
+
+	error := repo.db.Raw("SELECT preventive.*, users.name as user_name FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) WHERE prev_code = @PrevCode", entity.Preventive{
+		PrevCode: request,
 	}).Find(&preventive).Error
 
 	return preventive, error
