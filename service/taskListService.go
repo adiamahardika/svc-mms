@@ -34,7 +34,7 @@ func (taskListService *taskListService) GetTaskList(request *model.GetTaskListRe
 		date := task_list[index].CreatedAt.Format("2006-01-02")
 		ticket_code := task_list[index].TicketCode
 		file_name := task_list[index].Attachment
-		task_list[index].Attachment = url + date + "/" + ticket_code + "/" + file_name
+		task_list[index].Attachment = url + "ticket/" + date + "/" + ticket_code + "/" + file_name
 	}
 
 	return task_list, error
