@@ -13,7 +13,7 @@ import (
 
 type TaskListServiceInterface interface {
 	GetTaskList(request *model.GetTaskListRequest) ([]model.GetTaskListResponse, error)
-	UpdateTaskList(request model.UpdateTaskListRequest, context *gin.Context)	(entity.TaskList, error)
+	UpdateTaskList(request model.UpdateTaskListRequest, context *gin.Context) (entity.TaskList, error)
 }
 
 type taskListService struct {
@@ -25,7 +25,7 @@ func TaskListService(repository repository.TaskListRepositoryInterface) *taskLis
 }
 
 func (taskListService *taskListService) GetTaskList(request *model.GetTaskListRequest) ([]model.GetTaskListResponse, error) {
-	
+
 	task_list, error := taskListService.repository.GetTaskList(request)
 
 	url := os.Getenv("FILE_URL")
@@ -44,41 +44,41 @@ func (taskListService *taskListService) UpdateTaskList(request model.UpdateTaskL
 	var ticket entity.TaskList
 	date_now := time.Now()
 	dir := os.Getenv("FILE_DIR")
-	path := dir + date_now.Format("2006-01-02") + "/" + request.TicketCode 
+	path := dir + "/ticket/" + date_now.Format("2006-01-02") + "/" + request.TicketCode
 	error := fmt.Errorf("error")
 	attachment := "-"
 
 	_, check_dir_error := os.Stat(path)
 
-	if (os.IsNotExist(check_dir_error)) {
+	if os.IsNotExist(check_dir_error) {
 		check_dir_error := os.MkdirAll(path, 0755)
-		
-		if (check_dir_error != nil) {
+
+		if check_dir_error != nil {
 			error = check_dir_error
 		}
 	}
 
-	if (request.Attachment != nil) {
+	if request.Attachment != nil {
 		attachment = request.Attachment.Filename
-		error = context.SaveUploadedFile(request.Attachment, path + "/" + attachment)
+		error = context.SaveUploadedFile(request.Attachment, path+"/"+attachment)
 	} else {
 		error = nil
 	}
 
-	if (error == nil) {
-		new_request := entity.TaskList {
-			TicketCode: request.TicketCode,
+	if error == nil {
+		new_request := entity.TaskList{
+			TicketCode:  request.TicketCode,
 			Description: request.Description,
-			Attachment: attachment,
-			TaskName: request.TaskName,
-			Longitude: request.Longitude,
-			Latitude: request.Latitude,
-			AssignedBy: request.AssignedBy,
-			Status: request.Status,
-			Index: request.Index,
-			CreatedAt: date_now,
+			Attachment:  attachment,
+			TaskName:    request.TaskName,
+			Longitude:   request.Longitude,
+			Latitude:    request.Latitude,
+			AssignedBy:  request.AssignedBy,
+			Status:      request.Status,
+			Index:       request.Index,
+			CreatedAt:   date_now,
 		}
-	
+
 		ticket, error = taskListService.repository.UpdateTaskList(new_request)
 	}
 

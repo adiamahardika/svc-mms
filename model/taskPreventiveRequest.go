@@ -13,3 +13,7 @@ type UpdateTaskPreventiveRequest struct {
 	Status      string                `json:"status" form:"status"`
 	Index       int                   `json:"index" form:"index"`
 }
+
+type GetTaskPreventiveRequest struct {
+	PrevCode string `json:"prev_code"`
+}

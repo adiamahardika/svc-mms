@@ -13,6 +13,7 @@ import (
 
 type TaskPreventiveServiceInterface interface {
 	UpdateTaskPreventive(request model.UpdateTaskPreventiveRequest, context *gin.Context) (entity.TaskPreventive, error)
+	GetTaskPreventive(request *model.GetTaskPreventiveRequest) ([]model.GetTaskPreventiveResponse, error)
 }
 
 type taskPreventiveService struct {
@@ -63,6 +64,22 @@ func (taskPreventiveService *taskPreventiveService) UpdateTaskPreventive(request
 		}
 
 		task_preventive, error = taskPreventiveService.repository.UpdateTaskPreventive(new_request)
+	}
+
+	return task_preventive, error
+}
+
+func (taskPreventiveService *taskPreventiveService) GetTaskPreventive(request *model.GetTaskPreventiveRequest) ([]model.GetTaskPreventiveResponse, error) {
+
+	task_preventive, error := taskPreventiveService.repository.GetTaskPreventive(request)
+
+	url := os.Getenv("FILE_URL")
+
+	for index := range task_preventive {
+		date := task_preventive[index].CreatedAt.Format("2006-01-02")
+		prev_code := task_preventive[index].PrevCode
+		file_name := task_preventive[index].Attachment
+		task_preventive[index].Attachment = url + "preventive/" + date + "/" + prev_code + "/" + file_name
 	}
 
 	return task_preventive, error

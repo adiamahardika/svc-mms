@@ -84,6 +84,7 @@ func AllRouter(db *gorm.DB) {
 		v1.PUT("/update-preventive", preventiveController.UpdatePreventive)
 
 		v1.POST("/update-task-preventive", taskPreventiveController.UpdateTaskPreventiveController)
+		v1.POST("/get-task-preventive", taskPreventiveController.GetTaskPreventive)
 	}
 
 	router.Run(os.Getenv("PORT"))
