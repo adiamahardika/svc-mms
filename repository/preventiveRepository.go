@@ -10,6 +10,7 @@ type PreventiveRepositoryInterface interface {
 	GetPreventive(request model.GetPreventiveRequest) ([]model.GetPreventiveResponse, error)
 	UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error)
 	GetDetailPreventive(request string) ([]model.GetPreventiveResponse, error)
+	GetVisitDate(request model.GetPreventiveRequest) ([]model.GetVisitDateResponse, error)
 }
 
 func (repo *repository) CreatePreventive(request entity.Preventive) (entity.Preventive, error) {
@@ -32,6 +33,20 @@ func (repo *repository) GetPreventive(request model.GetPreventiveRequest) ([]mod
 	}).Find(&preventive).Error
 
 	return preventive, error
+}
+
+func (repo *repository) GetVisitDate(request model.GetPreventiveRequest) ([]model.GetVisitDateResponse, error) {
+	var list_visit_date []model.GetVisitDateResponse
+
+	error := repo.db.Raw("SELECT * FROM (SELECT preventive.visit_date, COUNT(*) AS total_preventive FROM preventive WHERE status LIKE @Status AND assigned_to LIKE @AssignedTo AND terminal_id LIKE @Search AND visit_date >= @StartDate AND visit_date <= @EndDate GROUP BY visit_date) AS tbl ORDER BY tbl.visit_date DESC", model.GetPreventiveRequest{
+		Search:     "%" + request.Search + "%",
+		Status:     "%" + request.Status + "%",
+		AssignedTo: "%" + request.AssignedTo + "%",
+		StartDate:  request.StartDate,
+		EndDate:    request.EndDate,
+	}).Find(&list_visit_date).Error
+
+	return list_visit_date, error
 }
 
 func (repo *repository) UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error) {

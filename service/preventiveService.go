@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/general"
 	"svc-monitoring-maintenance/model"
@@ -10,7 +11,7 @@ import (
 
 type PreventiveServiceInterface interface {
 	CreatePreventive(request []model.CreatePreventiveRequest) ([]entity.Preventive, error)
-	GetPreventive(request model.GetPreventiveRequest) ([]model.GetPreventiveResponse, error)
+	GetPreventive(request model.GetPreventiveRequest) ([]model.GetGroupPreventiveResponse, error)
 	UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error)
 	GetDetailPreventive(request string) ([]model.GetPreventiveResponse, error)
 }
@@ -50,12 +51,32 @@ func (preventiveService *preventiveService) CreatePreventive(request []model.Cre
 	return result, error
 }
 
-func (preventiveService *preventiveService) GetPreventive(request model.GetPreventiveRequest) ([]model.GetPreventiveResponse, error) {
+func (preventiveService *preventiveService) GetPreventive(request model.GetPreventiveRequest) ([]model.GetGroupPreventiveResponse, error) {
+	var preventive []model.GetPreventiveResponse
+	var list_group_preventive []model.GetGroupPreventiveResponse
+	error := fmt.Errorf("error")
 	request.EndDate = request.EndDate + " 23:59:59"
 
-	preventive, error := preventiveService.repository.GetPreventive(request)
+	list_visit_date, error := preventiveService.repository.GetVisitDate(request)
 
-	return preventive, error
+	for _, value := range list_visit_date {
+
+		request.StartDate = value.VisitDate
+		request.EndDate = value.VisitDate + " 23:59:59"
+
+		preventive, error = preventiveService.repository.GetPreventive(request)
+
+		group_preventive := model.GetGroupPreventiveResponse{
+			VisitDate:       value.VisitDate,
+			TotalPreventive: value.TotalPreventive,
+			PreventiveList:  preventive,
+		}
+
+		list_group_preventive = append(list_group_preventive, group_preventive)
+
+	}
+
+	return list_group_preventive, error
 
 }
 

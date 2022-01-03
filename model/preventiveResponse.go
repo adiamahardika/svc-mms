@@ -15,3 +15,14 @@ type GetPreventiveResponse struct {
 	UpdatedBy  string    `json:"updated_by"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
+
+type GetVisitDateResponse struct {
+	VisitDate       string `json:"visit_date"`
+	TotalPreventive string `json:"total_preventive"`
+}
+
+type GetGroupPreventiveResponse struct {
+	VisitDate       string                  `json:"visit_date"`
+	TotalPreventive string                  `json:"total_preventive"`
+	PreventiveList  []GetPreventiveResponse `json:"preventive_list"`
+}
