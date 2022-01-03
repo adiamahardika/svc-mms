@@ -2,9 +2,9 @@ package entity
 
 import "time"
 
-type TaskList struct {
+type TaskPreventive struct {
 	Id          int       `json:"id" gorm:"primaryKey"`
-	TicketCode  string    `json:"ticket_code"`
+	PrevCode    string    `json:"prev_code"`
 	Attachment  string    `json:"attachment"`
 	Description string    `json:"description"`
 	TaskName    string    `json:"task_name"`
@@ -12,6 +12,6 @@ type TaskList struct {
 	Latitude    string    `json:"latitude"`
 	AssignedBy  string    `json:"assigned_by"`
 	Status      string    `json:"status"`
-	Index       string    `json:"index"`
+	Index       int       `json:"index"`
 	CreatedAt   time.Time `json:"created_at"`
 }

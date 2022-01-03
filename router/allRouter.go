@@ -37,6 +37,9 @@ func AllRouter(db *gorm.DB) {
 	preventiveService := service.PreventiveService(repository)
 	preventiveController := controller.PreventiveController(preventiveService)
 
+	taskPreventiveService := service.TaskPreventiveService(repository)
+	taskPreventiveController := controller.TaskPreventiveController(taskPreventiveService)
+
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
@@ -79,6 +82,8 @@ func AllRouter(db *gorm.DB) {
 		v1.POST("/create-preventive", preventiveController.CreatePreventive)
 		v1.POST("/get-preventive", preventiveController.GetPreventive)
 		v1.PUT("/update-preventive", preventiveController.UpdatePreventive)
+
+		v1.POST("/update-task-preventive", taskPreventiveController.UpdateTaskPreventiveController)
 	}
 
 	router.Run(os.Getenv("PORT"))
