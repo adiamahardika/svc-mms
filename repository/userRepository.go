@@ -13,7 +13,7 @@ type UserRepositoryInterface interface {
 	GetDetailUser(request int) ([]model.GetUserResponse, error)
 }
 
-func (repo *repository) GetUser(request model.GetUserRequest) ([]model.GetUserResponse, error){
+func (repo *repository) GetUser(request model.GetUserRequest) ([]model.GetUserResponse, error) {
 	var user []model.GetUserResponse
 
 	error := repo.db.Raw("SELECT users.*, role.name as role_name, team.name as team_name FROM users LEFT OUTER JOIN role ON (users.role = CAST(role.id AS varchar(10))) LEFT OUTER JOIN team ON (users.team = CAST(team.id AS varchar(10))) WHERE users.role LIKE @Role AND users.team LIKE @Team ORDER BY users.name", model.GetUserRequest{
@@ -38,9 +38,9 @@ func (repo *repository) ChangePassword(request model.ChangePassRequest) (model.G
 	var user model.GetUserResponse
 
 	error := repo.db.Raw("UPDATE users SET password = @NewPassword, updated_at = @UpdatedAt WHERE username = @Username RETURNING users.*", model.ChangePassRequest{
-		Username: request.Username,
+		Username:    request.Username,
 		NewPassword: request.NewPassword,
-		UpdatedAt: request.UpdatedAt,
+		UpdatedAt:   request.UpdatedAt,
 	}).Find(&user).Error
 
 	return user, error

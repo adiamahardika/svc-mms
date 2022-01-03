@@ -30,31 +30,31 @@ func UserService(repository repository.UserRepositoryInterface) *userService {
 
 func (userService *userService) GetUser(request model.GetUserRequest) ([]model.GetUserResponse, error) {
 	user, error := userService.repository.GetUser(request)
-	
+
 	return user, error
 }
 
 func (userService *userService) Login(request model.LoginRequest) (model.GetUserResponse, error) {
 	var user_response model.GetUserResponse
 	user, error := userService.repository.CheckUsername(request.Username)
-	
-	if (len(user) < 1) {
+
+	if len(user) < 1 {
 		error = fmt.Errorf("Username Not Found!")
-		} else {
+	} else {
 		error_check_pass := bcrypt.CompareHashAndPassword([]byte(user[0].Password), []byte(request.Password))
-		
-		if (error_check_pass != nil) {
+
+		if error_check_pass != nil {
 			error = fmt.Errorf("Password Not Match")
 		}
 		user_response = model.GetUserResponse{
-			Id: user[0].Id,
-			Name: user[0].Name,
-			Username: user[0].Username,
-			Email: user[0].Email,
-			Team: user[0].Team,
-			TeamName: user[0].TeamName,
-			Role: user[0].Role,
-			RoleName: user[0].RoleName,
+			Id:        user[0].Id,
+			Name:      user[0].Name,
+			Username:  user[0].Username,
+			Email:     user[0].Email,
+			Team:      user[0].Team,
+			TeamName:  user[0].TeamName,
+			Role:      user[0].Role,
+			RoleName:  user[0].RoleName,
 			UpdatedAt: user[0].UpdatedAt,
 			CreatedAt: user[0].CreatedAt,
 		}
@@ -66,29 +66,29 @@ func (userService *userService) Login(request model.LoginRequest) (model.GetUser
 func (userService *userService) ChangePassword(request model.ChangePassRequest) (model.GetUserResponse, error) {
 	var user model.GetUserResponse
 	date_now := time.Now()
-	
+
 	users, error := userService.repository.CheckUsername(request.Username)
-	
-	if (len(users) < 1) {
+
+	if len(users) < 1 {
 		error = fmt.Errorf("Username Not Found!")
+	} else {
+
+		error_check_pass := bcrypt.CompareHashAndPassword([]byte(users[0].Password), []byte(request.OldPassword))
+		if error_check_pass != nil {
+			error = fmt.Errorf("Wrong Old Password!")
 		} else {
-			
-			error_check_pass := bcrypt.CompareHashAndPassword([]byte(users[0].Password), []byte(request.OldPassword))
-			if (error_check_pass != nil) {
-				error = fmt.Errorf("Wrong Old Password!")
+
+			new_pass, error_hash_pass := bcrypt.GenerateFromPassword([]byte(request.NewPassword), bcrypt.DefaultCost)
+
+			if error_hash_pass != nil {
+				error = fmt.Errorf("There was an error creating new password!")
 			} else {
-				
-				new_pass, error_hash_pass := bcrypt.GenerateFromPassword([]byte(request.NewPassword), bcrypt.DefaultCost)
-				
-				if (error_hash_pass != nil) {
-					error = fmt.Errorf("There was an error creating new password!")
-				} else {
-					request.UpdatedAt = date_now
-					request.NewPassword = string(new_pass)
-	
-					user, error = userService.repository.ChangePassword(request)
-				}
+				request.UpdatedAt = date_now
+				request.NewPassword = string(new_pass)
+
+				user, error = userService.repository.ChangePassword(request)
 			}
+		}
 	}
 
 	return user, error
@@ -97,28 +97,27 @@ func (userService *userService) ChangePassword(request model.ChangePassRequest) 
 func (userService *userService) ResetPassword(request model.ResetPassword) (model.GetUserResponse, error) {
 	var user model.GetUserResponse
 	date_now := time.Now()
-	
+
 	users, error := userService.repository.CheckUsername(request.Username)
-	
-	if (len(users) < 1) {
+
+	if len(users) < 1 {
 		error = fmt.Errorf("Username Not Found!")
+	} else {
+
+		new_pass, error_hash_pass := bcrypt.GenerateFromPassword([]byte(request.NewPassword), bcrypt.DefaultCost)
+
+		if error_hash_pass != nil {
+			error = fmt.Errorf("There was an error creating new password!")
 		} else {
-				
-			new_pass, error_hash_pass := bcrypt.GenerateFromPassword([]byte(request.NewPassword), bcrypt.DefaultCost)
-			
-			if (error_hash_pass != nil) {
-				error = fmt.Errorf("There was an error creating new password!")
-			} else {
-				new_request := model.ChangePassRequest{
-					Username: request.Username,
-					NewPassword: string(new_pass),
-					UpdatedAt: date_now,
-				}
-	
-				user, error = userService.repository.ChangePassword(new_request)
+			new_request := model.ChangePassRequest{
+				Username:    request.Username,
+				NewPassword: string(new_pass),
+				UpdatedAt:   date_now,
 			}
 
-			
+			user, error = userService.repository.ChangePassword(new_request)
+		}
+
 	}
 
 	return user, error
@@ -130,21 +129,23 @@ func (userService *userService) Register(request model.RegisterRequest) (entity.
 
 	users, error := userService.repository.CheckUsername(request.Username)
 
-	if (len(users) > 0) {
+	if len(users) > 0 {
 		error = fmt.Errorf("Username already exist!")
+	} else {
+		new_pass, error_hash_pass := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+
+		if error_hash_pass != nil {
+			error = fmt.Errorf("There was an error creating new password!")
 		} else {
-			new_pass, error_hash_pass := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
-			
-			if (error_hash_pass != nil) {
-				error = fmt.Errorf("There was an error creating new password!")
-			} else {
-				
+
 			request.CreatedAt = date_now
 			request.UpdatedAt = date_now
 			request.Password = string(new_pass)
 			request.Changepass = "0"
-		
-			user, error = userService.repository.Register(request)
+
+			_, error = userService.repository.Register(request)
+			users, error = userService.repository.CheckUsername(request.Username)
+			user = users[0]
 		}
 	}
 
@@ -155,6 +156,6 @@ func (userService *userService) GetDetailUser(request string) ([]model.GetUserRe
 
 	user_id, _ := strconv.Atoi(request)
 	user, error := userService.repository.GetDetailUser(user_id)
-	
+
 	return user, error
 }
