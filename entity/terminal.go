@@ -17,7 +17,7 @@ type Terminal struct {
 	KontakPic        string    `json:"kontak_pic"`
 	CreatedBy        string    `json:"created_by"`
 	CreatedDate      time.Time `json:"created_date"`
-	UpdatedBy        string    `json:"created_by"`
+	UpdatedBy        string    `json:"updated_by"`
 	UpdatedDate      string    `json:"updated_date"`
 	Status           string    `json:"status"`
 	RecStatus        string    `json:"rec_status"`

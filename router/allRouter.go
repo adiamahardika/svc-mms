@@ -16,6 +16,8 @@ func AllRouter(db *gorm.DB) {
 	router := gin.Default()
 	repository := repository.Repository(db)
 
+	logService := service.LogService(repository)
+
 	ticketService := service.TicketService(repository)
 	tikcetController := controller.TicketController(ticketService)
 
@@ -32,7 +34,7 @@ func AllRouter(db *gorm.DB) {
 	roleController := controller.RoleController(roleService)
 
 	categoryService := service.CategoryService(repository)
-	categoryController := controller.CategoryController(categoryService)
+	categoryController := controller.CategoryController(categoryService, logService)
 
 	preventiveService := service.PreventiveService(repository)
 	preventiveController := controller.PreventiveController(preventiveService)
