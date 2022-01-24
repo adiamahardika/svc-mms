@@ -22,7 +22,7 @@ func AllRouter(db *gorm.DB) {
 	tikcetController := controller.TicketController(ticketService)
 
 	taskListService := service.TaskListService(repository)
-	taskListController := controller.TaskListController(taskListService)
+	taskListController := controller.TaskListController(taskListService, logService)
 
 	userService := service.UserService(repository)
 	userController := controller.UserController(userService)
