@@ -40,7 +40,7 @@ func AllRouter(db *gorm.DB) {
 	preventiveController := controller.PreventiveController(preventiveService, logService)
 
 	taskPreventiveService := service.TaskPreventiveService(repository)
-	taskPreventiveController := controller.TaskPreventiveController(taskPreventiveService)
+	taskPreventiveController := controller.TaskPreventiveController(taskPreventiveService, logService)
 
 	terminalService := service.TerminalService(repository)
 	terminalController := controller.TerminalController(terminalService, logService)
