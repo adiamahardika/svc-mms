@@ -19,7 +19,7 @@ func AllRouter(db *gorm.DB) {
 	logService := service.LogService(repository)
 
 	ticketService := service.TicketService(repository)
-	tikcetController := controller.TicketController(ticketService)
+	tikcetController := controller.TicketController(ticketService, logService)
 
 	taskListService := service.TaskListService(repository)
 	taskListController := controller.TaskListController(taskListService, logService)
