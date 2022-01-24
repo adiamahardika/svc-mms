@@ -43,7 +43,7 @@ func AllRouter(db *gorm.DB) {
 	taskPreventiveController := controller.TaskPreventiveController(taskPreventiveService)
 
 	terminalService := service.TerminalService(repository)
-	terminalController := controller.TerminalController(terminalService)
+	terminalController := controller.TerminalController(terminalService, logService)
 
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
