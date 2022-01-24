@@ -1,11 +1,14 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/general"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/service"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -13,10 +16,11 @@ import (
 
 type userController struct {
 	userService service.UserServiceInterface
+	logService  service.LogServiceInterface
 }
 
-func UserController(userService service.UserServiceInterface) *userController {
-	return &userController{userService}
+func UserController(userService service.UserServiceInterface, logService service.LogServiceInterface) *userController {
+	return &userController{userService, logService}
 }
 
 func (controller *userController) GetUser(context *gin.Context) {
@@ -24,14 +28,18 @@ func (controller *userController) GetUser(context *gin.Context) {
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
+	var user []model.GetUserResponse
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
 			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", value.Field(), value.ActualTag())
 			description = append(description, errorMessage)
 		}
+		http_status = http.StatusBadRequest
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -41,12 +49,12 @@ func (controller *userController) GetUser(context *gin.Context) {
 		})
 	} else {
 
-		user, error := controller.userService.GetUser(request)
+		user, error = controller.userService.GetUser(request)
 		if error == nil {
 
 			description = append(description, "Success")
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusOK,
 				StatusCode:  general.SuccessStatusCode,
 				Description: description,
@@ -59,8 +67,9 @@ func (controller *userController) GetUser(context *gin.Context) {
 		} else {
 
 			description = append(description, error.Error())
+			http_status = http.StatusBadRequest
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusBadRequest,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
@@ -71,6 +80,11 @@ func (controller *userController) GetUser(context *gin.Context) {
 
 		}
 	}
+	parse_request, _ := json.Marshal(request)
+	parse_status, _ := json.Marshal(status)
+	parse_user, _ := json.Marshal(user)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_user))
+	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
 func (controller *userController) Login(context *gin.Context) {
@@ -78,14 +92,18 @@ func (controller *userController) Login(context *gin.Context) {
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
+	var user model.GetUserResponse
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
 			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", value.Field(), value.ActualTag())
 			description = append(description, errorMessage)
 		}
+		http_status = http.StatusBadRequest
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -95,13 +113,13 @@ func (controller *userController) Login(context *gin.Context) {
 		})
 	} else {
 
-		user, error := controller.userService.Login(request)
+		user, error = controller.userService.Login(request)
 
 		if error == nil {
 
 			description = append(description, "Success")
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusOK,
 				StatusCode:  general.SuccessStatusCode,
 				Description: description,
@@ -114,8 +132,9 @@ func (controller *userController) Login(context *gin.Context) {
 		} else {
 
 			description = append(description, error.Error())
+			http_status = http.StatusBadRequest
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusOK,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
@@ -126,6 +145,11 @@ func (controller *userController) Login(context *gin.Context) {
 
 		}
 	}
+	parse_request, _ := json.Marshal(request)
+	parse_status, _ := json.Marshal(status)
+	parse_user, _ := json.Marshal(user)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_user))
+	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
 func (controller *userController) ChangePassword(context *gin.Context) {
@@ -133,14 +157,18 @@ func (controller *userController) ChangePassword(context *gin.Context) {
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
+	var user model.GetUserResponse
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
 			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", value.Field(), value.ActualTag())
 			description = append(description, errorMessage)
 		}
+		http_status = http.StatusBadRequest
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -150,13 +178,13 @@ func (controller *userController) ChangePassword(context *gin.Context) {
 		})
 	} else {
 
-		user, error := controller.userService.ChangePassword(request)
+		user, error = controller.userService.ChangePassword(request)
 
 		if error == nil {
 
 			description = append(description, "Success")
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusOK,
 				StatusCode:  general.SuccessStatusCode,
 				Description: description,
@@ -169,8 +197,9 @@ func (controller *userController) ChangePassword(context *gin.Context) {
 		} else {
 
 			description = append(description, error.Error())
+			http_status = http.StatusBadRequest
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusBadRequest,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
@@ -181,6 +210,11 @@ func (controller *userController) ChangePassword(context *gin.Context) {
 
 		}
 	}
+	parse_request, _ := json.Marshal(request)
+	parse_status, _ := json.Marshal(status)
+	parse_user, _ := json.Marshal(user)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_user))
+	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
 func (controller *userController) ResetPassword(context *gin.Context) {
@@ -188,14 +222,18 @@ func (controller *userController) ResetPassword(context *gin.Context) {
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
+	var user model.GetUserResponse
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
 			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", value.Field(), value.ActualTag())
 			description = append(description, errorMessage)
 		}
+		http_status = http.StatusBadRequest
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -205,13 +243,13 @@ func (controller *userController) ResetPassword(context *gin.Context) {
 		})
 	} else {
 
-		user, error := controller.userService.ResetPassword(request)
+		user, error = controller.userService.ResetPassword(request)
 
 		if error == nil {
 
 			description = append(description, "Success")
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusOK,
 				StatusCode:  general.SuccessStatusCode,
 				Description: description,
@@ -224,8 +262,9 @@ func (controller *userController) ResetPassword(context *gin.Context) {
 		} else {
 
 			description = append(description, error.Error())
+			http_status = http.StatusBadRequest
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusBadRequest,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
@@ -236,6 +275,11 @@ func (controller *userController) ResetPassword(context *gin.Context) {
 
 		}
 	}
+	parse_request, _ := json.Marshal(request)
+	parse_status, _ := json.Marshal(status)
+	parse_user, _ := json.Marshal(user)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_user))
+	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
 func (controller *userController) Register(context *gin.Context) {
@@ -243,14 +287,18 @@ func (controller *userController) Register(context *gin.Context) {
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
+	var user entity.User
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
 			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", value.Field(), value.ActualTag())
 			description = append(description, errorMessage)
 		}
+		http_status = http.StatusBadRequest
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -260,13 +308,13 @@ func (controller *userController) Register(context *gin.Context) {
 		})
 	} else {
 
-		user, error := controller.userService.Register(request)
+		user, error = controller.userService.Register(request)
 
 		if error == nil {
 
 			description = append(description, "Success")
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusOK,
 				StatusCode:  general.SuccessStatusCode,
 				Description: description,
@@ -279,8 +327,9 @@ func (controller *userController) Register(context *gin.Context) {
 		} else {
 
 			description = append(description, error.Error())
+			http_status = http.StatusBadRequest
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusBadRequest,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
@@ -291,12 +340,19 @@ func (controller *userController) Register(context *gin.Context) {
 
 		}
 	}
+	parse_request, _ := json.Marshal(request)
+	parse_status, _ := json.Marshal(status)
+	parse_user, _ := json.Marshal(user)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_user))
+	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
 func (controller *userController) GetDetailUser(context *gin.Context) {
 	user_id := context.Param("user-id")
 
 	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
 
 	user, error := controller.userService.GetDetailUser(user_id)
 
@@ -304,7 +360,7 @@ func (controller *userController) GetDetailUser(context *gin.Context) {
 
 		description = append(description, "Success")
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusOK,
 			StatusCode:  general.SuccessStatusCode,
 			Description: description,
@@ -317,8 +373,9 @@ func (controller *userController) GetDetailUser(context *gin.Context) {
 	} else {
 
 		description = append(description, error.Error())
+		http_status = http.StatusBadRequest
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -328,5 +385,8 @@ func (controller *userController) GetDetailUser(context *gin.Context) {
 		})
 
 	}
-
+	parse_status, _ := json.Marshal(status)
+	parse_user, _ := json.Marshal(user)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_user))
+	controller.logService.CreateLog(context, "", result, time.Now(), http_status)
 }
