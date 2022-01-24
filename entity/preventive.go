@@ -6,6 +6,7 @@ type Preventive struct {
 	Id         int       `json:"id" gorm:"primaryKey"`
 	PrevCode   string    `json:"prev_code"`
 	VisitDate  string    `json:"visit_date"`
+	Location   string    `json:"location"`
 	TerminalId string    `json:"terminal_id"`
 	AssignedTo string    `json:"assigned_to"`
 	Status     string    `json:"status"`

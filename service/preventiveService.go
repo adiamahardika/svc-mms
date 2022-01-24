@@ -35,6 +35,7 @@ func (preventiveService *preventiveService) CreatePreventive(request []model.Cre
 		preventive_request := entity.Preventive{
 			PrevCode:   prev_code,
 			VisitDate:  value.VisitDate,
+			Location:   value.Location,
 			TerminalId: value.TerminalId,
 			AssignedTo: value.AssignedTo,
 			Status:     value.Status,
