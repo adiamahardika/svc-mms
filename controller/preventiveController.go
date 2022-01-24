@@ -1,11 +1,14 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/general"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/service"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -13,10 +16,11 @@ import (
 
 type preventiveController struct {
 	preventiveService service.PreventiveServiceInterface
+	logService        service.LogServiceInterface
 }
 
-func PreventiveController(preventiveService service.PreventiveServiceInterface) *preventiveController {
-	return &preventiveController{preventiveService}
+func PreventiveController(preventiveService service.PreventiveServiceInterface, logService service.LogServiceInterface) *preventiveController {
+	return &preventiveController{preventiveService, logService}
 }
 
 func (controller *preventiveController) CreatePreventive(context *gin.Context) {
@@ -24,14 +28,18 @@ func (controller *preventiveController) CreatePreventive(context *gin.Context) {
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
+	var list_preventive []entity.Preventive
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
 			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", value.Field(), value.ActualTag())
 			description = append(description, errorMessage)
 		}
+		http_status = http.StatusBadRequest
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -40,12 +48,13 @@ func (controller *preventiveController) CreatePreventive(context *gin.Context) {
 			"status": status,
 		})
 	} else {
-		list_preventive, error := controller.preventiveService.CreatePreventive(request)
+
+		list_preventive, error = controller.preventiveService.CreatePreventive(request)
 
 		if error == nil {
 			description = append(description, "Success")
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusOK,
 				StatusCode:  general.SuccessStatusCode,
 				Description: description,
@@ -55,9 +64,11 @@ func (controller *preventiveController) CreatePreventive(context *gin.Context) {
 				"result": list_preventive,
 			})
 		} else {
-			description = append(description, error.Error())
 
-			status := model.StandardResponse{
+			description = append(description, error.Error())
+			http_status = http.StatusBadRequest
+
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusBadRequest,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
@@ -67,6 +78,11 @@ func (controller *preventiveController) CreatePreventive(context *gin.Context) {
 			})
 		}
 	}
+	parse_request, _ := json.Marshal(request)
+	parse_status, _ := json.Marshal(status)
+	parse_preventive, _ := json.Marshal(list_preventive)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_preventive))
+	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
 func (controller *preventiveController) GetPreventive(context *gin.Context) {
@@ -74,14 +90,18 @@ func (controller *preventiveController) GetPreventive(context *gin.Context) {
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
+	var list_preventive []model.GetGroupPreventiveResponse
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
 			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", value.Field(), value.ActualTag())
 			description = append(description, errorMessage)
 		}
+		http_status = http.StatusBadRequest
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -90,12 +110,13 @@ func (controller *preventiveController) GetPreventive(context *gin.Context) {
 			"status": status,
 		})
 	} else {
-		list_preventive, error := controller.preventiveService.GetPreventive(request)
+
+		list_preventive, error = controller.preventiveService.GetPreventive(request)
 
 		if error == nil {
 			description = append(description, "Success")
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusOK,
 				StatusCode:  general.SuccessStatusCode,
 				Description: description,
@@ -105,9 +126,11 @@ func (controller *preventiveController) GetPreventive(context *gin.Context) {
 				"result": list_preventive,
 			})
 		} else {
-			description = append(description, error.Error())
 
-			status := model.StandardResponse{
+			description = append(description, error.Error())
+			http_status = http.StatusBadRequest
+
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusBadRequest,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
@@ -117,6 +140,11 @@ func (controller *preventiveController) GetPreventive(context *gin.Context) {
 			})
 		}
 	}
+	parse_request, _ := json.Marshal(request)
+	parse_status, _ := json.Marshal(status)
+	parse_preventive, _ := json.Marshal(list_preventive)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_preventive))
+	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
 func (controller *preventiveController) UpdatePreventive(context *gin.Context) {
@@ -124,14 +152,18 @@ func (controller *preventiveController) UpdatePreventive(context *gin.Context) {
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
+	var list_preventive entity.Preventive
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
 			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", value.Field(), value.ActualTag())
 			description = append(description, errorMessage)
 		}
+		http_status = http.StatusBadRequest
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -140,12 +172,13 @@ func (controller *preventiveController) UpdatePreventive(context *gin.Context) {
 			"status": status,
 		})
 	} else {
-		list_preventive, error := controller.preventiveService.UpdatePreventive(request)
+
+		list_preventive, error = controller.preventiveService.UpdatePreventive(request)
 
 		if error == nil {
 			description = append(description, "Success")
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusOK,
 				StatusCode:  general.SuccessStatusCode,
 				Description: description,
@@ -155,9 +188,11 @@ func (controller *preventiveController) UpdatePreventive(context *gin.Context) {
 				"result": list_preventive,
 			})
 		} else {
-			description = append(description, error.Error())
 
-			status := model.StandardResponse{
+			description = append(description, error.Error())
+			http_status = http.StatusBadRequest
+
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusBadRequest,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
@@ -167,12 +202,19 @@ func (controller *preventiveController) UpdatePreventive(context *gin.Context) {
 			})
 		}
 	}
+	parse_request, _ := json.Marshal(request)
+	parse_status, _ := json.Marshal(status)
+	parse_preventive, _ := json.Marshal(list_preventive)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_preventive))
+	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
 func (controller *preventiveController) GetDetailPreventive(context *gin.Context) {
 	request := context.Param("prev-code")
 
 	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
 
 	ticket, error := controller.preventiveService.GetDetailPreventive(request)
 
@@ -180,7 +222,7 @@ func (controller *preventiveController) GetDetailPreventive(context *gin.Context
 
 		description = append(description, "Success")
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusOK,
 			StatusCode:  general.SuccessStatusCode,
 			Description: description,
@@ -193,8 +235,9 @@ func (controller *preventiveController) GetDetailPreventive(context *gin.Context
 	} else {
 
 		description = append(description, error.Error())
+		http_status = http.StatusBadRequest
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -204,4 +247,8 @@ func (controller *preventiveController) GetDetailPreventive(context *gin.Context
 		})
 
 	}
+	parse_status, _ := json.Marshal(status)
+	parse_ticket, _ := json.Marshal(ticket)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_ticket))
+	controller.logService.CreateLog(context, "", result, time.Now(), http_status)
 }
