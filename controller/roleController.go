@@ -131,7 +131,7 @@ func (controller *roleController) CreateRole(context *gin.Context) {
 			description = append(description, error.Error())
 			http_status = http.StatusBadRequest
 
-			status := model.StandardResponse{
+			status = model.StandardResponse{
 				HttpStatus:  http.StatusBadRequest,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
@@ -223,7 +223,7 @@ func (controller *roleController) DeleteRole(context *gin.Context) {
 
 		description = append(description, "Success")
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusOK,
 			StatusCode:  general.SuccessStatusCode,
 			Description: description,
@@ -237,7 +237,7 @@ func (controller *roleController) DeleteRole(context *gin.Context) {
 		description = append(description, error.Error())
 		http_status = http.StatusBadRequest
 
-		status := model.StandardResponse{
+		status = model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
