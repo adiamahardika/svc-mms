@@ -14,23 +14,23 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type terminalController struct {
-	terminalController service.TerminalServiceInterface
-	logService         service.LogServiceInterface
+type grapariController struct {
+	grapariController service.GrapariServiceInterface
+	logService        service.LogServiceInterface
 }
 
-func TerminalController(terminalService service.TerminalServiceInterface, logService service.LogServiceInterface) *terminalController {
-	return &terminalController{terminalService, logService}
+func GrapariController(grapariService service.GrapariServiceInterface, logService service.LogServiceInterface) *grapariController {
+	return &grapariController{grapariService, logService}
 }
 
-func (controller *terminalController) GetTerminal(context *gin.Context) {
-	var request model.GetTerminalRequest
+func (controller *grapariController) GetGrapari(context *gin.Context) {
+	var request model.GetGrapariRequest
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
 	http_status := http.StatusOK
 	var status model.StandardResponse
-	var list_terminal []entity.Terminal
+	var grapari []entity.Grapari
 
 	if error != nil {
 
@@ -51,7 +51,7 @@ func (controller *terminalController) GetTerminal(context *gin.Context) {
 
 	} else {
 
-		list_terminal, error = controller.terminalController.GetTerminal(request)
+		grapari, error = controller.grapariController.GetGrapari(request)
 
 		if error == nil {
 
@@ -64,7 +64,7 @@ func (controller *terminalController) GetTerminal(context *gin.Context) {
 			}
 			context.JSON(http.StatusOK, gin.H{
 				"status": status,
-				"result": list_terminal,
+				"result": grapari,
 			})
 
 		} else {
@@ -86,7 +86,7 @@ func (controller *terminalController) GetTerminal(context *gin.Context) {
 	}
 	parse_request, _ := json.Marshal(request)
 	parse_status, _ := json.Marshal(status)
-	parse_list_terminal, _ := json.Marshal(list_terminal)
-	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_list_terminal))
+	parse_grapari, _ := json.Marshal(grapari)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_grapari))
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }

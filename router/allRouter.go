@@ -45,6 +45,9 @@ func AllRouter(db *gorm.DB) {
 	terminalService := service.TerminalService(repository)
 	terminalController := controller.TerminalController(terminalService, logService)
 
+	grapariService := service.GrapariService(repository)
+	grapariController := controller.GrapariController(grapariService, logService)
+
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
@@ -93,6 +96,8 @@ func AllRouter(db *gorm.DB) {
 		v1.POST("/get-task-preventive", taskPreventiveController.GetTaskPreventive)
 
 		v1.POST("/get-terminal", terminalController.GetTerminal)
+
+		v1.POST("/get-grapari", grapariController.GetGrapari)
 	}
 
 	router.Run(os.Getenv("PORT"))
