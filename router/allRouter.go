@@ -48,6 +48,8 @@ func AllRouter(db *gorm.DB) {
 	grapariService := service.GrapariService(repository)
 	grapariController := controller.GrapariController(grapariService, logService)
 
+	authService := service.AuthService(repository)
+
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
@@ -101,16 +103,16 @@ func AllRouter(db *gorm.DB) {
 	}
 
 	v2 := router.Group("/v2")
+	v2.Use(service.Authentication(), authService.Authorization())
 	{
-		protected_ticket := v2.Group("/ticket")
-		// protected_ticket.Use()
-		protected_ticket.GET("/get-all-ticket", service.Authentication(), tikcetController.GetAll)
-		protected_ticket.POST("/get-count-ticket-status", tikcetController.CountTicketByStatus)
-		protected_ticket.POST("/get-ticket", tikcetController.GetTicket)
-		protected_ticket.GET("/get-detail-ticket/:ticket-code", tikcetController.GetDetailTicket)
-		protected_ticket.POST("/create-ticket", tikcetController.CreateTicket)
-		protected_ticket.PUT("/assign-ticket", tikcetController.AssignTicket)
-		protected_ticket.PUT("/update-ticket-status", tikcetController.UpdateTicketStatus)
+		ticket := v2.Group("/ticket")
+		ticket.GET("/get-all-ticket", tikcetController.GetAll)
+		ticket.POST("/get-count-ticket-status", tikcetController.CountTicketByStatus)
+		ticket.POST("/get-ticket", tikcetController.GetTicket)
+		ticket.GET("/get-detail-ticket/:ticket-code", tikcetController.GetDetailTicket)
+		ticket.POST("/create-ticket", tikcetController.CreateTicket)
+		ticket.PUT("/assign-ticket", tikcetController.AssignTicket)
+		ticket.PUT("/update-ticket-status", tikcetController.UpdateTicketStatus)
 
 		v2.POST("/get-task-list", taskListController.GetTaskList)
 		v2.POST("/update-task-list", taskListController.UpdateTaskListController)

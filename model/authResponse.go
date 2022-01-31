@@ -7,6 +7,7 @@ type LoginResponse struct {
 }
 
 type Claims struct {
-	Username string `json:"username"`
+	SignatureKey string `json:"signature_key"`
+	Username     string `json:"username"`
 	jwt.StandardClaims
 }

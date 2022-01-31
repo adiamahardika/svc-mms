@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"svc-monitoring-maintenance/entity"
+	"svc-monitoring-maintenance/general"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/repository"
 	"time"
@@ -62,9 +63,10 @@ func (userService *userService) Login(request model.LoginRequest) (model.GetUser
 			CreatedAt: user[0].CreatedAt,
 		}
 
-		expirationTime := time.Now().Add(time.Minute * 5)
+		expirationTime := time.Now().Add(time.Minute * 60)
 		claims := &model.Claims{
-			Username: request.Username,
+			SignatureKey: general.GetMD5Hash(request.Username, strconv.Itoa(user[0].Id)),
+			Username:     request.Username,
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: expirationTime.Unix(),
 			},
