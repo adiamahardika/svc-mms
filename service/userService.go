@@ -2,18 +2,20 @@ package service
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/repository"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserServiceInterface interface {
 	GetUser(request model.GetUserRequest) ([]model.GetUserResponse, error)
-	Login(request model.LoginRequest) (model.GetUserResponse, error)
+	Login(request model.LoginRequest) (model.GetUserResponse, model.LoginResponse, error)
 	ChangePassword(request model.ChangePassRequest) (model.GetUserResponse, error)
 	ResetPassword(request model.ResetPassword) (model.GetUserResponse, error)
 	Register(request model.RegisterRequest) (entity.User, error)
@@ -34,8 +36,9 @@ func (userService *userService) GetUser(request model.GetUserRequest) ([]model.G
 	return user, error
 }
 
-func (userService *userService) Login(request model.LoginRequest) (model.GetUserResponse, error) {
+func (userService *userService) Login(request model.LoginRequest) (model.GetUserResponse, model.LoginResponse, error) {
 	var user_response model.GetUserResponse
+	var login_response model.LoginResponse
 	user, error := userService.repository.CheckUsername(request.Username)
 
 	if len(user) < 1 {
@@ -58,9 +61,28 @@ func (userService *userService) Login(request model.LoginRequest) (model.GetUser
 			UpdatedAt: user[0].UpdatedAt,
 			CreatedAt: user[0].CreatedAt,
 		}
+
+		expirationTime := time.Now().Add(time.Minute * 5)
+		claims := &model.Claims{
+			Username: request.Username,
+			StandardClaims: jwt.StandardClaims{
+				ExpiresAt: expirationTime.Unix(),
+			},
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+		jwtKey := []byte(os.Getenv("API_SECRET"))
+		tokenString, err := token.SignedString(jwtKey)
+
+		if err != nil {
+			error = err
+		}
+
+		login_response = model.LoginResponse{
+			Token: tokenString,
+		}
 	}
 
-	return user_response, error
+	return user_response, login_response, error
 }
 
 func (userService *userService) ChangePassword(request model.ChangePassRequest) (model.GetUserResponse, error) {

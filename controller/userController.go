@@ -95,6 +95,7 @@ func (controller *userController) Login(context *gin.Context) {
 	http_status := http.StatusOK
 	var status model.StandardResponse
 	var user model.GetUserResponse
+	var login model.LoginResponse
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
@@ -113,7 +114,7 @@ func (controller *userController) Login(context *gin.Context) {
 		})
 	} else {
 
-		user, error = controller.userService.Login(request)
+		user, login, error = controller.userService.Login(request)
 
 		if error == nil {
 
@@ -127,6 +128,7 @@ func (controller *userController) Login(context *gin.Context) {
 			context.JSON(http.StatusOK, gin.H{
 				"status": status,
 				"result": user,
+				"auth":   login,
 			})
 
 		} else {
