@@ -19,6 +19,7 @@ import (
 type AuthServiceInterface interface {
 	Login(request model.LoginRequest) (model.GetUserResponse, model.LoginResponse, error)
 	Register(request model.RegisterRequest) (entity.User, error)
+	RefreshToken(context *gin.Context) (model.LoginResponse, error)
 }
 
 type authService struct {
@@ -43,10 +44,11 @@ func Authentication() gin.HandlerFunc {
 			func(token *jwt.Token) (interface{}, error) {
 				return jwtKey, nil
 			})
+		validator_error, _ := error.(*jwt.ValidationError)
 
 		if token == nil {
 			error = fmt.Errorf(fmt.Sprintf("Please provide token!"))
-		} else if time.Now().Unix() > claims.ExpiresAt {
+		} else if validator_error.Errors == jwt.ValidationErrorExpired {
 			error = fmt.Errorf(fmt.Sprintf("Your token is expired!"))
 		} else if error != nil {
 			error = fmt.Errorf(fmt.Sprintf("Your token is invalid!"))
@@ -187,4 +189,52 @@ func (authService *authService) Register(request model.RegisterRequest) (entity.
 	}
 
 	return user, error
+}
+
+func (authService *authService) RefreshToken(context *gin.Context) (model.LoginResponse, error) {
+
+	token_string := context.Request.Header.Get("token")
+	claims := &model.Claims{}
+	jwtKey := []byte(os.Getenv("API_SECRET"))
+	var user []entity.User
+	var login_response model.LoginResponse
+
+	decode_token, error := jwt.ParseWithClaims(token_string, claims,
+		func(token *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+	validator_error, _ := error.(*jwt.ValidationError)
+
+	if decode_token == nil {
+		error = fmt.Errorf(fmt.Sprintf("Please provide token!"))
+	} else if validator_error.Errors == jwt.ValidationErrorExpired {
+		error = nil
+	} else if error != nil {
+		error = fmt.Errorf(fmt.Sprintf("Your token is invalid!"))
+	}
+
+	if error == nil {
+		user, error = authService.userRepository.CheckUsername(claims.Username)
+
+		expirationTime := time.Now().Add(time.Minute * 60)
+		generate_token := &model.Claims{
+			SignatureKey: general.GetMD5Hash(claims.Username, strconv.Itoa(user[0].Id)),
+			Username:     claims.Username,
+			StandardClaims: jwt.StandardClaims{
+				ExpiresAt: expirationTime.Unix(),
+			},
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, generate_token)
+		tokenString, err := token.SignedString(jwtKey)
+
+		if err != nil {
+			error = err
+		}
+
+		login_response = model.LoginResponse{
+			Token: tokenString,
+		}
+	}
+
+	return login_response, error
 }

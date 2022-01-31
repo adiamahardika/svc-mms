@@ -123,6 +123,7 @@ func AllRouter(db *gorm.DB) {
 		auth := v2.Group("/auth")
 		auth.POST("/login", authController.Login)
 		auth.POST("/register", authController.Register)
+		auth.GET("/refresh-token", authController.RefreshToken)
 
 		user := v2.Group("/user")
 		user.Use(service.Authentication(), authService.Authorization())

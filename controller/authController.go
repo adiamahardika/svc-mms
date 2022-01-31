@@ -73,11 +73,11 @@ func (controller *authController) Login(context *gin.Context) {
 			http_status = http.StatusBadRequest
 
 			status = model.StandardResponse{
-				HttpStatus:  http.StatusOK,
+				HttpStatus:  http.StatusBadRequest,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
 			}
-			context.JSON(http.StatusOK, gin.H{
+			context.JSON(http.StatusBadRequest, gin.H{
 				"status": status,
 			})
 
@@ -86,7 +86,8 @@ func (controller *authController) Login(context *gin.Context) {
 	parse_request, _ := json.Marshal(request)
 	parse_status, _ := json.Marshal(status)
 	parse_user, _ := json.Marshal(user)
-	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_user))
+	parse_auth, _ := json.Marshal(login)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s, \"auth\": %s}", string(parse_status), string(parse_user), string(parse_auth))
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
@@ -153,4 +154,48 @@ func (controller *authController) Register(context *gin.Context) {
 	parse_user, _ := json.Marshal(user)
 	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_user))
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
+}
+
+func (controller *authController) RefreshToken(context *gin.Context) {
+
+	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
+
+	login, error := controller.authService.RefreshToken(context)
+
+	if error == nil {
+
+		description = append(description, "Success")
+
+		status = model.StandardResponse{
+			HttpStatus:  http.StatusOK,
+			StatusCode:  general.SuccessStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusOK, gin.H{
+			"status": status,
+			"auth":   login,
+		})
+
+	} else {
+
+		description = append(description, error.Error())
+		http_status = http.StatusBadRequest
+
+		status = model.StandardResponse{
+			HttpStatus:  http.StatusBadRequest,
+			StatusCode:  general.ErrorStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusBadRequest, gin.H{
+			"status": status,
+		})
+
+	}
+
+	parse_status, _ := json.Marshal(status)
+	parse_auth, _ := json.Marshal(login)
+	var result = fmt.Sprintf("{\"status\": %s, \"auth\": %s}", string(parse_status), string(parse_auth))
+	controller.logService.CreateLog(context, "", result, time.Now(), http_status)
 }
