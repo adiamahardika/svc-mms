@@ -6,21 +6,11 @@ import (
 	"os"
 	"svc-monitoring-maintenance/general"
 	"svc-monitoring-maintenance/model"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
-
-type AuthServiceInterface interface {
-	Authentication(context *gin.Context)
-}
-
-type authService struct {
-}
-
-func AuthService() *authService {
-	return &authService{}
-}
 
 func Authentication() gin.HandlerFunc {
 	return func(context *gin.Context) {
@@ -32,26 +22,29 @@ func Authentication() gin.HandlerFunc {
 		var status model.StandardResponse
 
 		token, error := jwt.ParseWithClaims(tokenString, claims,
-			func(t *jwt.Token) (interface{}, error) {
+			func(token *jwt.Token) (interface{}, error) {
 				return jwtKey, nil
 			})
 
-		if error != nil || token == nil {
+		if token == nil {
 			error = fmt.Errorf(fmt.Sprintf("Please provide token!"))
-		} else if !token.Valid {
+		} else if error.Error() == "signature is invalid" {
 			error = fmt.Errorf(fmt.Sprintf("Your token is invalid!"))
+		} else if time.Now().Unix() > claims.ExpiresAt {
+			error = fmt.Errorf(fmt.Sprintf("Your token is expired!"))
 		}
-		fmt.Println(error)
+
 		if error != nil {
 			description = append(description, error.Error())
 			status = model.StandardResponse{
-				HttpStatus:  http.StatusBadRequest,
+				HttpStatus:  http.StatusUnauthorized,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
 			}
-			context.JSON(http.StatusBadRequest, gin.H{
+			context.JSON(http.StatusUnauthorized, gin.H{
 				"status": status,
 			})
+			context.Abort()
 		} else {
 			context.Next()
 		}
