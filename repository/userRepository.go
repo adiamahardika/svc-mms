@@ -9,7 +9,6 @@ type UserRepositoryInterface interface {
 	GetUser(request model.GetUserRequest) ([]model.GetUserResponse, error)
 	CheckUsername(request string) ([]entity.User, error)
 	ChangePassword(request model.ChangePassRequest) (model.GetUserResponse, error)
-	Register(request model.RegisterRequest) (entity.User, error)
 	GetDetailUser(request int) ([]model.GetUserResponse, error)
 }
 
@@ -42,14 +41,6 @@ func (repo *repository) ChangePassword(request model.ChangePassRequest) (model.G
 		NewPassword: request.NewPassword,
 		UpdatedAt:   request.UpdatedAt,
 	}).Find(&user).Error
-
-	return user, error
-}
-
-func (repo *repository) Register(request model.RegisterRequest) (entity.User, error) {
-	var user entity.User
-
-	error := repo.db.Table("users").Create(&request).Error
 
 	return user, error
 }

@@ -48,7 +48,8 @@ func AllRouter(db *gorm.DB) {
 	grapariService := service.GrapariService(repository)
 	grapariController := controller.GrapariController(grapariService, logService)
 
-	authService := service.AuthService(repository)
+	authService := service.AuthService(repository, repository)
+	authController := controller.AuthController(authService, logService)
 
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
@@ -69,8 +70,8 @@ func AllRouter(db *gorm.DB) {
 
 		v1.POST("/get-user", userController.GetUser)
 		v1.POST("/get-user-detail/:user-id", userController.GetDetailUser)
-		v1.POST("/login", userController.Login)
-		v1.POST("/register", userController.Register)
+		v1.POST("/login", authController.Login)
+		v1.POST("/register", authController.Register)
 		v1.POST("/change-pass", userController.ChangePassword)
 		v1.POST("/reset-pass", userController.ResetPassword)
 
@@ -120,8 +121,8 @@ func AllRouter(db *gorm.DB) {
 		task_list.POST("/update-task-list", taskListController.UpdateTaskListController)
 
 		auth := v2.Group("/auth")
-		auth.POST("/login", userController.Login)
-		auth.POST("/register", userController.Register)
+		auth.POST("/login", authController.Login)
+		auth.POST("/register", authController.Register)
 
 		user := v2.Group("/user")
 		user.Use(service.Authentication(), authService.Authorization())
