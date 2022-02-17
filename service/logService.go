@@ -26,6 +26,13 @@ func LogService(repository repository.LogRepositoryInterface) *logService {
 func (logService *logService) CreateLog(context *gin.Context, request string, response string, start time.Time, httpStatus int) {
 	now := time.Now()
 	check, err := regexp.Compile("[^a-zA-Z0-9]+")
+	var request_by string
+
+	if context.Request.Header.Get("request-by") != "" {
+		request_by = context.Request.Header.Get("request-by")
+	} else {
+		request_by = context.ClientIP()
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,7 +44,7 @@ func (logService *logService) CreateLog(context *gin.Context, request string, re
 	parse_ip := check.ReplaceAllString(context.ClientIP(), "")
 	log_request := entity.LgServiceActivities{
 		LogId:          parse_ip + start.Format("20060102150405"),
-		RequestFrom:    context.ClientIP(),
+		RequestFrom:    request_by,
 		RequestTo:      context.Request.RequestURI,
 		RequestData:    request,
 		ResponseData:   response,
@@ -46,7 +53,7 @@ func (logService *logService) CreateLog(context *gin.Context, request string, re
 		TotalTime:      conv_end_time - conv_start_time,
 		HttpStatusCode: httpStatus,
 		LogDate:        now,
-		LogBy:          context.ClientIP(),
+		LogBy:          request_by,
 	}
 	logService.repository.CreateLog(log_request)
 

@@ -7,6 +7,7 @@ type GetPreventiveResponse struct {
 	PrevCode   string    `json:"prev_code"`
 	VisitDate  string    `json:"visit_date"`
 	TerminalId string    `json:"terminal_id"`
+	Location   string    `json:"location"`
 	AssignedTo string    `json:"assigned_to"`
 	UserName   string    `json:"user_name"`
 	Status     string    `json:"status"`

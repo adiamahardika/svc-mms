@@ -48,7 +48,7 @@ func Authentication() gin.HandlerFunc {
 
 		if token == nil {
 			error = fmt.Errorf(fmt.Sprintf("Please provide token!"))
-		} else if validator_error.Errors == jwt.ValidationErrorExpired {
+		} else if validator_error != nil && validator_error.Errors == jwt.ValidationErrorExpired {
 			error = fmt.Errorf(fmt.Sprintf("Your token is expired!"))
 		} else if error != nil {
 			error = fmt.Errorf(fmt.Sprintf("Your token is invalid!"))
@@ -125,6 +125,9 @@ func (authService *authService) Login(request model.LoginRequest) (model.GetUser
 		if error_check_pass != nil {
 			error = fmt.Errorf("Password Not Match")
 		}
+		if request.KeyHp != "" {
+			error = authService.userRepository.UpdateKeyHp(request)
+		}
 		user_response = model.GetUserResponse{
 			Id:        user[0].Id,
 			Name:      user[0].Name,
@@ -134,6 +137,7 @@ func (authService *authService) Login(request model.LoginRequest) (model.GetUser
 			TeamName:  user[0].TeamName,
 			Role:      user[0].Role,
 			RoleName:  user[0].RoleName,
+			KeyHp:     user[0].KeyHp,
 			UpdatedAt: user[0].UpdatedAt,
 			CreatedAt: user[0].CreatedAt,
 		}
@@ -207,7 +211,7 @@ func (authService *authService) RefreshToken(context *gin.Context) (model.LoginR
 
 	if decode_token == nil {
 		error = fmt.Errorf(fmt.Sprintf("Please provide token!"))
-	} else if validator_error.Errors == jwt.ValidationErrorExpired {
+	} else if validator_error != nil && validator_error.Errors == jwt.ValidationErrorExpired {
 		error = nil
 	} else if error != nil {
 		error = fmt.Errorf(fmt.Sprintf("Your token is invalid!"))

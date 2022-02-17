@@ -11,6 +11,7 @@ type GetUserResponse struct {
 	TeamName  string    `json:"team_name"`
 	Role      string    `json:"role"`
 	RoleName  string    `json:"role_name"`
+	KeyHp     string    `json:"key_hp"`
 	UpdatedAt time.Time `json:"updated_at"`
 	CreatedAt time.Time `json:"created_at"`
 }
