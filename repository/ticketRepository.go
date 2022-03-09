@@ -16,6 +16,7 @@ type TicketRepositoryInterface interface {
 	AssignTicket(request model.AssignTicketRequest) (entity.Ticket, error)
 	UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error)
 	CheckTicketCode(request string) ([]model.GetTicketResponse, error)
+	GetEmailHistory(request model.GetEmailHistoryRequest) ([]model.GetEmailHistoryResponse, error)
 }
 
 func (repo *repository) GetAll() ([]entity.Ticket, error) {
@@ -132,4 +133,14 @@ func (repo *repository) CheckTicketCode(request string) ([]model.GetTicketRespon
 	}).Find(&ticket).Error
 
 	return ticket, error
+}
+
+func (repo *repository) GetEmailHistory(request model.GetEmailHistoryRequest) ([]model.GetEmailHistoryResponse, error) {
+	var email []model.GetEmailHistoryResponse
+
+	error := repo.db.Raw("SELECT DISTINCT ticket.email FROM ticket WHERE email LIKE @Search ORDER BY email ASC", model.GetEmailHistoryRequest{
+		Search: "%" + request.Search + "%",
+	}).Scan(&email).Error
+
+	return email, error
 }

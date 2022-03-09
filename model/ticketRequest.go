@@ -52,3 +52,7 @@ type CountTicketByStatusRequest struct {
 	StartDate      string `json:"start_date" binding:"required"`
 	EndDate        string `json:"end_date" binding:"required"`
 }
+
+type GetEmailHistoryRequest struct {
+	Search string `json:"search"`
+}

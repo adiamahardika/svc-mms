@@ -16,6 +16,7 @@ type TicketServiceInterface interface {
 	AssignTicket(request model.AssignTicketRequest) (entity.Ticket, error)
 	UpdateTicketStatus(request model.UpdateTicketStatusRequest) (entity.Ticket, error)
 	GetDetailTicket(request string) ([]model.GetTicketResponse, error)
+	GetEmailHistory(request model.GetEmailHistoryRequest) ([]model.GetEmailHistoryResponse, error)
 }
 
 type ticketService struct {
@@ -135,4 +136,11 @@ func (ticketService *ticketService) GetDetailTicket(request string) ([]model.Get
 	ticket[0].TicketIsi = ticket_isi
 
 	return ticket, error
+}
+
+func (ticketService *ticketService) GetEmailHistory(request model.GetEmailHistoryRequest) ([]model.GetEmailHistoryResponse, error) {
+
+	email, error := ticketService.repository.GetEmailHistory(request)
+
+	return email, error
 }
