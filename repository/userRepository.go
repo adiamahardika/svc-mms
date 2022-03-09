@@ -10,7 +10,7 @@ type UserRepositoryInterface interface {
 	CheckUsername(request string) ([]entity.User, error)
 	ChangePassword(request model.ChangePassRequest) (model.GetUserResponse, error)
 	GetDetailUser(request int) ([]model.GetUserResponse, error)
-	UpdateKeyHp(request model.LoginRequest) error
+	UpdateKeyHp(request model.LoginRequest) (string, error)
 }
 
 func (repo *repository) GetUser(request model.GetUserRequest) ([]model.GetUserResponse, error) {
@@ -56,7 +56,7 @@ func (repo *repository) GetDetailUser(request int) ([]model.GetUserResponse, err
 	return user, error
 }
 
-func (repo *repository) UpdateKeyHp(request model.LoginRequest) error {
+func (repo *repository) UpdateKeyHp(request model.LoginRequest) (string, error) {
 	var user entity.User
 
 	error := repo.db.Raw("UPDATE users SET key_hp = @KeyHp WHERE username = @Username RETURNING users.*", model.LoginRequest{
@@ -64,5 +64,5 @@ func (repo *repository) UpdateKeyHp(request model.LoginRequest) error {
 		Username: request.Username,
 	}).Find(&user).Error
 
-	return error
+	return user.KeyHp, error
 }

@@ -115,6 +115,7 @@ func (authService *authService) Authorization() gin.HandlerFunc {
 func (authService *authService) Login(request model.LoginRequest) (model.GetUserResponse, model.LoginResponse, error) {
 	var user_response model.GetUserResponse
 	var login_response model.LoginResponse
+	var key_hp string
 	user, error := authService.userRepository.CheckUsername(request.Username)
 
 	if len(user) < 1 {
@@ -125,8 +126,9 @@ func (authService *authService) Login(request model.LoginRequest) (model.GetUser
 		if error_check_pass != nil {
 			error = fmt.Errorf("Password Not Match")
 		}
+		key_hp = user[0].KeyHp
 		if request.KeyHp != "" {
-			error = authService.userRepository.UpdateKeyHp(request)
+			key_hp, error = authService.userRepository.UpdateKeyHp(request)
 		}
 		user_response = model.GetUserResponse{
 			Id:        user[0].Id,
@@ -137,7 +139,7 @@ func (authService *authService) Login(request model.LoginRequest) (model.GetUser
 			TeamName:  user[0].TeamName,
 			Role:      user[0].Role,
 			RoleName:  user[0].RoleName,
-			KeyHp:     user[0].KeyHp,
+			KeyHp:     key_hp,
 			UpdatedAt: user[0].UpdatedAt,
 			CreatedAt: user[0].CreatedAt,
 		}
