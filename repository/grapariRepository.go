@@ -12,7 +12,7 @@ type GrapariRepositoryInterface interface {
 func (repo *repository) GetGrapari(request model.GetGrapariRequest) ([]entity.Grapari, error) {
 	var grapari []entity.Grapari
 
-	error := repo.db.Raw("SELECT * FROM (SELECT ms_grapari.* FROM ms_grapari WHERE area LIKE @Area AND regional LIKE @Regional AND status LIKE @Status ORDER BY name ASC) AS tbl WHERE tbl.name LIKE @Search OR tbl.grapari_id LIKE @Search", model.GetGrapariRequest{
+	error := repo.db.Raw("SELECT * FROM (SELECT ms_grapari.* FROM ms_grapari WHERE area LIKE @Area AND regional LIKE @Regional AND status LIKE @Status ORDER BY name ASC) AS tbl WHERE LOWER(tbl.name) LIKE LOWER(@Search) OR LOWER(tbl.grapari_id) LIKE LOWER(@Search)", model.GetGrapariRequest{
 		Search:   "%" + request.Search + "%",
 		Area:     "%" + request.Area + "%",
 		Regional: "%" + request.Regional + "%",

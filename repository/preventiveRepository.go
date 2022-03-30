@@ -25,7 +25,7 @@ func (repo *repository) CreatePreventive(request entity.Preventive) (entity.Prev
 func (repo *repository) GetPreventive(request model.GetPreventiveRequest) ([]model.GetPreventiveResponse, error) {
 	var preventive []model.GetPreventiveResponse
 
-	error := repo.db.Raw("SELECT * FROM (SELECT preventive.*, users.name AS user_name FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) WHERE status LIKE @Status AND assigned_to LIKE @AssignedTo AND visit_date >= @StartDate AND visit_date <= @EndDate ORDER BY visit_date DESC) AS tbl WHERE tbl.terminal_id LIKE @Search OR tbl.location LIKE @Search", model.GetPreventiveRequest{
+	error := repo.db.Raw("SELECT * FROM (SELECT preventive.*, users.name AS user_name FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) WHERE status LIKE @Status AND assigned_to LIKE @AssignedTo AND visit_date >= @StartDate AND visit_date <= @EndDate ORDER BY visit_date DESC) AS tbl WHERE LOWER(tbl.terminal_id) LIKE LOWER(@Search) OR LOWER(tbl.location) LIKE LOWER(@Search)", model.GetPreventiveRequest{
 		Search:     "%" + request.Search + "%",
 		Status:     "%" + request.Status + "%",
 		AssignedTo: "%" + request.AssignedTo + "%",
@@ -39,7 +39,7 @@ func (repo *repository) GetPreventive(request model.GetPreventiveRequest) ([]mod
 func (repo *repository) GetVisitDate(request model.GetPreventiveRequest) ([]model.GetVisitDateResponse, error) {
 	var list_visit_date []model.GetVisitDateResponse
 
-	error := repo.db.Raw("SELECT * FROM (SELECT preventive.visit_date, COUNT(*) AS total_preventive FROM preventive WHERE status LIKE @Status AND assigned_to LIKE @AssignedTo AND terminal_id LIKE @Search AND visit_date >= @StartDate AND visit_date <= @EndDate GROUP BY visit_date) AS tbl ORDER BY tbl.visit_date DESC", model.GetPreventiveRequest{
+	error := repo.db.Raw("SELECT * FROM (SELECT preventive.visit_date, COUNT(*) AS total_preventive FROM preventive WHERE status LIKE @Status AND assigned_to LIKE @AssignedTo AND LOWER(terminal_id) LIKE LOWER(@Search) AND visit_date >= @StartDate AND visit_date <= @EndDate GROUP BY visit_date) AS tbl ORDER BY tbl.visit_date DESC", model.GetPreventiveRequest{
 		Search:     "%" + request.Search + "%",
 		Status:     "%" + request.Status + "%",
 		AssignedTo: "%" + request.AssignedTo + "%",
