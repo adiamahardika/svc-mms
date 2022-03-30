@@ -27,3 +27,8 @@ type GetGroupPreventiveResponse struct {
 	TotalPreventive string                  `json:"total_preventive"`
 	PreventiveList  []GetPreventiveResponse `json:"preventive_list"`
 }
+
+type CountPreventiveByStatusResponse struct {
+	Status string `json:"status"`
+	Total  int    `json:"total"`
+}

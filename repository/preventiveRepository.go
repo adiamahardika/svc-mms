@@ -11,6 +11,7 @@ type PreventiveRepositoryInterface interface {
 	UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error)
 	GetDetailPreventive(request string) ([]model.GetPreventiveResponse, error)
 	GetVisitDate(request model.GetPreventiveRequest) ([]model.GetVisitDateResponse, error)
+	CountPreventiveByStatus(request model.CountPreventiveByStatusRequest) ([]model.CountPreventiveByStatusResponse, error)
 }
 
 func (repo *repository) CreatePreventive(request entity.Preventive) (entity.Preventive, error) {
@@ -74,4 +75,16 @@ func (repo *repository) GetDetailPreventive(request string) ([]model.GetPreventi
 	}).Find(&preventive).Error
 
 	return preventive, error
+}
+
+func (repo *repository) CountPreventiveByStatus(request model.CountPreventiveByStatusRequest) ([]model.CountPreventiveByStatusResponse, error) {
+	var status []model.CountPreventiveByStatusResponse
+
+	error := repo.db.Raw("SELECT status, COUNT(*) AS total FROM preventive WHERE assigned_to LIKE @AssignedTo AND CAST(visit_date AS DATE) >= @StartDate AND CAST(visit_date AS DATE) <= @EndDate GROUP BY status", model.CountPreventiveByStatusRequest{
+		AssignedTo: "%" + request.AssignedTo + "%",
+		StartDate:  request.StartDate,
+		EndDate:    request.EndDate,
+	}).Find(&status).Error
+
+	return status, error
 }

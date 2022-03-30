@@ -29,3 +29,9 @@ type UpdatePreventiveRequest struct {
 	UpdatedBy  string    `json:"updated_by"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
+
+type CountPreventiveByStatusRequest struct {
+	AssignedTo string `json:"assigned_to"`
+	StartDate  string `json:"start_date" binding:"required"`
+	EndDate    string `json:"end_date" binding:"required"`
+}
