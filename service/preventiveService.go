@@ -34,16 +34,17 @@ func (preventiveService *preventiveService) CreatePreventive(request []model.Cre
 
 		prev_code := "PREV-" + date_now.Format("020106") + "-" + general.RandomString(4)
 		preventive_request := entity.Preventive{
-			PrevCode:   prev_code,
-			VisitDate:  value.VisitDate,
-			Location:   value.Location,
-			TerminalId: value.TerminalId,
-			AssignedTo: value.AssignedTo,
-			Status:     value.Status,
-			CreatedBy:  value.CreatedBy,
-			CreatedAt:  date_now,
-			UpdatedBy:  value.CreatedBy,
-			UpdatedAt:  date_now,
+			PrevCode:       prev_code,
+			VisitDate:      value.VisitDate,
+			Location:       value.Location,
+			TerminalId:     value.TerminalId,
+			AssignedTo:     value.AssignedTo,
+			AssignedToTeam: value.AssignedToTeam,
+			Status:         value.Status,
+			CreatedBy:      value.CreatedBy,
+			CreatedAt:      date_now,
+			UpdatedBy:      value.CreatedBy,
+			UpdatedAt:      date_now,
 		}
 		_, error = preventiveService.repository.CreatePreventive(preventive_request)
 
@@ -101,6 +102,7 @@ func (preventiveService *preventiveService) GetDetailPreventive(request string) 
 
 func (preventiveService *preventiveService) CountPreventiveByStatus(request model.CountPreventiveByStatusRequest) ([]model.CountPreventiveByStatusResponse, error) {
 
+	request.EndDate = request.EndDate + " 23:59:59"
 	count_preventive, error := preventiveService.repository.CountPreventiveByStatus(request)
 
 	return count_preventive, error

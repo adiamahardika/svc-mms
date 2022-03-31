@@ -94,6 +94,7 @@ func AllRouter(db *gorm.DB) {
 		v1.POST("/get-preventive", preventiveController.GetPreventive)
 		v1.PUT("/update-preventive", preventiveController.UpdatePreventive)
 		v1.GET("/get-detail-preventive/:prev-code", preventiveController.GetDetailPreventive)
+		v1.POST("/get-count-preventive-status", preventiveController.CountPreventiveByStatus)
 
 		v1.POST("/update-task-preventive", taskPreventiveController.UpdateTaskPreventiveController)
 		v1.POST("/get-task-preventive", taskPreventiveController.GetTaskPreventive)
