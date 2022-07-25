@@ -93,6 +93,8 @@ func (authService *authService) Authorization() gin.HandlerFunc {
 			error = fmt.Errorf(fmt.Sprintf("Please provide signature-key!"))
 		} else if signature_key != generate_sk {
 			error = fmt.Errorf(fmt.Sprintf("Your signature-key is invalid!"))
+		} else if claims.BranchKey != os.Getenv("BRANCH_KEY") {
+			error = fmt.Errorf(fmt.Sprintf("You're not permit to access this service!"))
 		}
 
 		if error != nil {
@@ -148,6 +150,7 @@ func (authService *authService) Login(request model.LoginRequest) (model.GetUser
 		claims := &model.Claims{
 			SignatureKey: general.GetMD5Hash(request.Username, strconv.Itoa(user[0].Id)),
 			Username:     request.Username,
+			BranchKey:    os.Getenv("BRANCH_KEY"),
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: expirationTime.Unix(),
 			},

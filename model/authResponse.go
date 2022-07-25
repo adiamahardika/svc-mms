@@ -9,5 +9,6 @@ type LoginResponse struct {
 type Claims struct {
 	SignatureKey string `json:"signature_key"`
 	Username     string `json:"username"`
+	BranchKey    string `json:"branchKey"`
 	jwt.StandardClaims
 }
