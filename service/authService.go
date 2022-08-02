@@ -146,7 +146,8 @@ func (authService *authService) Login(request model.LoginRequest) (model.GetUser
 			CreatedAt: user[0].CreatedAt,
 		}
 
-		expirationTime := time.Now().Add(time.Minute * 60)
+		token_lifespan, _ := strconv.Atoi(os.Getenv("TOKEN_LIFESPAN"))
+		expirationTime := time.Now().Add(time.Minute * time.Duration(token_lifespan))
 		claims := &model.Claims{
 			SignatureKey: general.GetMD5Hash(request.Username, strconv.Itoa(user[0].Id)),
 			Username:     request.Username,
@@ -232,6 +233,7 @@ func (authService *authService) RefreshToken(context *gin.Context) (model.LoginR
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: expirationTime.Unix(),
 			},
+			BranchKey: os.Getenv("BRANCH_KEY"),
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, generate_token)
 		tokenString, err := token.SignedString(jwtKey)
