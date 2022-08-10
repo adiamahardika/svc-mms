@@ -12,18 +12,20 @@ import (
 )
 
 type HwReplacementServiceInterface interface {
-	CreateHwReplacement(request *model.HwReplacementRequest, context *gin.Context) (entity.HwReplacement, error)
+	CreateHwReplacement(request *model.CreateHwReplacementRequest, context *gin.Context) (entity.HwReplacement, error)
+	GetHwReplacement(request *model.GetHwReplacementRequest) (model.GetHwReplacementResponse, error)
 }
 
 type hwReplacementService struct {
-	repository repository.HwReplacementRepositoryInterface
+	hwReplacementRepository repository.HwReplacementRepositoryInterface
+	ticketRepository        repository.TicketRepositoryInterface
 }
 
-func HwReplacementService(repository repository.HwReplacementRepositoryInterface) *hwReplacementService {
-	return &hwReplacementService{repository}
+func HwReplacementService(hwReplacementRepository repository.HwReplacementRepositoryInterface, ticketRepository repository.TicketRepositoryInterface) *hwReplacementService {
+	return &hwReplacementService{hwReplacementRepository, ticketRepository}
 }
 
-func (hwReplacementService *hwReplacementService) CreateHwReplacement(request *model.HwReplacementRequest, context *gin.Context) (entity.HwReplacement, error) {
+func (hwReplacementService *hwReplacementService) CreateHwReplacement(request *model.CreateHwReplacementRequest, context *gin.Context) (entity.HwReplacement, error) {
 	var hw_replacement entity.HwReplacement
 	date_now := time.Now()
 	dir := os.Getenv("FILE_DIR")
@@ -60,8 +62,38 @@ func (hwReplacementService *hwReplacementService) CreateHwReplacement(request *m
 			CreatedAt:   date_now,
 		}
 
-		hw_replacement, error = hwReplacementService.repository.CreateHwReplacement(new_request)
+		hw_replacement, error = hwReplacementService.hwReplacementRepository.CreateHwReplacement(new_request)
 	}
 
 	return hw_replacement, error
+}
+
+func (hwReplacementService *hwReplacementService) GetHwReplacement(request *model.GetHwReplacementRequest) (model.GetHwReplacementResponse, error) {
+
+	var response model.GetHwReplacementResponse
+	var hw_replacement []entity.HwReplacement
+
+	ticket, error := hwReplacementService.ticketRepository.CheckTicketCode(request.TicketCode)
+
+	if error == nil && len(ticket) > 0 {
+		response.TicketCode = request.TicketCode
+		response.NoSPM = ticket[0].NoSPM
+		response.NoReqSPM = ticket[0].NoReqSPM
+
+		hw_replacement, error = hwReplacementService.hwReplacementRepository.GetHwReplacement(request)
+
+		url := os.Getenv("FILE_URL")
+
+		for index := range hw_replacement {
+			date := hw_replacement[index].CreatedAt.Format("2006-01-02")
+			file_name := hw_replacement[index].Attachment
+			hw_replacement[index].Attachment = url + "hw_replacement/" + request.TicketCode + "/" + date + "/" + file_name
+		}
+
+		if error == nil {
+			response.HwReplacement = hw_replacement
+		}
+	}
+
+	return response, error
 }

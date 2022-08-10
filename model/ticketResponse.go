@@ -31,6 +31,8 @@ type GetTicketResponse struct {
 	AssignedToTeam   string             `json:"assigned_to_team"`
 	TeamName         string             `json:"team_name"`
 	TicketIsi        []entity.TicketIsi `json:"ticket_isi" gorm:"foreignKey:TicketCode"`
+	NoSPM            string             `json:"no_spm"`
+	NoReqSPM         string             `json:"no_req_spm"`
 }
 
 type GetEmailHistoryResponse struct {
