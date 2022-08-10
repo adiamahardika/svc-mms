@@ -72,6 +72,8 @@ func (ticketService *ticketService) CreateTicket(request model.CreateTicketReque
 		Email:            request.Email,
 		AssignedTo:       request.AssignedTo,
 		AssignedToTeam:   request.AssignedToTeam,
+		NoSPM:            request.NoSPM,
+		NoReqSPM:         request.NoReqSPM,
 		TglDibuat:        date_now,
 		TglDiperbarui:    date_now,
 	}

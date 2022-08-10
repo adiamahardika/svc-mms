@@ -31,6 +31,8 @@ type CreateTicketRequest struct {
 	AssignedTo     string `json:"assigned_to"`
 	AssignedToTeam string `json:"assigned_to_team"`
 	TicketCode     string `json:"ticket_code"`
+	NoSPM          string `json:"no_spm"`
+	NoReqSPM       string `json:"no_req_spm"`
 }
 
 type AssignTicketRequest struct {
