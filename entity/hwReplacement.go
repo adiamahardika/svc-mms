@@ -8,6 +8,7 @@ type HwReplacement struct {
 	Id          int       `json:"id" gorm:"primaryKey"`
 	TicketCode  string    `json:"ticket_code" form:"ticket_code"`
 	HwId        string    `json:"hw_id" form:"hw_id"`
+	HwName      string    `json:"hw_name" gorm:"->"`
 	OldSN       string    `json:"old_sn" form:"old_sn"`
 	NewSN       string    `json:"new_sn" form:"new_sn"`
 	Description string    `json:"description" form:"description"`
