@@ -64,6 +64,9 @@ func AllRouter(db *gorm.DB) {
 	hwReplacementService := service.HwReplacementService(repository, repository)
 	hwReplacementController := controller.HwReplacementController(hwReplacementService, logService)
 
+	hardwareService := service.HardwareService(repository)
+	hardwareController := controller.HardwareController(hardwareService, logService)
+
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
@@ -192,6 +195,10 @@ func AllRouter(db *gorm.DB) {
 		hw_replacement.Use(service.Authentication(), authService.Authorization())
 		hw_replacement.POST("/create", hwReplacementController.CreateHwReplacementController)
 		hw_replacement.POST("/get", hwReplacementController.GetHwReplacementController)
+
+		hardware := v2.Group("/hardware")
+		hardware.Use(service.Authentication(), authService.Authorization())
+		hardware.POST("/get", hardwareController.GetHardwareController)
 	}
 
 	router.Run(os.Getenv("PORT"))
