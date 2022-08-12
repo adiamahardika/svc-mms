@@ -11,6 +11,7 @@ type HardwareServiceInterface interface {
 	GetHardware(request *model.GetHardwareRequest) ([]entity.Hardware, error)
 	CreateHardware(request *entity.Hardware) (entity.Hardware, error)
 	UpdateHardware(request *entity.Hardware) (entity.Hardware, error)
+	DeleteHardware(id *int) error
 }
 
 type hardwareService struct {
@@ -43,4 +44,11 @@ func (hardwareService *hardwareService) UpdateHardware(request *entity.Hardware)
 	hardware, error := hardwareService.hardwareRepository.UpdateHardware(request)
 
 	return hardware, error
+}
+
+func (hardwareService *hardwareService) DeleteHardware(id *int) error {
+
+	error := hardwareService.hardwareRepository.DeleteHardware(id)
+
+	return error
 }

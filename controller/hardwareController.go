@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/general"
 	"svc-monitoring-maintenance/model"
@@ -23,7 +24,7 @@ func HardwareController(hardwareService service.HardwareServiceInterface, logSer
 	return &hardwareController{hardwareService, logService}
 }
 
-func (controller *hardwareController) GetHardwareController(context *gin.Context) {
+func (controller *hardwareController) GetHardware(context *gin.Context) {
 
 	var request *model.GetHardwareRequest
 
@@ -91,7 +92,7 @@ func (controller *hardwareController) GetHardwareController(context *gin.Context
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
-func (controller *hardwareController) CreateHardwareController(context *gin.Context) {
+func (controller *hardwareController) CreateHardware(context *gin.Context) {
 
 	var request *entity.Hardware
 
@@ -159,7 +160,7 @@ func (controller *hardwareController) CreateHardwareController(context *gin.Cont
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
-func (controller *hardwareController) UpdateHardwareController(context *gin.Context) {
+func (controller *hardwareController) UpdateHardware(context *gin.Context) {
 
 	var request *entity.Hardware
 
@@ -225,4 +226,46 @@ func (controller *hardwareController) UpdateHardwareController(context *gin.Cont
 	parse_result, _ := json.Marshal(response)
 	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_result))
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
+}
+
+func (controller *hardwareController) DeleteHardware(context *gin.Context) {
+
+	id, error := strconv.Atoi(context.Param("hw-id"))
+	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
+
+	error = controller.hardwareService.DeleteHardware(&id)
+
+	if error == nil {
+
+		description = append(description, "Success")
+
+		status = model.StandardResponse{
+			HttpStatus:  http.StatusOK,
+			StatusCode:  general.SuccessStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusOK, gin.H{
+			"status": status,
+		})
+
+	} else {
+
+		description = append(description, error.Error())
+		http_status = http.StatusBadRequest
+
+		status = model.StandardResponse{
+			HttpStatus:  http.StatusBadRequest,
+			StatusCode:  general.ErrorStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusBadRequest, gin.H{
+			"status": status,
+		})
+
+	}
+	parse_status, _ := json.Marshal(status)
+	var result = fmt.Sprintf("{\"status\": %s}", string(parse_status))
+	controller.logService.CreateLog(context, "", result, time.Now(), http_status)
 }
