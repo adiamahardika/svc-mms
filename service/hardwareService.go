@@ -10,6 +10,7 @@ import (
 type HardwareServiceInterface interface {
 	GetHardware(request *model.GetHardwareRequest) ([]entity.Hardware, error)
 	CreateHardware(request *entity.Hardware) (entity.Hardware, error)
+	UpdateHardware(request *entity.Hardware) (entity.Hardware, error)
 }
 
 type hardwareService struct {
@@ -33,6 +34,13 @@ func (hardwareService *hardwareService) CreateHardware(request *entity.Hardware)
 	request.IsActive = "true"
 
 	hardware, error := hardwareService.hardwareRepository.CreateHardware(request)
+
+	return hardware, error
+}
+
+func (hardwareService *hardwareService) UpdateHardware(request *entity.Hardware) (entity.Hardware, error) {
+
+	hardware, error := hardwareService.hardwareRepository.UpdateHardware(request)
 
 	return hardware, error
 }
