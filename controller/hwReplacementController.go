@@ -98,6 +98,7 @@ func (controller *hwReplacementController) CreateHwReplacementController(context
 	description := []string{}
 	http_status := http.StatusOK
 	var status *model.StandardResponse
+	var response model.GetHwReplacementResponse
 
 	if error != nil {
 
@@ -118,7 +119,7 @@ func (controller *hwReplacementController) CreateHwReplacementController(context
 
 	} else {
 
-		_, error := controller.hwReplacementService.CreateHwReplacement(request, context)
+		response, error = controller.hwReplacementService.CreateHwReplacement(request, context)
 
 		if error == nil {
 
@@ -131,6 +132,7 @@ func (controller *hwReplacementController) CreateHwReplacementController(context
 			}
 			context.JSON(http.StatusOK, gin.H{
 				"status": status,
+				"result": response,
 			})
 
 		} else {
@@ -151,6 +153,7 @@ func (controller *hwReplacementController) CreateHwReplacementController(context
 	}
 	parse_request, _ := json.Marshal(request)
 	parse_status, _ := json.Marshal(status)
-	var result = fmt.Sprintf("{\"status\": %s}", string(parse_status))
+	parse_result, _ := json.Marshal(response)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_result))
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
