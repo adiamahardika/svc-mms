@@ -4,10 +4,12 @@ import (
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/repository"
+	"time"
 )
 
 type HardwareServiceInterface interface {
 	GetHardware(request *model.GetHardwareRequest) ([]entity.Hardware, error)
+	CreateHardware(request *entity.Hardware) (entity.Hardware, error)
 }
 
 type hardwareService struct {
@@ -21,6 +23,16 @@ func HardwareService(hardwareRepository repository.HardwareRepositoryInterface) 
 func (hardwareService *hardwareService) GetHardware(request *model.GetHardwareRequest) ([]entity.Hardware, error) {
 
 	hardware, error := hardwareService.hardwareRepository.GetHardware(request)
+
+	return hardware, error
+}
+
+func (hardwareService *hardwareService) CreateHardware(request *entity.Hardware) (entity.Hardware, error) {
+
+	request.CreatedAt = time.Now()
+	request.IsActive = "true"
+
+	hardware, error := hardwareService.hardwareRepository.CreateHardware(request)
 
 	return hardware, error
 }

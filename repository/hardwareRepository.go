@@ -7,6 +7,7 @@ import (
 
 type HardwareRepositoryInterface interface {
 	GetHardware(request *model.GetHardwareRequest) ([]entity.Hardware, error)
+	CreateHardware(request *entity.Hardware) (entity.Hardware, error)
 }
 
 func (repo *repository) GetHardware(request *model.GetHardwareRequest) ([]entity.Hardware, error) {
@@ -17,6 +18,15 @@ func (repo *repository) GetHardware(request *model.GetHardwareRequest) ([]entity
 		Search:   "%" + request.Search + "%",
 		IsActive: "%" + request.IsActive + "%",
 	}).Find(&hardware).Error
+
+	return hardware, error
+}
+
+func (repo *repository) CreateHardware(request *entity.Hardware) (entity.Hardware, error) {
+
+	var hardware entity.Hardware
+
+	error := repo.db.Table("hardware").Create(&request).Error
 
 	return hardware, error
 }

@@ -199,6 +199,7 @@ func AllRouter(db *gorm.DB) {
 		hardware := v2.Group("/hardware")
 		hardware.Use(service.Authentication(), authService.Authorization())
 		hardware.POST("/get", hardwareController.GetHardwareController)
+		hardware.POST("/create", hardwareController.CreateHardwareController)
 	}
 
 	router.Run(os.Getenv("PORT"))
