@@ -131,6 +131,7 @@ func AllRouter(db *gorm.DB) {
 		ticket.PUT("/assign-ticket", tikcetController.AssignTicket)
 		ticket.PUT("/update-ticket-status", tikcetController.UpdateTicketStatus)
 		ticket.POST("/get-email-history", tikcetController.GetEmailHistory)
+		ticket.PUT("/update", tikcetController.UpdateTicket)
 
 		task_list := v2.Group("/task-list")
 		task_list.Use(service.Authentication(), authService.Authorization())
