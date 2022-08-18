@@ -43,7 +43,7 @@ func AllRouter(db *gorm.DB) {
 	roleService := service.RoleService(repository)
 	roleController := controller.RoleController(roleService, logService)
 
-	categoryService := service.CategoryService(repository)
+	categoryService := service.CategoryService(repository, repository)
 	categoryController := controller.CategoryController(categoryService, logService)
 
 	preventiveService := service.PreventiveService(repository)
@@ -69,55 +69,6 @@ func AllRouter(db *gorm.DB) {
 
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
-
-	v1 := router.Group("/v1")
-	{
-		v1.GET("/get-all-ticket", tikcetController.GetAll)
-		v1.POST("/get-count-ticket-status", tikcetController.CountTicketByStatus)
-		v1.POST("/get-ticket", tikcetController.GetTicket)
-		v1.GET("/get-detail-ticket/:ticket-code", tikcetController.GetDetailTicket)
-		v1.POST("/create-ticket", tikcetController.CreateTicket)
-		v1.PUT("/assign-ticket", tikcetController.AssignTicket)
-		v1.PUT("/update-ticket-status", tikcetController.UpdateTicketStatus)
-
-		v1.POST("/get-task-list", taskListController.GetTaskList)
-		v1.POST("/update-task-list", taskListController.UpdateTaskListController)
-
-		v1.POST("/get-user", userController.GetUser)
-		v1.POST("/get-user-detail/:user-id", userController.GetDetailUser)
-		v1.POST("/login", authController.Login)
-		v1.POST("/register", authController.Register)
-		v1.POST("/change-pass", userController.ChangePassword)
-		v1.POST("/reset-pass", userController.ResetPassword)
-
-		v1.POST("/get-team", teamController.GetAll)
-		v1.POST("/create-team", teamController.CreateTeam)
-		v1.PUT("/update-team", teamController.UpdateTeam)
-		v1.DELETE("/delete-team/:team-id", teamController.DeleteTeam)
-
-		v1.POST("/get-role", roleController.GetAll)
-		v1.POST("/create-role", roleController.CreateRole)
-		v1.PUT("/update-role", roleController.UpdateRole)
-		v1.DELETE("/delete-role/:role-id", roleController.DeleteRole)
-
-		v1.POST("/get-category", categoryController.GetCategory)
-		v1.POST("/create-category", categoryController.CreateCategory)
-		v1.PUT("/update-category", categoryController.UpdateCategory)
-		v1.DELETE("/delete-category/:category-id", categoryController.DeleteCategory)
-
-		v1.POST("/create-preventive", preventiveController.CreatePreventive)
-		v1.POST("/get-preventive", preventiveController.GetPreventive)
-		v1.PUT("/update-preventive", preventiveController.UpdatePreventive)
-		v1.GET("/get-detail-preventive/:prev-code", preventiveController.GetDetailPreventive)
-		v1.POST("/get-count-preventive-status", preventiveController.CountPreventiveByStatus)
-
-		v1.POST("/update-task-preventive", taskPreventiveController.UpdateTaskPreventiveController)
-		v1.POST("/get-task-preventive", taskPreventiveController.GetTaskPreventive)
-
-		v1.POST("/get-terminal", terminalController.GetTerminal)
-
-		v1.POST("/get-grapari", grapariController.GetGrapari)
-	}
 
 	v2 := router.Group("/v2")
 	{
@@ -170,6 +121,7 @@ func AllRouter(db *gorm.DB) {
 		category.POST("/create-category", categoryController.CreateCategory)
 		category.PUT("/update-category", categoryController.UpdateCategory)
 		category.DELETE("/delete-category/:category-id", categoryController.DeleteCategory)
+		category.GET("/get-detail/:id", categoryController.GetDetailCategory)
 
 		preventive := v2.Group("/preventive")
 		preventive.Use(service.Authentication(), authService.Authorization())

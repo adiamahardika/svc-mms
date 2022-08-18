@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/general"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/service"
@@ -25,22 +24,25 @@ func CategoryController(categoryService service.CategoryServiceInterface, logSer
 }
 
 func (controller *categoryController) GetCategory(context *gin.Context) {
-	var request model.GetCategoryRequest
+
+	var request *model.GetCategoryRequest
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
 	http_status := http.StatusOK
-	var status model.StandardResponse
-	var category []entity.Category
+	var status *model.StandardResponse
+	var category []model.CreateCategoryRequest
+	var total_pages float64
 
 	if error != nil {
+
 		for _, value := range error.(validator.ValidationErrors) {
 			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", value.Field(), value.ActualTag())
 			description = append(description, errorMessage)
 		}
 		http_status = http.StatusBadRequest
 
-		status = model.StandardResponse{
+		status = &model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -48,29 +50,31 @@ func (controller *categoryController) GetCategory(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"status": status,
 		})
-	} else {
 
-		category, error = controller.categoryService.GetCategory(request)
+	} else {
+		category, total_pages, error = controller.categoryService.GetCategory(request)
 
 		if error == nil {
 
 			description = append(description, "Success")
 
-			status = model.StandardResponse{
+			status = &model.StandardResponse{
 				HttpStatus:  http.StatusOK,
 				StatusCode:  general.SuccessStatusCode,
 				Description: description,
 			}
 			context.JSON(http.StatusOK, gin.H{
-				"status": status,
-				"result": category,
+				"status":     status,
+				"content":    category,
+				"page":       request.PageNo,
+				"totalPages": total_pages,
 			})
 		} else {
 
 			description = append(description, error.Error())
 			http_status = http.StatusBadRequest
 
-			status = model.StandardResponse{
+			status = &model.StandardResponse{
 				HttpStatus:  http.StatusBadRequest,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
@@ -80,22 +84,23 @@ func (controller *categoryController) GetCategory(context *gin.Context) {
 			})
 		}
 	}
+
 	parse_request, _ := json.Marshal(request)
 	parse_status, _ := json.Marshal(status)
 	parse_category, _ := json.Marshal(category)
-	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_category))
+	var result = fmt.Sprintf("{\"status\": %s, \"content\": %s, \"page\": %d, \"totalPages\": %d}", string(parse_status), string(parse_category), request.PageNo, int(total_pages))
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
 func (controller *categoryController) CreateCategory(context *gin.Context) {
 
-	var request model.CreateCategoryRequest
+	var request *model.CreateCategoryRequest
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
 	http_status := http.StatusOK
-	var status model.StandardResponse
-	var category []entity.Category
+	var status *model.StandardResponse
+	var category model.CreateCategoryRequest
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
@@ -104,7 +109,7 @@ func (controller *categoryController) CreateCategory(context *gin.Context) {
 		}
 		http_status = http.StatusBadRequest
 
-		status = model.StandardResponse{
+		status = &model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -114,20 +119,20 @@ func (controller *categoryController) CreateCategory(context *gin.Context) {
 		})
 	} else {
 
-		category, error := controller.categoryService.CreateCategory(request)
+		category, error = controller.categoryService.CreateCategory(request)
 
 		if error == nil {
 
 			description = append(description, "Success")
 
-			status = model.StandardResponse{
+			status = &model.StandardResponse{
 				HttpStatus:  http.StatusOK,
 				StatusCode:  general.SuccessStatusCode,
 				Description: description,
 			}
 			context.JSON(http.StatusOK, gin.H{
-				"status": status,
-				"result": category,
+				"status":  status,
+				"content": category,
 			})
 
 		} else {
@@ -135,7 +140,7 @@ func (controller *categoryController) CreateCategory(context *gin.Context) {
 			description = append(description, error.Error())
 			http_status = http.StatusBadRequest
 
-			status = model.StandardResponse{
+			status = &model.StandardResponse{
 				HttpStatus:  http.StatusBadRequest,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
@@ -149,18 +154,18 @@ func (controller *categoryController) CreateCategory(context *gin.Context) {
 	parse_request, _ := json.Marshal(request)
 	parse_status, _ := json.Marshal(status)
 	parse_category, _ := json.Marshal(category)
-	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_category))
+	var result = fmt.Sprintf("{\"status\": %s, \"content\": %s}", string(parse_status), string(parse_category))
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
 func (controller *categoryController) UpdateCategory(context *gin.Context) {
-	var request entity.Category
+	var request *model.CreateCategoryRequest
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
 	http_status := http.StatusOK
-	var status model.StandardResponse
-	var category entity.Category
+	var status *model.StandardResponse
+	var category model.CreateCategoryRequest
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
@@ -169,7 +174,7 @@ func (controller *categoryController) UpdateCategory(context *gin.Context) {
 		}
 		http_status = http.StatusBadRequest
 
-		status = model.StandardResponse{
+		status = &model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -185,14 +190,14 @@ func (controller *categoryController) UpdateCategory(context *gin.Context) {
 
 			description = append(description, "Success")
 
-			status = model.StandardResponse{
+			status = &model.StandardResponse{
 				HttpStatus:  http.StatusOK,
 				StatusCode:  general.SuccessStatusCode,
 				Description: description,
 			}
 			context.JSON(http.StatusOK, gin.H{
-				"status": status,
-				"result": category,
+				"status":  status,
+				"content": category,
 			})
 
 		} else {
@@ -200,7 +205,7 @@ func (controller *categoryController) UpdateCategory(context *gin.Context) {
 			description = append(description, error.Error())
 			http_status = http.StatusBadRequest
 
-			status = model.StandardResponse{
+			status = &model.StandardResponse{
 				HttpStatus:  http.StatusBadRequest,
 				StatusCode:  general.ErrorStatusCode,
 				Description: description,
@@ -214,7 +219,7 @@ func (controller *categoryController) UpdateCategory(context *gin.Context) {
 	parse_request, _ := json.Marshal(request)
 	parse_status, _ := json.Marshal(status)
 	parse_category, _ := json.Marshal(category)
-	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_category))
+	var result = fmt.Sprintf("{\"status\": %s, \"content\": %s}", string(parse_status), string(parse_category))
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
@@ -224,15 +229,15 @@ func (controller *categoryController) DeleteCategory(context *gin.Context) {
 
 	description := []string{}
 	http_status := http.StatusOK
-	var status model.StandardResponse
+	var status *model.StandardResponse
 
-	error = controller.categoryService.DeleteCategory(id)
+	error = controller.categoryService.DeleteCategory(&id)
 
 	if error == nil {
 
 		description = append(description, "Success")
 
-		status = model.StandardResponse{
+		status = &model.StandardResponse{
 			HttpStatus:  http.StatusOK,
 			StatusCode:  general.SuccessStatusCode,
 			Description: description,
@@ -246,7 +251,7 @@ func (controller *categoryController) DeleteCategory(context *gin.Context) {
 		description = append(description, error.Error())
 		http_status = http.StatusBadRequest
 
-		status = model.StandardResponse{
+		status = &model.StandardResponse{
 			HttpStatus:  http.StatusBadRequest,
 			StatusCode:  general.ErrorStatusCode,
 			Description: description,
@@ -258,5 +263,51 @@ func (controller *categoryController) DeleteCategory(context *gin.Context) {
 	}
 	parse_status, _ := json.Marshal(status)
 	var result = fmt.Sprintf("{\"status\": %s}", string(parse_status))
+	controller.logService.CreateLog(context, "", result, time.Now(), http_status)
+}
+
+func (controller *categoryController) GetDetailCategory(context *gin.Context) {
+
+	id := context.Param("id")
+
+	description := []string{}
+	http_status := http.StatusOK
+	var status *model.StandardResponse
+
+	category, error := controller.categoryService.GetDetailCategory(&id)
+
+	if error == nil {
+
+		description = append(description, "Success")
+
+		status = &model.StandardResponse{
+			HttpStatus:  http.StatusOK,
+			StatusCode:  general.SuccessStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusOK, gin.H{
+			"status":  status,
+			"content": category,
+		})
+
+	} else {
+
+		description = append(description, error.Error())
+		http_status = http.StatusBadRequest
+
+		status = &model.StandardResponse{
+			HttpStatus:  http.StatusBadRequest,
+			StatusCode:  general.ErrorStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusBadRequest, gin.H{
+			"status": status,
+		})
+
+	}
+	parse_status, _ := json.Marshal(status)
+	parse_category, _ := json.Marshal(category)
+	var result = fmt.Sprintf("{\"status\": %s, \"content\": %s}", string(parse_status), string(parse_category))
+	controller.logService.CreateLog(context, "", result, time.Now(), http_status)
 	controller.logService.CreateLog(context, "", result, time.Now(), http_status)
 }

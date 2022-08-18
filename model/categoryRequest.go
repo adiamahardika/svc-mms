@@ -1,17 +1,23 @@
 package model
 
-import "time"
+import (
+	"svc-monitoring-maintenance/entity"
+	"time"
+)
 
 type CreateCategoryRequest struct {
-	Name             string    `json:"name"`
-	CodeLevel        string    `json:"code_level"`
-	Parent           string    `json:"parent"`
-	UpdateAt         time.Time `json:"update_at"`
-	AdditionalInput1 string    `json:"additional_input_1"`
-	AdditionalInput2 string    `json:"additional_input_2"`
-	AdditionalInput3 string    `json:"additional_input_3"`
+	Id          int                  `json:"id" gorm:"primaryKey"`
+	Name        string               `json:"name"`
+	SubCategory []entity.SubCategory `json:"sub_category" gorm:"foreignKey:Id"`
+	IsActive    string               `json:"is_active"`
+	UpdateAt    time.Time            `json:"update_at"`
 }
 
 type GetCategoryRequest struct {
-	IsActive string `json:"is_active"`
+	Size       int    `json:"size"`
+	PageNo     int    `json:"page_no"`
+	StartIndex int    `json:"start_index"`
+	SortBy     string `json:"sort_by"`
+	OrderBy    string `json:"order_by"`
+	IsActive   string `json:"is_active"`
 }
