@@ -1,23 +1,40 @@
 package repository
 
 import (
+	"fmt"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
 )
 
 type GrapariRepositoryInterface interface {
-	GetGrapari(request model.GetGrapariRequest) ([]entity.Grapari, error)
+	GetGrapari(request model.GetGrapariRequest) ([]entity.MsGrapari, error)
 }
 
-func (repo *repository) GetGrapari(request model.GetGrapariRequest) ([]entity.Grapari, error) {
-	var grapari []entity.Grapari
+func (repo *repository) GetGrapari(request model.GetGrapariRequest) ([]entity.MsGrapari, error) {
+	var result []entity.MsGrapari
+	var area_code string
+	var regional string
+	var grapari_id string
 
-	error := repo.db.Raw("SELECT * FROM (SELECT ms_grapari.* FROM ms_grapari WHERE area LIKE @Area AND regional LIKE @Regional AND status LIKE @Status ORDER BY name ASC) AS tbl WHERE LOWER(tbl.name) LIKE LOWER(@Search) OR LOWER(tbl.grapari_id) LIKE LOWER(@Search)", model.GetGrapariRequest{
-		Search:   "%" + request.Search + "%",
-		Area:     "%" + request.Area + "%",
-		Regional: "%" + request.Regional + "%",
-		Status:   "%" + request.Status + "%",
-	}).Find(&grapari).Error
+	if len(request.AreaCode) > 0 {
+		area_code = "area IN @AreaCode AND"
+	}
+	if len(request.Regional) > 0 {
+		regional = "regional IN @Regional AND"
+	}
+	if len(request.GrapariId) > 0 {
+		grapari_id = "grapari_id IN @GrapariId AND "
+	}
 
-	return grapari, error
+	query := fmt.Sprintf("SELECT * FROM ms_grapari WHERE %s %s %s status LIKE @Status AND name LIKE @Search ORDER BY name ASC", area_code, regional, grapari_id)
+
+	error := repo.db.Raw(query, model.GetGrapariRequest{
+		AreaCode:  request.AreaCode,
+		Regional:  request.Regional,
+		GrapariId: request.GrapariId,
+		Search:    "%" + request.Search + "%",
+		Status:    "%" + request.Status + "%",
+	}).Find(&result).Error
+
+	return result, error
 }

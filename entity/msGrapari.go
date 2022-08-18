@@ -2,7 +2,7 @@ package entity
 
 import "time"
 
-type Grapari struct {
+type MsGrapari struct {
 	Id        int       `json:"id" gorm:"primaryKey"`
 	GrapariId string    `json:"grapari_id"`
 	Name      string    `json:"name"`

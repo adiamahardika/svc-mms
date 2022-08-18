@@ -30,7 +30,7 @@ func (controller *grapariController) GetGrapari(context *gin.Context) {
 	description := []string{}
 	http_status := http.StatusOK
 	var status model.StandardResponse
-	var grapari []entity.Grapari
+	var grapari []entity.MsGrapari
 
 	if error != nil {
 
