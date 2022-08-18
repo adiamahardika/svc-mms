@@ -145,10 +145,6 @@ func AllRouter(db *gorm.DB) {
 		task_preventive.POST("/update", taskPreventiveController.UpdateTaskPreventiveController)
 		task_preventive.POST("/get", taskPreventiveController.GetTaskPreventive)
 
-		terminal := v3.Group("/terminal")
-		terminal.Use(service.Authentication(), authService.Authorization())
-		terminal.POST("/get", terminalController.GetTerminal)
-
 		hw_replacement := v3.Group("/hw-replacement")
 		hw_replacement.Use(service.Authentication(), authService.Authorization())
 		hw_replacement.POST("/create", hwReplacementController.CreateHwReplacementController)
@@ -180,8 +176,16 @@ func AllRouter(db *gorm.DB) {
 		}
 
 		grapari := v3.Group("/grapari")
-		grapari.Use(service.Authentication(), authService.Authorization())
-		grapari.POST("/get", grapariController.GetGrapari)
+		{
+			grapari.Use(service.Authentication(), authService.Authorization())
+			grapari.POST("/get", grapariController.GetGrapari)
+		}
+
+		terminal := v3.Group("/terminal")
+		{
+			terminal.Use(service.Authentication(), authService.Authorization())
+			terminal.POST("/get", terminalController.GetTerminal)
+		}
 	}
 
 	router.Run(os.Getenv("PORT"))

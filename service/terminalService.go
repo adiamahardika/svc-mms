@@ -7,7 +7,7 @@ import (
 )
 
 type TerminalServiceInterface interface {
-	GetTerminal(request model.GetTerminalRequest) ([]entity.Terminal, error)
+	GetTerminal(request model.GetTerminalRequest) ([]entity.MsTerminal, error)
 }
 
 type terminalService struct {
@@ -18,7 +18,7 @@ func TerminalService(repository repository.TerminalRepositoryInterface) *termina
 	return &terminalService{repository}
 }
 
-func (terminalService *terminalService) GetTerminal(request model.GetTerminalRequest) ([]entity.Terminal, error) {
+func (terminalService *terminalService) GetTerminal(request model.GetTerminalRequest) ([]entity.MsTerminal, error) {
 	list_terminal, error := terminalService.repository.GetTerminal(request)
 
 	return list_terminal, error

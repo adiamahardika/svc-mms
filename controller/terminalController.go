@@ -30,7 +30,7 @@ func (controller *terminalController) GetTerminal(context *gin.Context) {
 	description := []string{}
 	http_status := http.StatusOK
 	var status model.StandardResponse
-	var list_terminal []entity.Terminal
+	var list_terminal []entity.MsTerminal
 
 	if error != nil {
 

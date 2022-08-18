@@ -1,26 +1,44 @@
 package repository
 
 import (
+	"fmt"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
 )
 
 type TerminalRepositoryInterface interface {
-	GetTerminal(request model.GetTerminalRequest) ([]entity.Terminal, error)
+	GetTerminal(request model.GetTerminalRequest) ([]entity.MsTerminal, error)
 }
 
-func (repo *repository) GetTerminal(request model.GetTerminalRequest) ([]entity.Terminal, error) {
-	var terminal []entity.Terminal
+func (repo *repository) GetTerminal(request model.GetTerminalRequest) ([]entity.MsTerminal, error) {
+	var result []entity.MsTerminal
+	var area_code string
+	var regional string
+	var grapari_id string
+	var terminal string
 
-	error := repo.db.Raw("SELECT * FROM (SELECT ms_terminal.*, grapari_has_terminal.grapari_id FROM ms_terminal LEFT OUTER JOIN grapari_has_terminal ON (ms_terminal.terminal_id = grapari_has_terminal.terminal_id) WHERE area LIKE @Area AND regional LIKE @Regional AND ctp_type LIKE @CtpType AND kecamatan LIKE @Kecamatan AND kota_kabupaten LIKE @KotaKabupaten AND grapari_has_terminal.grapari_id LIKE @GrapariId ORDER BY terminal_id ASC) AS tbl WHERE LOWER(tbl.terminal_id) LIKE LOWER(@Search) OR LOWER(tbl.terminal_name) LIKE LOWER(@Search) OR LOWER(tbl.terminal_location) LIKE LOWER(@Search) OR LOWER(tbl.pic) LIKE LOWER(@Search)", model.GetTerminalRequest{
-		Search:        "%" + request.Search + "%",
-		GrapariId:     "%" + request.GrapariId + "%",
-		Area:          "%" + request.Area + "%",
-		Regional:      "%" + request.Regional + "%",
-		CtpType:       "%" + request.CtpType + "%",
-		Kecamatan:     "%" + request.Kecamatan + "%",
-		KotaKabupaten: "%" + request.KotaKabupaten + "%",
-	}).Find(&terminal).Error
+	if len(request.AreaCode) > 0 {
+		area_code = "area IN @AreaCode AND"
+	}
+	if len(request.Regional) > 0 {
+		regional = "regional IN @Regional AND"
+	}
+	if len(request.GrapariId) > 0 {
+		grapari_id = "grapari_has_terminal.grapari_id IN @GrapariId AND "
+	}
+	if len(request.TerminalId) > 0 {
+		terminal = "ms_terminal.terminal_id IN @TerminalId AND "
+	}
 
-	return terminal, error
+	query := fmt.Sprintf("SELECT ms_terminal.*, grapari_has_terminal.grapari_id AS grapari_id FROM ms_terminal LEFT OUTER JOIN grapari_has_terminal ON (ms_terminal.terminal_id = grapari_has_terminal.terminal_id)WHERE %s %s %s %s status LIKE @Status", area_code, regional, grapari_id, terminal)
+
+	error := repo.db.Raw(query, model.GetTerminalRequest{
+		TerminalId: request.TerminalId,
+		GrapariId:  request.GrapariId,
+		AreaCode:   request.AreaCode,
+		Regional:   request.Regional,
+		Status:     "%" + request.Status + "%",
+	}).Find(&result).Error
+
+	return result, error
 }
