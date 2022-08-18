@@ -70,6 +70,9 @@ func AllRouter(db *gorm.DB) {
 	subCategoryService := service.SubCategoryService(repository)
 	subCategoryController := controller.SubCategoryController(subCategoryService, logService)
 
+	areaService := service.AreaService(repository)
+	areaController := controller.AreaController(areaService, logService)
+
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
@@ -163,6 +166,12 @@ func AllRouter(db *gorm.DB) {
 		{
 			sub_category.Use(service.Authentication(), authService.Authorization())
 			sub_category.GET("/get", subCategoryController.GetSubCategory)
+		}
+
+		area := v2.Group("/area")
+		{
+			area.Use(service.Authentication(), authService.Authorization())
+			area.POST("/get", areaController.GetArea)
 		}
 	}
 
