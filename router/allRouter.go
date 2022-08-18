@@ -67,6 +67,9 @@ func AllRouter(db *gorm.DB) {
 	hardwareService := service.HardwareService(repository)
 	hardwareController := controller.HardwareController(hardwareService, logService)
 
+	subCategoryService := service.SubCategoryService(repository)
+	subCategoryController := controller.SubCategoryController(subCategoryService, logService)
+
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
@@ -155,6 +158,12 @@ func AllRouter(db *gorm.DB) {
 		hardware.POST("/create", hardwareController.CreateHardware)
 		hardware.PUT("/update", hardwareController.UpdateHardware)
 		hardware.DELETE("/delete/:hw-id", hardwareController.DeleteHardware)
+
+		sub_category := v2.Group("/sub-category")
+		{
+			sub_category.Use(service.Authentication(), authService.Authorization())
+			sub_category.GET("/get", subCategoryController.GetSubCategory)
+		}
 	}
 
 	router.Run(os.Getenv("PORT"))
