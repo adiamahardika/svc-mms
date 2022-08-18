@@ -79,9 +79,9 @@ func AllRouter(db *gorm.DB) {
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
-	v2 := router.Group("/v2")
+	v3 := router.Group("/v3")
 	{
-		ticket := v2.Group("/ticket")
+		ticket := v3.Group("/ticket")
 		ticket.Use(service.Authentication(), authService.Authorization())
 		ticket.GET("/get-all", tikcetController.GetAll)
 		ticket.POST("/get-count-status", tikcetController.CountTicketByStatus)
@@ -93,38 +93,38 @@ func AllRouter(db *gorm.DB) {
 		ticket.POST("/get-email-history", tikcetController.GetEmailHistory)
 		ticket.PUT("/update", tikcetController.UpdateTicket)
 
-		task_list := v2.Group("/task-list")
+		task_list := v3.Group("/task-list")
 		task_list.Use(service.Authentication(), authService.Authorization())
 		task_list.POST("/get", taskListController.GetTaskList)
 		task_list.POST("/update", taskListController.UpdateTaskListController)
 
-		auth := v2.Group("/auth")
+		auth := v3.Group("/auth")
 		auth.POST("/login", authController.Login)
 		auth.POST("/register", authController.Register)
 		auth.GET("/refresh-token", authController.RefreshToken)
 
-		user := v2.Group("/user")
+		user := v3.Group("/user")
 		user.Use(service.Authentication(), authService.Authorization())
 		user.POST("/get", userController.GetUser)
 		user.POST("/get-detail/:user-id", userController.GetDetailUser)
 		user.POST("/change-pass", userController.ChangePassword)
 		user.POST("/reset-pass", userController.ResetPassword)
 
-		team := v2.Group("/team")
+		team := v3.Group("/team")
 		team.Use(service.Authentication(), authService.Authorization())
 		team.POST("/get", teamController.GetAll)
 		team.POST("/create", teamController.CreateTeam)
 		team.PUT("/update", teamController.UpdateTeam)
 		team.DELETE("/delete/:team-id", teamController.DeleteTeam)
 
-		role := v2.Group("/role")
+		role := v3.Group("/role")
 		role.Use(service.Authentication(), authService.Authorization())
 		role.POST("/get", roleController.GetAll)
 		role.POST("/create", roleController.CreateRole)
 		role.PUT("/update", roleController.UpdateRole)
 		role.DELETE("/delete/:role-id", roleController.DeleteRole)
 
-		category := v2.Group("/category")
+		category := v3.Group("/category")
 		category.Use(service.Authentication(), authService.Authorization())
 		category.POST("/get", categoryController.GetCategory)
 		category.POST("/create", categoryController.CreateCategory)
@@ -132,7 +132,7 @@ func AllRouter(db *gorm.DB) {
 		category.DELETE("/delete/:category-id", categoryController.DeleteCategory)
 		category.GET("/get-detail/:id", categoryController.GetDetailCategory)
 
-		preventive := v2.Group("/preventive")
+		preventive := v3.Group("/preventive")
 		preventive.Use(service.Authentication(), authService.Authorization())
 		preventive.POST("/create", preventiveController.CreatePreventive)
 		preventive.POST("/get", preventiveController.GetPreventive)
@@ -140,46 +140,46 @@ func AllRouter(db *gorm.DB) {
 		preventive.GET("/get-detail/:prev-code", preventiveController.GetDetailPreventive)
 		preventive.POST("/get-count-status", preventiveController.CountPreventiveByStatus)
 
-		task_preventive := v2.Group("/task-preventive")
+		task_preventive := v3.Group("/task-preventive")
 		task_preventive.Use(service.Authentication(), authService.Authorization())
 		task_preventive.POST("/update", taskPreventiveController.UpdateTaskPreventiveController)
 		task_preventive.POST("/get", taskPreventiveController.GetTaskPreventive)
 
-		terminal := v2.Group("/terminal")
+		terminal := v3.Group("/terminal")
 		terminal.Use(service.Authentication(), authService.Authorization())
 		terminal.POST("/get", terminalController.GetTerminal)
 
-		hw_replacement := v2.Group("/hw-replacement")
+		hw_replacement := v3.Group("/hw-replacement")
 		hw_replacement.Use(service.Authentication(), authService.Authorization())
 		hw_replacement.POST("/create", hwReplacementController.CreateHwReplacementController)
 		hw_replacement.POST("/get", hwReplacementController.GetHwReplacementController)
 
-		hardware := v2.Group("/hardware")
+		hardware := v3.Group("/hardware")
 		hardware.Use(service.Authentication(), authService.Authorization())
 		hardware.POST("/get", hardwareController.GetHardware)
 		hardware.POST("/create", hardwareController.CreateHardware)
 		hardware.PUT("/update", hardwareController.UpdateHardware)
 		hardware.DELETE("/delete/:hw-id", hardwareController.DeleteHardware)
 
-		sub_category := v2.Group("/sub-category")
+		sub_category := v3.Group("/sub-category")
 		{
 			sub_category.Use(service.Authentication(), authService.Authorization())
 			sub_category.GET("/get", subCategoryController.GetSubCategory)
 		}
 
-		area := v2.Group("/area")
+		area := v3.Group("/area")
 		{
 			area.Use(service.Authentication(), authService.Authorization())
 			area.POST("/get", areaController.GetArea)
 		}
 
-		regional := v2.Group("/regional")
+		regional := v3.Group("/regional")
 		{
 			regional.Use(service.Authentication(), authService.Authorization())
 			regional.POST("/get", regionalController.GetRegional)
 		}
 
-		grapari := v2.Group("/grapari")
+		grapari := v3.Group("/grapari")
 		grapari.Use(service.Authentication(), authService.Authorization())
 		grapari.POST("/get", grapariController.GetGrapari)
 	}
