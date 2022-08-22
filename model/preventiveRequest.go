@@ -1,15 +1,5 @@
 package model
 
-type CreatePreventiveRequest struct {
-	VisitDate      string `json:"visit_date"`
-	Location       string `json:"location"`
-	TerminalId     string `json:"terminal_id"`
-	AssignedTo     string `json:"assigned_to"`
-	AssignedToTeam string `json:"assigned_to_team"`
-	Status         string `json:"status"`
-	CreatedBy      string `json:"created_by"`
-}
-
 type GetPreventiveRequest struct {
 	Search         string   `json:"search"`
 	Status         []string `json:"status"`

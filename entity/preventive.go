@@ -14,7 +14,7 @@ type Preventive struct {
 	Location       string    `json:"location"`
 	TerminalId     string    `json:"terminal_id"`
 	AssignedTo     string    `json:"assigned_to"`
-	UserName       string    `json:"user_name"`
+	UserName       string    `json:"user_name" gorm:"->"`
 	AssignedToTeam string    `json:"assigned_to_team"`
 	TeamName       string    `json:"team_name" gorm:"->"`
 	Status         string    `json:"status"`

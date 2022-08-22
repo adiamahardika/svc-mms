@@ -11,7 +11,7 @@ import (
 )
 
 type PreventiveServiceInterface interface {
-	CreatePreventive(request []model.CreatePreventiveRequest) ([]entity.Preventive, error)
+	CreatePreventive(request []entity.Preventive) ([]entity.Preventive, error)
 	GetPreventive(request *model.GetPreventiveRequest) ([]model.GetGroupPreventiveResponse, int, error)
 	UpdatePreventive(request *entity.Preventive) (entity.Preventive, error)
 	GetDetailPreventive(request string) ([]entity.Preventive, error)
@@ -26,7 +26,7 @@ func PreventiveService(repository repository.PreventiveRepositoryInterface) *pre
 	return &preventiveService{repository}
 }
 
-func (preventiveService *preventiveService) CreatePreventive(request []model.CreatePreventiveRequest) ([]entity.Preventive, error) {
+func (preventiveService *preventiveService) CreatePreventive(request []entity.Preventive) ([]entity.Preventive, error) {
 	date_now := time.Now()
 	result := []entity.Preventive{}
 	var error error
@@ -46,6 +46,9 @@ func (preventiveService *preventiveService) CreatePreventive(request []model.Cre
 			CreatedAt:      date_now,
 			UpdatedBy:      value.CreatedBy,
 			UpdatedAt:      date_now,
+			AreaCode:       value.AreaCode,
+			Regional:       value.Regional,
+			GrapariId:      value.GrapariId,
 		}
 		_, error = preventiveService.repository.CreatePreventive(preventive_request)
 

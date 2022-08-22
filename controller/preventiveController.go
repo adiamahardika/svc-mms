@@ -24,7 +24,7 @@ func PreventiveController(preventiveService service.PreventiveServiceInterface, 
 }
 
 func (controller *preventiveController) CreatePreventive(context *gin.Context) {
-	var request []model.CreatePreventiveRequest
+	var request []entity.Preventive
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
