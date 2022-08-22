@@ -45,10 +45,12 @@ type CreateTicketRequest struct {
 }
 
 type AssignTicketRequest struct {
-	TicketCode string      `json:"ticket_code" binding:"required"`
-	UserId     json.Number `json:"user_id" binding:"required"`
-	TeamId     json.Number `json:"team_id" binding:"required"`
-	UpdateAt   time.Time   `json:"update_at"`
+	TicketCode    string      `json:"ticket_code" binding:"required"`
+	AssigningBy   json.Number `json:"assigning_by"`
+	AssigningTime time.Time   `json:"assigning_time"`
+	UserId        json.Number `json:"user_id" binding:"required"`
+	TeamId        json.Number `json:"team_id" binding:"required"`
+	UpdateAt      time.Time   `json:"update_at"`
 }
 
 type UpdateTicketStatusRequest struct {

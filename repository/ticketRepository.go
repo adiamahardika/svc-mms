@@ -191,12 +191,7 @@ func (repo *repository) GetTicketIsi(request string) ([]entity.TicketIsi, error)
 func (repo *repository) AssignTicket(request model.AssignTicketRequest) (entity.Ticket, error) {
 	var ticket entity.Ticket
 
-	error := repo.db.Raw("UPDATE ticket SET assigned_to = @UserId, assigned_to_team = @TeamId, tgl_diperbarui = @UpdateAt WHERE ticket_code = @TicketCode RETURNING ticket.*", model.AssignTicketRequest{
-		TicketCode: request.TicketCode,
-		UserId:     request.UserId,
-		TeamId:     request.TeamId,
-		UpdateAt:   request.UpdateAt,
-	}).Find(&ticket).Error
+	error := repo.db.Raw("UPDATE ticket SET assigned_to = @UserId, assigned_to_team = @TeamId, tgl_diperbarui = @UpdateAt, assigning_time = @AssigningTime, assigning_by = @AssigningBy WHERE ticket_code = @TicketCode RETURNING ticket.*", request).Find(&ticket).Error
 
 	return ticket, error
 }

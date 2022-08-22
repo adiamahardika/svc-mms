@@ -118,6 +118,7 @@ func (ticketService *ticketService) AssignTicket(request model.AssignTicketReque
 	date_now := time.Now()
 
 	request.UpdateAt = date_now
+	request.AssigningTime = date_now
 
 	ticket, error := ticketService.repository.AssignTicket(request)
 
