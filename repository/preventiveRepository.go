@@ -10,7 +10,7 @@ type PreventiveRepositoryInterface interface {
 	CreatePreventive(request entity.Preventive) (entity.Preventive, error)
 	GetPreventive(request *model.GetPreventiveRequest) ([]entity.Preventive, error)
 	CountVisitDate(request *model.GetPreventiveRequest) (int, error)
-	UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error)
+	UpdatePreventive(request *entity.Preventive) (entity.Preventive, error)
 	GetDetailPreventive(request string) ([]entity.Preventive, error)
 	GetVisitDate(request *model.GetPreventiveRequest) ([]model.GetVisitDateResponse, error)
 	CountPreventiveByStatus(request model.CountPreventiveByStatusRequest) ([]model.CountPreventiveByStatusResponse, error)
@@ -125,20 +125,10 @@ func (repo *repository) GetVisitDate(request *model.GetPreventiveRequest) ([]mod
 	return list_visit_date, error
 }
 
-func (repo *repository) UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error) {
+func (repo *repository) UpdatePreventive(request *entity.Preventive) (entity.Preventive, error) {
 	var preventive entity.Preventive
 
-	error := repo.db.Raw("UPDATE preventive SET visit_date = @VisitDate, location = @Location, terminal_id = @TerminalId, assigned_to = @AssignedTo, updated_by = @UpdatedBy, updated_at = @UpdatedAt, status = @Status WHERE prev_code = @PrevCode RETURNING preventive.*", entity.Preventive{
-		VisitDate:      request.VisitDate,
-		Location:       request.Location,
-		TerminalId:     request.TerminalId,
-		AssignedTo:     request.AssignedTo,
-		AssignedToTeam: request.AssignedToTeam,
-		UpdatedBy:      request.UpdatedBy,
-		UpdatedAt:      request.UpdatedAt,
-		Status:         request.Status,
-		PrevCode:       request.PrevCode,
-	}).Find(&preventive).Error
+	error := repo.db.Raw("UPDATE preventive SET visit_date = @VisitDate, area_code = @AreaCode, regional = @Regional, grapari_id = @GrapariId, location = @Location, terminal_id = @TerminalId, assigned_to = @AssignedTo, assigned_to_team = @AssignedToTeam, updated_by = @UpdatedBy, updated_at = @UpdatedAt, status = @Status WHERE prev_code = @PrevCode RETURNING preventive.*", request).Find(&preventive).Error
 
 	return preventive, error
 }

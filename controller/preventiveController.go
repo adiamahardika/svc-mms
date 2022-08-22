@@ -151,7 +151,7 @@ func (controller *preventiveController) GetPreventive(context *gin.Context) {
 }
 
 func (controller *preventiveController) UpdatePreventive(context *gin.Context) {
-	var request model.UpdatePreventiveRequest
+	var request *entity.Preventive
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}

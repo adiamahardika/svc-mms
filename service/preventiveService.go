@@ -13,7 +13,7 @@ import (
 type PreventiveServiceInterface interface {
 	CreatePreventive(request []model.CreatePreventiveRequest) ([]entity.Preventive, error)
 	GetPreventive(request *model.GetPreventiveRequest) ([]model.GetGroupPreventiveResponse, int, error)
-	UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error)
+	UpdatePreventive(request *entity.Preventive) (entity.Preventive, error)
 	GetDetailPreventive(request string) ([]entity.Preventive, error)
 	CountPreventiveByStatus(request model.CountPreventiveByStatusRequest) ([]model.CountPreventiveByStatusResponse, error)
 }
@@ -92,7 +92,7 @@ func (preventiveService *preventiveService) GetPreventive(request *model.GetPrev
 
 }
 
-func (preventiveService *preventiveService) UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error) {
+func (preventiveService *preventiveService) UpdatePreventive(request *entity.Preventive) (entity.Preventive, error) {
 	date_now := time.Now()
 
 	request.UpdatedAt = date_now
