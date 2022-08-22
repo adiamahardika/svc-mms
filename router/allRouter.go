@@ -76,6 +76,9 @@ func AllRouter(db *gorm.DB) {
 	regionalService := service.RegionalService(repository)
 	regionalController := controller.RegionalController(regionalService, logService)
 
+	reportService := service.ReportService(repository)
+	reportController := controller.ReportController(reportService, logService)
+
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
@@ -180,6 +183,12 @@ func AllRouter(db *gorm.DB) {
 		{
 			regional.Use(service.Authentication(), authService.Authorization())
 			regional.POST("/get", regionalController.GetRegional)
+		}
+
+		report := v2.Group("/report")
+		{
+			report.Use(service.Authentication(), authService.Authorization())
+			report.POST("/get-corrective", reportController.GetReportCorrective)
 		}
 
 	}
