@@ -23,6 +23,8 @@ type GetTicketResponse struct {
 	TicketCode       string             `json:"ticket_code"`
 	Category         string             `json:"category"`
 	CategoryName     string             `json:"category_name"`
+	AreaName         string             `json:"area_name"`
+	GrapariName      string             `json:"grapari_name"`
 	Lokasi           string             `json:"lokasi"`
 	TerminalId       string             `json:"terminal_id"`
 	Email            string             `json:"email"`
@@ -33,6 +35,8 @@ type GetTicketResponse struct {
 	TicketIsi        []entity.TicketIsi `json:"ticket_isi" gorm:"foreignKey:TicketCode"`
 	NoSPM            string             `json:"no_spm"`
 	NoReqSPM         string             `json:"no_req_spm"`
+	UserPembuat      string             `json:"user_pembuat"`
+	Assignee         string             `json:"assignee"`
 }
 
 type GetEmailHistoryResponse struct {
