@@ -14,7 +14,7 @@ type PreventiveServiceInterface interface {
 	CreatePreventive(request []model.CreatePreventiveRequest) ([]entity.Preventive, error)
 	GetPreventive(request *model.GetPreventiveRequest) ([]model.GetGroupPreventiveResponse, int, error)
 	UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error)
-	GetDetailPreventive(request string) ([]model.GetPreventiveResponse, error)
+	GetDetailPreventive(request string) ([]entity.Preventive, error)
 	CountPreventiveByStatus(request model.CountPreventiveByStatusRequest) ([]model.CountPreventiveByStatusResponse, error)
 }
 
@@ -56,7 +56,7 @@ func (preventiveService *preventiveService) CreatePreventive(request []model.Cre
 }
 
 func (preventiveService *preventiveService) GetPreventive(request *model.GetPreventiveRequest) ([]model.GetGroupPreventiveResponse, int, error) {
-	var preventive []model.GetPreventiveResponse
+	var preventive []entity.Preventive
 	var list_group_preventive []model.GetGroupPreventiveResponse
 	error := fmt.Errorf("error")
 	request.EndDate = request.EndDate + " 23:59:59"
@@ -102,7 +102,7 @@ func (preventiveService *preventiveService) UpdatePreventive(request model.Updat
 	return preventive, error
 }
 
-func (preventiveService *preventiveService) GetDetailPreventive(request string) ([]model.GetPreventiveResponse, error) {
+func (preventiveService *preventiveService) GetDetailPreventive(request string) ([]entity.Preventive, error) {
 
 	preventive, error := preventiveService.repository.GetDetailPreventive(request)
 

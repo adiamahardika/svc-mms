@@ -2,12 +2,13 @@ package repository
 
 import (
 	"fmt"
+	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
 )
 
 type ReportRepositoryInterface interface {
 	GetReportCorrective(request *model.GetReportRequest) ([]model.GetReportCorrectiveResponse, error)
-	GetReportPreventive(request *model.GetReportRequest) ([]model.GetPreventiveResponse, error)
+	GetReportPreventive(request *model.GetReportRequest) ([]entity.Preventive, error)
 }
 
 func (repo *repository) GetReportCorrective(request *model.GetReportRequest) ([]model.GetReportCorrectiveResponse, error) {
@@ -54,8 +55,8 @@ func (repo *repository) GetReportCorrective(request *model.GetReportRequest) ([]
 	return ticket, error
 }
 
-func (repo *repository) GetReportPreventive(request *model.GetReportRequest) ([]model.GetPreventiveResponse, error) {
-	var preventive []model.GetPreventiveResponse
+func (repo *repository) GetReportPreventive(request *model.GetReportRequest) ([]entity.Preventive, error) {
+	var preventive []entity.Preventive
 
 	error := repo.db.Raw("SELECT preventive.*, users.name AS user_name, team.name as team_name FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (preventive.assigned_to_team = CAST(team.id AS varchar(10))) WHERE status IN @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam AND visit_date >= @StartDate AND visit_date <= @EndDate ORDER BY visit_date DESC", model.GetReportRequest{
 		Status:         request.Status,
