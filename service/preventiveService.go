@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"math"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/general"
 	"svc-monitoring-maintenance/model"
@@ -11,7 +12,7 @@ import (
 
 type PreventiveServiceInterface interface {
 	CreatePreventive(request []model.CreatePreventiveRequest) ([]entity.Preventive, error)
-	GetPreventive(request model.GetPreventiveRequest) ([]model.GetGroupPreventiveResponse, error)
+	GetPreventive(request *model.GetPreventiveRequest) ([]model.GetGroupPreventiveResponse, int, error)
 	UpdatePreventive(request model.UpdatePreventiveRequest) (entity.Preventive, error)
 	GetDetailPreventive(request string) ([]model.GetPreventiveResponse, error)
 	CountPreventiveByStatus(request model.CountPreventiveByStatusRequest) ([]model.CountPreventiveByStatusResponse, error)
@@ -54,11 +55,19 @@ func (preventiveService *preventiveService) CreatePreventive(request []model.Cre
 	return result, error
 }
 
-func (preventiveService *preventiveService) GetPreventive(request model.GetPreventiveRequest) ([]model.GetGroupPreventiveResponse, error) {
+func (preventiveService *preventiveService) GetPreventive(request *model.GetPreventiveRequest) ([]model.GetGroupPreventiveResponse, int, error) {
 	var preventive []model.GetPreventiveResponse
 	var list_group_preventive []model.GetGroupPreventiveResponse
 	error := fmt.Errorf("error")
 	request.EndDate = request.EndDate + " 23:59:59"
+	if request.PageSize == 0 {
+		request.PageSize = math.MaxInt16
+	}
+
+	request.StartIndex = request.PageNo * request.PageSize
+	total_data, error := preventiveService.repository.CountVisitDate(request)
+	total_pages := math.Ceil(float64(total_data) / float64(request.PageSize))
+	parse_tp := int(total_pages)
 
 	list_visit_date, error := preventiveService.repository.GetVisitDate(request)
 
@@ -79,7 +88,7 @@ func (preventiveService *preventiveService) GetPreventive(request model.GetPreve
 
 	}
 
-	return list_group_preventive, error
+	return list_group_preventive, parse_tp, error
 
 }
 

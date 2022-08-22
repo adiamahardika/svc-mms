@@ -86,13 +86,14 @@ func (controller *preventiveController) CreatePreventive(context *gin.Context) {
 }
 
 func (controller *preventiveController) GetPreventive(context *gin.Context) {
-	var request model.GetPreventiveRequest
+	var request *model.GetPreventiveRequest
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
 	http_status := http.StatusOK
 	var status model.StandardResponse
 	var list_preventive []model.GetGroupPreventiveResponse
+	var total_pages int
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
@@ -111,7 +112,7 @@ func (controller *preventiveController) GetPreventive(context *gin.Context) {
 		})
 	} else {
 
-		list_preventive, error = controller.preventiveService.GetPreventive(request)
+		list_preventive, total_pages, error = controller.preventiveService.GetPreventive(request)
 
 		if error == nil {
 			description = append(description, "Success")
@@ -122,8 +123,10 @@ func (controller *preventiveController) GetPreventive(context *gin.Context) {
 				Description: description,
 			}
 			context.JSON(http.StatusOK, gin.H{
-				"status": status,
-				"result": list_preventive,
+				"status":      status,
+				"result":      list_preventive,
+				"page":        request.PageNo,
+				"total_pages": total_pages,
 			})
 		} else {
 
@@ -143,7 +146,7 @@ func (controller *preventiveController) GetPreventive(context *gin.Context) {
 	parse_request, _ := json.Marshal(request)
 	parse_status, _ := json.Marshal(status)
 	parse_preventive, _ := json.Marshal(list_preventive)
-	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_preventive))
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s, \"page\": %d, \"total_pages\": %d}", string(parse_status), string(parse_preventive), request.PageNo, total_pages)
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 

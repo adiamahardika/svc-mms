@@ -19,6 +19,9 @@ type GetPreventiveRequest struct {
 	AssignedToTeam string `json:"assigned_to_team"`
 	StartDate      string `json:"start_date" binding:"required"`
 	EndDate        string `json:"end_date" binding:"required"`
+	PageNo         int    `json:"page_no"`
+	PageSize       int    `json:"page_size"`
+	StartIndex     int    `json:"start_index"`
 }
 
 type UpdatePreventiveRequest struct {
