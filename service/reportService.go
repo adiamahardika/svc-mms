@@ -6,7 +6,8 @@ import (
 )
 
 type ReportServiceInterface interface {
-	GetReportCorrective(request *model.GetReportRequest) ([]model.GetReportResponse, error)
+	GetReportCorrective(request *model.GetReportRequest) ([]model.GetReportCorrectiveResponse, error)
+	GetReportPreventive(request *model.GetReportRequest) ([]model.GetPreventiveResponse, error)
 }
 
 type reportService struct {
@@ -17,10 +18,19 @@ func ReportService(repository repository.ReportRepositoryInterface) *reportServi
 	return &reportService{repository}
 }
 
-func (reportService *reportService) GetReportCorrective(request *model.GetReportRequest) ([]model.GetReportResponse, error) {
+func (reportService *reportService) GetReportCorrective(request *model.GetReportRequest) ([]model.GetReportCorrectiveResponse, error) {
 
 	request.EndDate = request.EndDate + " 23:59:59"
 	ticket, error := reportService.repository.GetReportCorrective(request)
+
+	return ticket, error
+
+}
+
+func (reportService *reportService) GetReportPreventive(request *model.GetReportRequest) ([]model.GetPreventiveResponse, error) {
+
+	request.EndDate = request.EndDate + " 23:59:59"
+	ticket, error := reportService.repository.GetReportPreventive(request)
 
 	return ticket, error
 

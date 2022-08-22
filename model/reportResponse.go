@@ -1,6 +1,6 @@
 package model
 
-type GetReportResponse struct {
+type GetReportCorrectiveResponse struct {
 	Id              int    `json:"id" gorm:"primaryKey"`
 	Judul           string `json:"judul"`
 	UsernamePembuat string `json:"username_pembuat"`

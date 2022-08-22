@@ -6,11 +6,12 @@ import (
 )
 
 type ReportRepositoryInterface interface {
-	GetReportCorrective(request *model.GetReportRequest) ([]model.GetReportResponse, error)
+	GetReportCorrective(request *model.GetReportRequest) ([]model.GetReportCorrectiveResponse, error)
+	GetReportPreventive(request *model.GetReportRequest) ([]model.GetPreventiveResponse, error)
 }
 
-func (repo *repository) GetReportCorrective(request *model.GetReportRequest) ([]model.GetReportResponse, error) {
-	var ticket []model.GetReportResponse
+func (repo *repository) GetReportCorrective(request *model.GetReportRequest) ([]model.GetReportCorrectiveResponse, error) {
+	var ticket []model.GetReportCorrectiveResponse
 	var query string
 	var category string
 	var created_by string
@@ -51,4 +52,18 @@ func (repo *repository) GetReportCorrective(request *model.GetReportRequest) ([]
 	}).Find(&ticket).Error
 
 	return ticket, error
+}
+
+func (repo *repository) GetReportPreventive(request *model.GetReportRequest) ([]model.GetPreventiveResponse, error) {
+	var preventive []model.GetPreventiveResponse
+
+	error := repo.db.Raw("SELECT preventive.*, users.name AS user_name, team.name as team_name FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (preventive.assigned_to_team = CAST(team.id AS varchar(10))) WHERE status IN @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam AND visit_date >= @StartDate AND visit_date <= @EndDate ORDER BY visit_date DESC", model.GetReportRequest{
+		Status:         request.Status,
+		AssignedTo:     "%" + request.AssignedTo + "%",
+		AssignedToTeam: "%" + request.AssignedToTeam + "%",
+		StartDate:      request.StartDate,
+		EndDate:        request.EndDate,
+	}).Find(&preventive).Error
+
+	return preventive, error
 }

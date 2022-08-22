@@ -189,6 +189,7 @@ func AllRouter(db *gorm.DB) {
 		{
 			report.Use(service.Authentication(), authService.Authorization())
 			report.POST("/get-corrective", reportController.GetReportCorrective)
+			report.POST("/get-preventive", reportController.GetReportPreventive)
 		}
 
 	}
