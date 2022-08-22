@@ -64,13 +64,14 @@ func (controller *ticketController) GetAll(context *gin.Context) {
 }
 
 func (controller *ticketController) GetTicket(context *gin.Context) {
-	var request model.GetTicketRequest
+	var request *model.GetTicketRequest
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
 	http_status := http.StatusOK
 	var status model.StandardResponse
-	var list_ticket []model.GetTicketResponse
+	var list_ticket []entity.Ticket
+	var total_pages int
 
 	if error != nil {
 
@@ -91,7 +92,7 @@ func (controller *ticketController) GetTicket(context *gin.Context) {
 
 	} else {
 
-		list_ticket, error = controller.ticketService.GetTicket(request)
+		list_ticket, total_pages, error = controller.ticketService.GetTicket(request)
 
 		if error == nil {
 
@@ -103,8 +104,10 @@ func (controller *ticketController) GetTicket(context *gin.Context) {
 				Description: description,
 			}
 			context.JSON(http.StatusOK, gin.H{
-				"status": status,
-				"result": list_ticket,
+				"status":      status,
+				"result":      list_ticket,
+				"page":        request.PageNo,
+				"total_pages": total_pages,
 			})
 
 		} else {
@@ -126,7 +129,7 @@ func (controller *ticketController) GetTicket(context *gin.Context) {
 	parse_request, _ := json.Marshal(request)
 	parse_status, _ := json.Marshal(status)
 	parse_list_ticket, _ := json.Marshal(list_ticket)
-	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_list_ticket))
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s, \"page\": %d, \"total_pages\": %d}", string(parse_status), string(parse_list_ticket), request.PageNo, total_pages)
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
 
@@ -197,7 +200,7 @@ func (controller *ticketController) CountTicketByStatus(context *gin.Context) {
 }
 
 func (controller *ticketController) CreateTicket(context *gin.Context) {
-	var request model.CreateTicketRequest
+	var request *model.CreateTicketRequest
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}

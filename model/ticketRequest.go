@@ -6,13 +6,19 @@ import (
 )
 
 type GetTicketRequest struct {
+	AssignedTo      string   `json:"assigned_to"`
+	Category        []string `json:"category"`
+	PageNo          int      `json:"page_no"`
+	PageSize        int      `json:"page_size"`
+	StartIndex      int      `json:"start_index"`
+	Priority        string   `json:"priority"`
 	Search          string   `json:"search"`
 	Status          string   `json:"status"`
-	Priority        string   `json:"priority"`
-	AssignedTo      string   `json:"assigned_to"`
 	AssignedToTeam  string   `json:"assigned_to_team"`
+	AreaCode        []string `json:"area_code"`
+	Regional        []string `json:"regional"`
+	GrapariId       []string `json:"grapari_id"`
 	UsernamePembuat string   `json:"username_pembuat"`
-	Category        []string `json:"category"`
 	StartDate       string   `json:"start_date" binding:"required"`
 	EndDate         string   `json:"end_date" binding:"required"`
 }
@@ -21,7 +27,6 @@ type CreateTicketRequest struct {
 	Judul          string `json:"judul"`
 	UserPembuat    string `json:"user_pembuat"`
 	Prioritas      string `json:"prioritas"`
-	TotalWaktu     string `json:"total_waktu"`
 	Status         string `json:"status"`
 	Isi            string `json:"isi"`
 	Lokasi         string `json:"lokasi"`
@@ -33,6 +38,10 @@ type CreateTicketRequest struct {
 	TicketCode     string `json:"ticket_code"`
 	NoSPM          string `json:"no_spm"`
 	NoReqSPM       string `json:"no_req_spm"`
+	AreaCode       string `json:"area_code"`
+	Regional       string `json:"regional"`
+	GrapariId      string `json:"grapari_id"`
+	SubCategory    string `json:"sub_category"`
 }
 
 type AssignTicketRequest struct {
