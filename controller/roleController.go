@@ -31,7 +31,7 @@ func (controller *roleController) GetAll(context *gin.Context) {
 	description := []string{}
 	http_status := http.StatusOK
 	var status model.StandardResponse
-	var role []entity.Role
+	var role []model.GetRoleResponse
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
