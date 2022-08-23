@@ -36,7 +36,7 @@ func (repo *repository) CreateHardware(request *entity.Hardware) (entity.Hardwar
 func (repo *repository) UpdateHardware(request *entity.Hardware) (entity.Hardware, error) {
 	var hardware entity.Hardware
 
-	error := repo.db.Raw("UPDATE hardware SET name = @Name WHERE id = @Id RETURNING hardware.*", request).Find(&hardware).Error
+	error := repo.db.Raw("UPDATE hardware SET name = @Name, hw_code = @HwCode WHERE id = @Id RETURNING hardware.*", request).Find(&hardware).Error
 
 	return hardware, error
 }
