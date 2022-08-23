@@ -57,11 +57,29 @@ func (repo *repository) GetReportCorrective(request *model.GetReportRequest) ([]
 
 func (repo *repository) GetReportPreventive(request *model.GetReportRequest) ([]entity.Preventive, error) {
 	var preventive []entity.Preventive
+	var area_code string
+	var regional string
+	var grapari_id string
 
-	error := repo.db.Raw("SELECT preventive.*, users.name AS user_name, team.name as team_name FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (preventive.assigned_to_team = CAST(team.id AS varchar(10))) WHERE status IN @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam AND visit_date >= @StartDate AND visit_date <= @EndDate ORDER BY visit_date DESC", model.GetReportRequest{
+	if len(request.AreaCode) > 0 {
+		area_code = "AND preventive.area_code IN @AreaCode"
+	}
+	if len(request.Regional) > 0 {
+		regional = "AND preventive.regional IN @Regional"
+	}
+	if len(request.GrapariId) > 0 {
+		grapari_id = "AND preventive.grapari_id IN @GrapariId"
+	}
+
+	query := fmt.Sprintf("SELECT preventive.*, users.name AS user_name, team.name as team_name, ms_area.area_name, ms_grapari.name AS grapari_name FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (preventive.assigned_to_team = CAST(team.id AS varchar(10))) LEFT OUTER JOIN ms_area ON (preventive.area_code = ms_area.area_code) LEFT OUTER JOIN ms_grapari ON (preventive.grapari_id = ms_grapari.grapari_id) WHERE preventive.status IN @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam %s %s %s AND visit_date >= @StartDate AND visit_date <= @EndDate ORDER BY visit_date DESC", area_code, grapari_id, regional)
+
+	error := repo.db.Raw(query, model.GetReportRequest{
 		Status:         request.Status,
 		AssignedTo:     "%" + request.AssignedTo + "%",
 		AssignedToTeam: "%" + request.AssignedToTeam + "%",
+		AreaCode:       request.AreaCode,
+		Regional:       request.Regional,
+		GrapariId:      request.GrapariId,
 		StartDate:      request.StartDate,
 		EndDate:        request.EndDate,
 	}).Find(&preventive).Error
