@@ -17,7 +17,7 @@ import (
 )
 
 type AuthServiceInterface interface {
-	Login(request model.LoginRequest) (model.GetUserResponse, model.LoginResponse, error)
+	Login(request *model.LoginRequest) (model.GetUserResponse, model.LoginResponse, error)
 	Register(request model.RegisterRequest) (entity.User, error)
 	RefreshToken(context *gin.Context) (model.LoginResponse, error)
 }
@@ -114,7 +114,7 @@ func (authService *authService) Authorization() gin.HandlerFunc {
 	}
 }
 
-func (authService *authService) Login(request model.LoginRequest) (model.GetUserResponse, model.LoginResponse, error) {
+func (authService *authService) Login(request *model.LoginRequest) (model.GetUserResponse, model.LoginResponse, error) {
 	var user_response model.GetUserResponse
 	var login_response model.LoginResponse
 	var key_hp string

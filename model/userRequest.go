@@ -37,3 +37,8 @@ type RegisterRequest struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 	CreatedAt  time.Time `json:"created_at"`
 }
+
+type UpdateKeyHpRequest struct {
+	Username string `json:"username" binding:"required"`
+	KeyHp    string `json:"key_hp" binding:"required"`
+}

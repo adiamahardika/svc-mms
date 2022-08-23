@@ -107,11 +107,14 @@ func AllRouter(db *gorm.DB) {
 		auth.GET("/refresh-token", authController.RefreshToken)
 
 		user := v2.Group("/user")
-		user.Use(service.Authentication(), authService.Authorization())
-		user.POST("/get-user", userController.GetUser)
-		user.POST("/get-user-detail/:user-id", userController.GetDetailUser)
-		user.POST("/change-pass", userController.ChangePassword)
-		user.POST("/reset-pass", userController.ResetPassword)
+		{
+			user.Use(service.Authentication(), authService.Authorization())
+			user.POST("/get-user", userController.GetUser)
+			user.POST("/get-user-detail/:user-id", userController.GetDetailUser)
+			user.POST("/change-pass", userController.ChangePassword)
+			user.POST("/reset-pass", userController.ResetPassword)
+			user.PUT("/update-key-hp", userController.UpdateKeyHp)
+		}
 
 		team := v2.Group("/team")
 		team.Use(service.Authentication(), authService.Authorization())

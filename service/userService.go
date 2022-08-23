@@ -15,6 +15,7 @@ type UserServiceInterface interface {
 	ChangePassword(request model.ChangePassRequest) (model.GetUserResponse, error)
 	ResetPassword(request model.ResetPassword) (model.GetUserResponse, error)
 	GetDetailUser(request string) ([]model.GetUserResponse, error)
+	UpdateKeyHp(request *model.UpdateKeyHpRequest) (model.UpdateKeyHpRequest, error)
 }
 
 type userService struct {
@@ -97,4 +98,16 @@ func (userService *userService) GetDetailUser(request string) ([]model.GetUserRe
 	user, error := userService.repository.GetDetailUser(user_id)
 
 	return user, error
+}
+
+func (userService *userService) UpdateKeyHp(request *model.UpdateKeyHpRequest) (model.UpdateKeyHpRequest, error) {
+
+	key_hp, error := userService.repository.UpdateKeyHp(&model.LoginRequest{
+		Username: request.Username,
+		KeyHp:    request.KeyHp,
+	})
+
+	request.KeyHp = key_hp
+
+	return *request, error
 }

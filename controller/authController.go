@@ -24,7 +24,7 @@ func AuthController(authService service.AuthServiceInterface, logService service
 }
 
 func (controller *authController) Login(context *gin.Context) {
-	var request model.LoginRequest
+	var request *model.LoginRequest
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
