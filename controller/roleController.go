@@ -149,13 +149,13 @@ func (controller *roleController) CreateRole(context *gin.Context) {
 }
 
 func (controller *roleController) UpdateRole(context *gin.Context) {
-	var request *entity.Role
+	var request *model.GetRoleResponse
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
 	http_status := http.StatusOK
 	var status model.StandardResponse
-	var role entity.Role
+	var role []model.GetRoleResponse
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {

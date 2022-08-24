@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/repository"
@@ -10,7 +11,7 @@ import (
 type RoleServiceInterface interface {
 	GetRole(request *model.GetRoleRequest) ([]model.GetRoleResponse, error)
 	CreateRole(request *model.CreateRoleRequest) ([]entity.Role, error)
-	UpdateRole(request *entity.Role) (entity.Role, error)
+	UpdateRole(request *model.GetRoleResponse) ([]model.GetRoleResponse, error)
 	DeleteRole(id *int) error
 }
 
@@ -71,15 +72,55 @@ func (roleService *roleService) CreateRole(request *model.CreateRoleRequest) ([]
 	return role, error
 }
 
-func (roleService *roleService) UpdateRole(request *entity.Role) (entity.Role, error) {
-	role_request := &entity.Role{
+func (roleService *roleService) UpdateRole(request *model.GetRoleResponse) ([]model.GetRoleResponse, error) {
+	var rhwp_request []*model.CreateRoleHasWebPermissionRequest
+	var rhap_request []*model.CreateRoleHasAppPermissionRequest
+	var response []model.GetRoleResponse
+	var role []entity.Role
+
+	_, error := roleService.roleRepository.UpdateRole(&entity.Role{
 		Id:   request.Id,
 		Name: request.Name,
+	})
+
+	if error == nil {
+		error = roleService.rhwpRepository.DeleteRoleHasWebPermission(&request.Id)
+
+		if error == nil {
+			for _, value := range request.WebPermission {
+				rhwp_request = append(rhwp_request, &model.CreateRoleHasWebPermissionRequest{IdRole: request.Id, IdPermission: value.Id})
+			}
+			error = roleService.rhwpRepository.CreateRoleHasWebPermission(rhwp_request)
+		}
+	}
+	if error == nil {
+		error = roleService.rhapRepository.DeleteRoleHasAppPermission(&request.Id)
+
+		if error == nil {
+			for _, value := range request.WebPermission {
+				rhap_request = append(rhap_request, &model.CreateRoleHasAppPermissionRequest{IdRole: request.Id, IdPermission: value.Id})
+			}
+			error = roleService.rhapRepository.CreateRoleHasAppPermission(rhap_request)
+		}
 	}
 
-	_, error := roleService.roleRepository.UpdateRole(role_request)
+	role, error = roleService.roleRepository.GetDetailRole(&request.Id)
+	fmt.Println(role)
+	for _, value := range role {
+		var web_permission []*entity.MmsWebPermission
+		var app_permission []*entity.MmsAppPermission
+		json.Unmarshal([]byte(value.WebPermission), &web_permission)
+		json.Unmarshal([]byte(value.AppPermission), &app_permission)
 
-	return *role_request, error
+		response = append(response, model.GetRoleResponse{
+			Name:          value.Name,
+			Id:            value.Id,
+			WebPermission: web_permission,
+			AppPermission: app_permission,
+		})
+	}
+
+	return response, error
 }
 
 func (roleService *roleService) DeleteRole(id *int) error {

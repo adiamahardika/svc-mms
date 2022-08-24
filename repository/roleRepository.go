@@ -10,6 +10,7 @@ type RoleRepositoryInteface interface {
 	CreateRole(request *entity.Role) ([]entity.Role, error)
 	UpdateRole(request *entity.Role) (entity.Role, error)
 	DeleteRole(id *int) error
+	GetDetailRole(id *int) ([]entity.Role, error)
 }
 
 func (repo *repository) GetRole(request *model.GetRoleRequest) ([]entity.Role, error) {
@@ -44,4 +45,12 @@ func (repo *repository) DeleteRole(id *int) error {
 	error := repo.db.Raw("UPDATE role SET is_active = ? WHERE id = ? RETURNING role.*", "false", id).Find(&role).Error
 
 	return error
+}
+
+func (repo *repository) GetDetailRole(id *int) ([]entity.Role, error) {
+	var role []entity.Role
+
+	error := repo.db.Raw("SELECT role.*, JSON_AGG(DISTINCT mms_web_permission.*) AS web_permission, JSON_AGG(DISTINCT mms_app_permission.*) AS app_permission FROM role INNER JOIN  mms_role_has_web_permission ON (role.id = mms_role_has_web_permission.id_role) INNER JOIN mms_web_permission ON (mms_role_has_web_permission.id_permission = mms_web_permission.id) INNER JOIN  mms_role_has_app_permission ON (role.id = mms_role_has_app_permission.id_role) INNER JOIN mms_app_permission ON (mms_role_has_app_permission.id_permission = mms_app_permission.id) WHERE role.id = ? GROUP BY mms_role_has_web_permission.id_role, mms_role_has_app_permission.id_role, role.id ORDER BY name", id).Find(&role).Error
+
+	return role, error
 }
