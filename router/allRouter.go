@@ -82,6 +82,9 @@ func AllRouter(db *gorm.DB) {
 	webPermissionService := service.WebPermissionService(repository)
 	webPermissionController := controller.WebPermissonController(webPermissionService, logService)
 
+	appPermissionService := service.AppPermissionService(repository)
+	appPermissionController := controller.AppPermissonController(appPermissionService, logService)
+
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
@@ -205,6 +208,12 @@ func AllRouter(db *gorm.DB) {
 		{
 			web_permission.Use(service.Authentication(), authService.Authorization())
 			web_permission.GET("/get", webPermissionController.GetPermission)
+		}
+
+		app_permission := v2.Group("/app-permission")
+		{
+			app_permission.Use(service.Authentication(), authService.Authorization())
+			app_permission.GET("/get", appPermissionController.GetPermission)
 		}
 
 	}
