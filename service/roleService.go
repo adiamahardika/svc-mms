@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/repository"
@@ -13,6 +12,7 @@ type RoleServiceInterface interface {
 	CreateRole(request *model.CreateRoleRequest) ([]entity.Role, error)
 	UpdateRole(request *model.GetRoleResponse) ([]model.GetRoleResponse, error)
 	DeleteRole(id *int) error
+	GetDetailRole(id *int) ([]model.GetRoleResponse, error)
 }
 
 type roleService struct {
@@ -105,7 +105,6 @@ func (roleService *roleService) UpdateRole(request *model.GetRoleResponse) ([]mo
 	}
 
 	role, error = roleService.roleRepository.GetDetailRole(&request.Id)
-	fmt.Println(role)
 	for _, value := range role {
 		var web_permission []*entity.MmsWebPermission
 		var app_permission []*entity.MmsAppPermission
@@ -128,4 +127,25 @@ func (roleService *roleService) DeleteRole(id *int) error {
 	error := roleService.roleRepository.DeleteRole(id)
 
 	return error
+}
+
+func (roleService *roleService) GetDetailRole(id *int) ([]model.GetRoleResponse, error) {
+	var response []model.GetRoleResponse
+	role, error := roleService.roleRepository.GetDetailRole(id)
+
+	for _, value := range role {
+		var web_permission []*entity.MmsWebPermission
+		var app_permission []*entity.MmsAppPermission
+		json.Unmarshal([]byte(value.WebPermission), &web_permission)
+		json.Unmarshal([]byte(value.AppPermission), &app_permission)
+
+		response = append(response, model.GetRoleResponse{
+			Name:          value.Name,
+			Id:            value.Id,
+			WebPermission: web_permission,
+			AppPermission: app_permission,
+		})
+	}
+
+	return response, error
 }

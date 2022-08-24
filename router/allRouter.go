@@ -124,11 +124,14 @@ func AllRouter(db *gorm.DB) {
 		team.DELETE("/delete-team/:team-id", teamController.DeleteTeam)
 
 		role := v2.Group("/role")
-		role.Use(service.Authentication(), authService.Authorization())
-		role.POST("/get-role", roleController.GetAll)
-		role.POST("/create-role", roleController.CreateRole)
-		role.PUT("/update-role", roleController.UpdateRole)
-		role.DELETE("/delete-role/:role-id", roleController.DeleteRole)
+		{
+			role.Use(service.Authentication(), authService.Authorization())
+			role.POST("/get-role", roleController.GetAll)
+			role.POST("/create-role", roleController.CreateRole)
+			role.PUT("/update-role", roleController.UpdateRole)
+			role.DELETE("/delete-role/:role-id", roleController.DeleteRole)
+			role.GET("/get-detail/:role-id", roleController.GetDetailRole)
+		}
 
 		category := v2.Group("/category")
 		category.Use(service.Authentication(), authService.Authorization())

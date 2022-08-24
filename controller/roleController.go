@@ -251,3 +251,48 @@ func (controller *roleController) DeleteRole(context *gin.Context) {
 	var result = fmt.Sprintf("{\"status\": %s}", string(parse_status))
 	controller.logService.CreateLog(context, "", result, time.Now(), http_status)
 }
+
+func (controller *roleController) GetDetailRole(context *gin.Context) {
+
+	id, error := strconv.Atoi(context.Param("role-id"))
+	description := []string{}
+	http_status := http.StatusOK
+	var status model.StandardResponse
+	var role []model.GetRoleResponse
+
+	role, error = controller.roleService.GetDetailRole(&id)
+
+	if error == nil {
+
+		description = append(description, "Success")
+
+		status = model.StandardResponse{
+			HttpStatus:  http.StatusOK,
+			StatusCode:  general.SuccessStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusOK, gin.H{
+			"status": status,
+			"result": role,
+		})
+
+	} else {
+
+		description = append(description, error.Error())
+		http_status = http.StatusBadRequest
+
+		status = model.StandardResponse{
+			HttpStatus:  http.StatusBadRequest,
+			StatusCode:  general.ErrorStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusBadRequest, gin.H{
+			"status": status,
+		})
+
+	}
+	parse_status, _ := json.Marshal(status)
+	parse_role, _ := json.Marshal(role)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_role))
+	controller.logService.CreateLog(context, "", result, time.Now(), http_status)
+}
