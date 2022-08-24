@@ -40,7 +40,7 @@ func AllRouter(db *gorm.DB) {
 	teamService := service.TeamService(repository)
 	teamController := controller.TeamController(teamService, logService)
 
-	roleService := service.RoleService(repository)
+	roleService := service.RoleService(repository, repository, repository)
 	roleController := controller.RoleController(roleService, logService)
 
 	categoryService := service.CategoryService(repository, repository)

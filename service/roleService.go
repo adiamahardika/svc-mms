@@ -8,23 +8,26 @@ import (
 )
 
 type RoleServiceInterface interface {
-	GetRole(request model.GetRoleRequest) ([]model.GetRoleResponse, error)
-	CreateRole(request model.CreateRoleRequest) (entity.Role, error)
-	UpdateRole(request entity.Role) (entity.Role, error)
-	DeleteRole(Id int) error
+	GetRole(request *model.GetRoleRequest) ([]model.GetRoleResponse, error)
+	CreateRole(request *model.CreateRoleRequest) ([]entity.Role, error)
+	UpdateRole(request *entity.Role) (entity.Role, error)
+	DeleteRole(id *int) error
 }
 
 type roleService struct {
-	repository repository.RoleRepositoryInteface
+	roleRepository repository.RoleRepositoryInteface
+	rhwpRepository repository.RoleHasWebPermissionRepositoryInterface
+	rhapRepository repository.RoleHasAppPermissionRepositoryInterface
 }
 
-func RoleService(repository repository.RoleRepositoryInteface) *roleService {
-	return &roleService{repository}
+func RoleService(roleRepository repository.RoleRepositoryInteface, rhwpRepository repository.RoleHasWebPermissionRepositoryInterface,
+	rhapRepository repository.RoleHasAppPermissionRepositoryInterface) *roleService {
+	return &roleService{roleRepository, rhwpRepository, rhapRepository}
 }
 
-func (roleService *roleService) GetRole(request model.GetRoleRequest) ([]model.GetRoleResponse, error) {
+func (roleService *roleService) GetRole(request *model.GetRoleRequest) ([]model.GetRoleResponse, error) {
 	var response []model.GetRoleResponse
-	role, error := roleService.repository.GetRole(request)
+	role, error := roleService.roleRepository.GetRole(request)
 
 	for _, value := range role {
 		var web_permission []*entity.MmsWebPermission
@@ -43,30 +46,45 @@ func (roleService *roleService) GetRole(request model.GetRoleRequest) ([]model.G
 	return response, error
 }
 
-func (roleService *roleService) CreateRole(request model.CreateRoleRequest) (entity.Role, error) {
-	role_request := entity.Role{
-		Name: request.Name,
+func (roleService *roleService) CreateRole(request *model.CreateRoleRequest) ([]entity.Role, error) {
+	var rhwp_request []*model.CreateRoleHasWebPermissionRequest
+	var rhap_request []*model.CreateRoleHasAppPermissionRequest
+
+	role, error := roleService.roleRepository.CreateRole(&entity.Role{
+		Name:     request.Name,
+		IsActive: "true",
+	})
+
+	if error == nil {
+		for _, value := range request.WebPermission {
+			rhwp_request = append(rhwp_request, &model.CreateRoleHasWebPermissionRequest{IdRole: role[0].Id, IdPermission: value.Id})
+		}
+		error = roleService.rhwpRepository.CreateRoleHasWebPermission(rhwp_request)
+	}
+	if error == nil {
+		for _, value := range request.AppPermission {
+			rhap_request = append(rhap_request, &model.CreateRoleHasAppPermissionRequest{IdRole: role[0].Id, IdPermission: value.Id})
+		}
+		error = roleService.rhapRepository.CreateRoleHasAppPermission(rhap_request)
 	}
 
-	_, error := roleService.repository.CreateRole(role_request)
-
-	return role_request, error
+	return role, error
 }
 
-func (roleService *roleService) UpdateRole(request entity.Role) (entity.Role, error) {
-	role_request := entity.Role{
+func (roleService *roleService) UpdateRole(request *entity.Role) (entity.Role, error) {
+	role_request := &entity.Role{
 		Id:   request.Id,
 		Name: request.Name,
 	}
 
-	_, error := roleService.repository.UpdateRole(role_request)
+	_, error := roleService.roleRepository.UpdateRole(role_request)
 
-	return role_request, error
+	return *role_request, error
 }
 
-func (roleService *roleService) DeleteRole(Id int) error {
+func (roleService *roleService) DeleteRole(id *int) error {
 
-	error := roleService.repository.DeleteRole(Id)
+	error := roleService.roleRepository.DeleteRole(id)
 
 	return error
 }

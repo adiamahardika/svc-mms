@@ -25,7 +25,7 @@ func RoleController(roleService service.RoleServiceInterface, logService service
 }
 
 func (controller *roleController) GetAll(context *gin.Context) {
-	var request model.GetRoleRequest
+	var request *model.GetRoleRequest
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
@@ -87,13 +87,13 @@ func (controller *roleController) GetAll(context *gin.Context) {
 }
 
 func (controller *roleController) CreateRole(context *gin.Context) {
-	var request model.CreateRoleRequest
+	var request *model.CreateRoleRequest
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
 	http_status := http.StatusOK
 	var status model.StandardResponse
-	var role entity.Role
+	var role []entity.Role
 
 	if error != nil {
 		for _, value := range error.(validator.ValidationErrors) {
@@ -149,7 +149,7 @@ func (controller *roleController) CreateRole(context *gin.Context) {
 }
 
 func (controller *roleController) UpdateRole(context *gin.Context) {
-	var request entity.Role
+	var request *entity.Role
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}
@@ -217,7 +217,7 @@ func (controller *roleController) DeleteRole(context *gin.Context) {
 	http_status := http.StatusOK
 	var status model.StandardResponse
 
-	error = controller.roleService.DeleteRole(id)
+	error = controller.roleService.DeleteRole(&id)
 
 	if error == nil {
 
