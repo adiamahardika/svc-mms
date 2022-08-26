@@ -145,6 +145,7 @@ func AllRouter(db *gorm.DB) {
 		category.POST("/create-category", categoryController.CreateCategory)
 		category.PUT("/update-category", categoryController.UpdateCategory)
 		category.DELETE("/delete-category/:category-id", categoryController.DeleteCategory)
+		category.GET("/get-detail/:id", categoryController.GetDetailCategory)
 
 		preventive := v2.Group("/preventive")
 		preventive.Use(service.Authentication(), authService.Authorization())
