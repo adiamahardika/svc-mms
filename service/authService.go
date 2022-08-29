@@ -133,17 +133,20 @@ func (authService *authService) Login(request *model.LoginRequest) (model.GetUse
 			key_hp, error = authService.userRepository.UpdateKeyHp(request)
 		}
 		user_response = model.GetUserResponse{
-			Id:        user[0].Id,
-			Name:      user[0].Name,
-			Username:  user[0].Username,
-			Email:     user[0].Email,
-			Team:      user[0].Team,
-			TeamName:  user[0].TeamName,
-			Role:      user[0].Role,
-			RoleName:  user[0].RoleName,
-			KeyHp:     key_hp,
-			UpdatedAt: user[0].UpdatedAt,
-			CreatedAt: user[0].CreatedAt,
+			Id:         user[0].Id,
+			Name:       user[0].Name,
+			Username:   user[0].Username,
+			Email:      user[0].Email,
+			Team:       user[0].Team,
+			TeamName:   user[0].TeamName,
+			Role:       user[0].Role,
+			RoleName:   user[0].RoleName,
+			KeyHp:      key_hp,
+			Nik:        user[0].Nik,
+			Position:   user[0].Position,
+			Department: user[0].Department,
+			UpdatedAt:  user[0].UpdatedAt,
+			CreatedAt:  user[0].CreatedAt,
 		}
 
 		token_lifespan, _ := strconv.Atoi(os.Getenv("TOKEN_LIFESPAN"))

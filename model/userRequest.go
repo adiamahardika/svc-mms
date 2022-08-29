@@ -34,6 +34,9 @@ type RegisterRequest struct {
 	Email      string    `json:"email"`
 	Team       string    `json:"team"`
 	Role       string    `json:"role"`
+	Nik        string    `json:"nik"`
+	Position   string    `json:"position"`
+	Department string    `json:"department"`
 	UpdatedAt  time.Time `json:"updated_at"`
 	CreatedAt  time.Time `json:"created_at"`
 }
