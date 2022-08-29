@@ -7,12 +7,6 @@ type GetUserRequest struct {
 	Role string `json:"role"`
 }
 
-type LoginRequest struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	KeyHp    string `json:"key_hp"`
-}
-
 type ChangePassRequest struct {
 	Username    string    `json:"username"`
 	OldPassword string    `json:"old_password"`
