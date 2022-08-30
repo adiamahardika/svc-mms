@@ -19,6 +19,7 @@ type Preventive struct {
 	TeamName       string    `json:"team_name" gorm:"->"`
 	Status         string    `json:"status"`
 	CreatedBy      string    `json:"created_by"`
+	Creator        string    `json:"creator" gorm:"->"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedBy      string    `json:"updated_by"`
 	UpdatedAt      time.Time `json:"updated_at"`

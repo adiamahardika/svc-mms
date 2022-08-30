@@ -21,7 +21,7 @@ func (repo *repository) GetReportCorrective(request *model.GetReportRequest) ([]
 	var grapari_id string
 
 	if len(request.Category) > 0 {
-		category = "AND ticketing_category IN @Category"
+		category = "AND mms_category IN @Category"
 	}
 	if len(request.UsernamePembuat) > 0 {
 		created_by = "AND username_pembuat IN @UsernamePembuat"
@@ -71,7 +71,7 @@ func (repo *repository) GetReportPreventive(request *model.GetReportRequest) ([]
 		grapari_id = "AND preventive.grapari_id IN @GrapariId"
 	}
 
-	query := fmt.Sprintf("SELECT preventive.*, users.name AS user_name, team.name as team_name, ms_area.area_name, ms_grapari.name AS grapari_name FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (preventive.assigned_to_team = CAST(team.id AS varchar(10))) LEFT OUTER JOIN ms_area ON (preventive.area_code = ms_area.area_code) LEFT OUTER JOIN ms_grapari ON (preventive.grapari_id = ms_grapari.grapari_id) WHERE preventive.status IN @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam %s %s %s AND visit_date >= @StartDate AND visit_date <= @EndDate ORDER BY visit_date DESC", area_code, grapari_id, regional)
+	query := fmt.Sprintf("SELECT preventive.*, users.name AS user_name, team.name as team_name, ms_area.area_name, ms_grapari.name AS grapari_name, users2.name AS creator FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN users users2 ON (preventive.created_by = CAST(users2.id AS varchar(10))) LEFT OUTER JOIN team ON (preventive.assigned_to_team = CAST(team.id AS varchar(10))) LEFT OUTER JOIN ms_area ON (preventive.area_code = ms_area.area_code) LEFT OUTER JOIN ms_grapari ON (preventive.grapari_id = ms_grapari.grapari_id) WHERE preventive.status IN @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam %s %s %s AND visit_date >= @StartDate AND visit_date <= @EndDate ORDER BY visit_date DESC", area_code, grapari_id, regional)
 
 	error := repo.db.Raw(query, model.GetReportRequest{
 		Status:         request.Status,
