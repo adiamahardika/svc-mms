@@ -115,7 +115,26 @@ func (repo *repository) CountTicket(request *model.GetTicketRequest) (int, error
 func (repo *repository) CountTicketByStatus(request model.CountTicketByStatusRequest) ([]model.CountTicketByStatusResponse, error) {
 	var status []model.CountTicketByStatusResponse
 
-	error := repo.db.Raw("SELECT status, COUNT(*) as total FROM ticket WHERE assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate GROUP BY status", model.CountTicketByStatusRequest{
+	var area_code string
+	var regional string
+	var grapari_id string
+
+	if len(request.AreaCode) > 0 {
+		area_code = "AND ticket.area_code IN @AreaCode"
+	}
+	if len(request.Regional) > 0 {
+		regional = "AND ticket.regional IN @Regional"
+	}
+	if len(request.GrapariId) > 0 {
+		grapari_id = "AND ticket.grapari_id IN @GrapariId"
+	}
+
+	query := fmt.Sprintf("SELECT status, COUNT(*) as total FROM ticket WHERE assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam %s %s %s AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate GROUP BY status", area_code, regional, grapari_id)
+
+	error := repo.db.Raw(query, model.CountTicketByStatusRequest{
+		AreaCode:       request.AreaCode,
+		Regional:       request.Regional,
+		GrapariId:      request.GrapariId,
 		AssignedTo:     "%" + request.AssignedTo + "%",
 		AssignedToTeam: "%" + request.AssignedToTeam + "%",
 		StartDate:      request.StartDate,
