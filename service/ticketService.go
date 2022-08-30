@@ -39,10 +39,10 @@ func (ticketService *ticketService) GetTicket(request *model.GetTicketRequest) (
 		request.PageSize = math.MaxInt16
 	}
 	request.StartIndex = request.PageNo * request.PageSize
+	request.EndDate = request.EndDate + " 23:59:59"
 	total_data, error := ticketService.repository.CountTicket(request)
 	total_pages := math.Ceil(float64(total_data) / float64(request.PageSize))
 
-	request.EndDate = request.EndDate + " 23:59:59"
 	ticket, error := ticketService.repository.GetTicket(request)
 	parse_tp := int(total_pages)
 
