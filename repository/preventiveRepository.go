@@ -136,7 +136,7 @@ func (repo *repository) UpdatePreventive(request *entity.Preventive) (entity.Pre
 func (repo *repository) GetDetailPreventive(request string) ([]entity.Preventive, error) {
 	var preventive []entity.Preventive
 
-	error := repo.db.Raw("SELECT preventive.*, users.name as user_name, team.name as team_name FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (preventive.assigned_to_team = CAST(team.id AS varchar(10))) WHERE prev_code = @PrevCode", entity.Preventive{
+	error := repo.db.Raw("SELECT preventive.*, users.name as user_name, team.name as team_name, ms_area.area_name, ms_grapari.name AS grapari_name, users2.name AS creator FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (preventive.assigned_to_team = CAST(team.id AS varchar(10))) LEFT OUTER JOIN ms_area ON (preventive.area_code = ms_area.area_code) LEFT OUTER JOIN ms_grapari ON (preventive.grapari_id = ms_grapari.grapari_id) LEFT OUTER JOIN users users2 ON (preventive.created_by = CAST(users2.id AS varchar(10))) WHERE prev_code = @PrevCode", entity.Preventive{
 		PrevCode: request,
 	}).Find(&preventive).Error
 
