@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/general"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/service"
@@ -99,7 +98,7 @@ func (controller *reportController) GetReportPreventive(context *gin.Context) {
 	description := []string{}
 	http_status := http.StatusOK
 	var status model.StandardResponse
-	var list_ticket []entity.Preventive
+	var list_ticket []model.GetReportPreventiveResponse
 
 	if error != nil {
 

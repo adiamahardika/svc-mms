@@ -2,13 +2,12 @@ package repository
 
 import (
 	"fmt"
-	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
 )
 
 type ReportRepositoryInterface interface {
 	GetReportCorrective(request *model.GetReportRequest) ([]model.GetReportCorrectiveResponse, error)
-	GetReportPreventive(request *model.GetReportRequest) ([]entity.Preventive, error)
+	GetReportPreventive(request *model.GetReportRequest) ([]model.GetReportPreventiveResponse, error)
 }
 
 func (repo *repository) GetReportCorrective(request *model.GetReportRequest) ([]model.GetReportCorrectiveResponse, error) {
@@ -21,7 +20,7 @@ func (repo *repository) GetReportCorrective(request *model.GetReportRequest) ([]
 	var grapari_id string
 
 	if len(request.Category) > 0 {
-		category = "AND mms_category IN @Category"
+		category = "AND category IN @Category"
 	}
 	if len(request.UsernamePembuat) > 0 {
 		created_by = "AND username_pembuat IN @UsernamePembuat"
@@ -55,8 +54,8 @@ func (repo *repository) GetReportCorrective(request *model.GetReportRequest) ([]
 	return ticket, error
 }
 
-func (repo *repository) GetReportPreventive(request *model.GetReportRequest) ([]entity.Preventive, error) {
-	var preventive []entity.Preventive
+func (repo *repository) GetReportPreventive(request *model.GetReportRequest) ([]model.GetReportPreventiveResponse, error) {
+	var preventive []model.GetReportPreventiveResponse
 	var area_code string
 	var regional string
 	var grapari_id string
@@ -71,7 +70,7 @@ func (repo *repository) GetReportPreventive(request *model.GetReportRequest) ([]
 		grapari_id = "AND preventive.grapari_id IN @GrapariId"
 	}
 
-	query := fmt.Sprintf("SELECT preventive.*, users.name AS user_name, team.name as team_name, ms_area.area_name, ms_grapari.name AS grapari_name, users2.name AS creator FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN users users2 ON (preventive.created_by = CAST(users2.id AS varchar(10))) LEFT OUTER JOIN team ON (preventive.assigned_to_team = CAST(team.id AS varchar(10))) LEFT OUTER JOIN ms_area ON (preventive.area_code = ms_area.area_code) LEFT OUTER JOIN ms_grapari ON (preventive.grapari_id = ms_grapari.grapari_id) WHERE preventive.status IN @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam %s %s %s AND visit_date >= @StartDate AND visit_date <= @EndDate ORDER BY visit_date DESC", area_code, grapari_id, regional)
+	query := fmt.Sprintf("SELECT preventive.*, TO_CHAR(preventive.created_at, 'DD-MM-YYYY HH24:MI:SS') AS created_at, TO_CHAR(preventive.updated_at, 'DD-MM-YYYY HH24:MI:SS') AS updated_at, users.name AS user_name, team.name as team_name, ms_area.area_name, ms_grapari.name AS grapari_name, users2.name AS creator FROM preventive LEFT OUTER JOIN users ON (preventive.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN users users2 ON (preventive.created_by = CAST(users2.id AS varchar(10))) LEFT OUTER JOIN team ON (preventive.assigned_to_team = CAST(team.id AS varchar(10))) LEFT OUTER JOIN ms_area ON (preventive.area_code = ms_area.area_code) LEFT OUTER JOIN ms_grapari ON (preventive.grapari_id = ms_grapari.grapari_id) WHERE preventive.status IN @Status AND assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam %s %s %s AND visit_date >= @StartDate AND visit_date <= @EndDate ORDER BY visit_date DESC", area_code, grapari_id, regional)
 
 	error := repo.db.Raw(query, model.GetReportRequest{
 		Status:         request.Status,

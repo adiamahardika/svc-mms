@@ -23,4 +23,9 @@ type Preventive struct {
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedBy      string    `json:"updated_by"`
 	UpdatedAt      time.Time `json:"updated_at"`
+	NoSPM          string    `json:"no_spm"`
+	NoReqSPM       string    `json:"no_req_spm"`
+	Note           string    `json:"note"`
+	Judul          string    `json:"judul"`
+	Email          string    `json:"email"`
 }

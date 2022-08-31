@@ -36,3 +36,31 @@ type GetReportCorrectiveResponse struct {
 	NoSPM           string `json:"no_spm"`
 	NoReqSPM        string `json:"no_req_spm"`
 }
+
+type GetReportPreventiveResponse struct {
+	Id             int    `json:"id" gorm:"primaryKey"`
+	Judul          string `json:"judul"`
+	CreatedBy      string `json:"created_by"`
+	UpdatedBy      string `json:"updated_by"`
+	CreatedAt      string `json:"created_at"`
+	UpdatedAt      string `json:"updated_at"`
+	Status         string `json:"status"`
+	PrevCode       string `json:"prev_code"`
+	Email          string `json:"email"`
+	AssignedTo     string `json:"assigned_to"`
+	Note           string `json:"note"`
+	AreaCode       string `json:"area_code"`
+	AreaName       string `json:"area_name"`
+	Regional       string `json:"regional"`
+	GrapariId      string `json:"grapari_id"`
+	GrapariName    string `json:"grapari_name"`
+	TerminalId     string `json:"terminal_id"`
+	Location       string `json:"location"`
+	Creator        string `json:"creator"`
+	UserName       string `json:"user_name"`
+	VisitDate      string `json:"visit_date"`
+	AssignedToTeam string `json:"assigned_to_team"`
+	TeamName       string `json:"team_name"`
+	NoSPM          string `json:"no_spm"`
+	NoReqSPM       string `json:"no_req_spm"`
+}
