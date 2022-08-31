@@ -23,7 +23,10 @@ type GetTicketResponse struct {
 	TicketCode       string             `json:"ticket_code"`
 	Category         string             `json:"category"`
 	CategoryName     string             `json:"category_name"`
+	AreaCode         string             `json:"area_code"`
 	AreaName         string             `json:"area_name"`
+	Regional         string             `json:"regional"`
+	GrapariId        string             `json:"grapari_id"`
 	GrapariName      string             `json:"grapari_name"`
 	Lokasi           string             `json:"lokasi"`
 	TerminalId       string             `json:"terminal_id"`
