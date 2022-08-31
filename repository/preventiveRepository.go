@@ -128,7 +128,7 @@ func (repo *repository) GetVisitDate(request *model.GetPreventiveRequest) ([]mod
 func (repo *repository) UpdatePreventive(request *entity.Preventive) (entity.Preventive, error) {
 	var preventive entity.Preventive
 
-	error := repo.db.Raw("UPDATE preventive SET visit_date = @VisitDate, area_code = @AreaCode, regional = @Regional, grapari_id = @GrapariId, location = @Location, terminal_id = @TerminalId, assigned_to = @AssignedTo, assigned_to_team = @AssignedToTeam, updated_by = @UpdatedBy, updated_at = @UpdatedAt, status = @Status WHERE prev_code = @PrevCode RETURNING preventive.*", request).Find(&preventive).Error
+	error := repo.db.Raw("UPDATE preventive SET visit_date = @VisitDate, area_code = @AreaCode, regional = @Regional, grapari_id = @GrapariId, location = @Location, terminal_id = @TerminalId, assigned_to = @AssignedTo, assigned_to_team = @AssignedToTeam, updated_by = @UpdatedBy, updated_at = @UpdatedAt, judul = @Judul, Note = @Note, status = @Status, no_spm = @NoSPM, no_req_spm = @NoReqSPM, email = @Email WHERE prev_code = @PrevCode RETURNING preventive.*", request).Find(&preventive).Error
 
 	return preventive, error
 }

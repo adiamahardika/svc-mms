@@ -49,6 +49,10 @@ func (preventiveService *preventiveService) CreatePreventive(request []entity.Pr
 			AreaCode:       value.AreaCode,
 			Regional:       value.Regional,
 			GrapariId:      value.GrapariId,
+			NoSPM:          value.NoSPM,
+			NoReqSPM:       value.NoReqSPM,
+			Judul:          "Preventive",
+			Email:          value.Email,
 		}
 		_, error = preventiveService.repository.CreatePreventive(preventive_request)
 
