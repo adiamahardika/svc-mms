@@ -145,8 +145,23 @@ func (repo *repository) GetDetailPreventive(request string) ([]entity.Preventive
 
 func (repo *repository) CountPreventiveByStatus(request model.CountPreventiveByStatusRequest) ([]model.CountPreventiveByStatusResponse, error) {
 	var status []model.CountPreventiveByStatusResponse
+	var area_code string
+	var regional string
+	var grapari_id string
 
-	error := repo.db.Raw("SELECT status, COUNT(*) AS total FROM preventive WHERE assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam AND CAST(visit_date AS DATE) >= @StartDate AND CAST(visit_date AS DATE) <= @EndDate GROUP BY status", model.CountPreventiveByStatusRequest{
+	if len(request.AreaCode) > 0 {
+		area_code = "AND preventive.area_code IN @AreaCode"
+	}
+	if len(request.Regional) > 0 {
+		regional = "AND preventive.regional IN @Regional"
+	}
+	if len(request.GrapariId) > 0 {
+		grapari_id = "AND preventive.grapari_id IN @GrapariId"
+	}
+
+	query := fmt.Sprintf("SELECT status, COUNT(*) AS total FROM preventive WHERE assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam %s %s %s AND CAST(visit_date AS DATE) >= @StartDate AND CAST(visit_date AS DATE) <= @EndDate GROUP BY status", area_code, grapari_id, regional)
+
+	error := repo.db.Raw(query, model.CountPreventiveByStatusRequest{
 		AssignedTo:     "%" + request.AssignedTo + "%",
 		AssignedToTeam: "%" + request.AssignedToTeam + "%",
 		StartDate:      request.StartDate,
