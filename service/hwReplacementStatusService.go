@@ -7,6 +7,7 @@ import (
 
 type HwReplacementStatusServiceInterface interface {
 	GetHwReplacementStatus() ([]entity.HwReplacementStatus, error)
+	CreateHwReplacementStatus(request *entity.HwReplacementStatus) ([]entity.HwReplacementStatus, error)
 }
 
 type hwReplacementStatusService struct {
@@ -20,6 +21,14 @@ func HwReplacementStatusService(hwReplacementStatusRepository repository.HwRepla
 func (hwReplacementStatusService *hwReplacementStatusService) GetHwReplacementStatus() ([]entity.HwReplacementStatus, error) {
 
 	status, error := hwReplacementStatusService.hwReplacementStatusRepository.GetHwReplacementStatus()
+
+	return status, error
+}
+
+func (hwReplacementStatusService *hwReplacementStatusService) CreateHwReplacementStatus(request *entity.HwReplacementStatus) ([]entity.HwReplacementStatus, error) {
+
+	request.IsActive = "true"
+	status, error := hwReplacementStatusService.hwReplacementStatusRepository.CreateHwReplacementStatus(request)
 
 	return status, error
 }
