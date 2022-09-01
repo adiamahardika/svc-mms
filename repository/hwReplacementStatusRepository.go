@@ -9,7 +9,7 @@ type HwReplacementStatusRepositoryInterface interface {
 func (repo *repository) GetHwReplacementStatus() ([]entity.HwReplacementStatus, error) {
 	var status []entity.HwReplacementStatus
 
-	error := repo.db.Raw("SELECT * FROM hw_replacement_status ORDER BY status ASC").Find(&status).Error
+	error := repo.db.Raw("SELECT * FROM hw_replacement_status WHERE is_active = ? ORDER BY status ASC", "true").Find(&status).Error
 
 	return status, error
 }
