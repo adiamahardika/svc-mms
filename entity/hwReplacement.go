@@ -13,6 +13,8 @@ type HwReplacement struct {
 	NewSN       string    `json:"new_sn" form:"new_sn"`
 	Description string    `json:"description" form:"description"`
 	Attachment  string    `json:"attachment" form:"attachment"`
+	StatusId    string    `json:"status_id" form:"status_id"`
+	Status      string    `json:"status" gorm:"->"`
 	CreatedBy   string    `json:"created_by" form:"created_by"`
 	CreatedAt   time.Time `json:"created_at" form:"created_at"`
 }
