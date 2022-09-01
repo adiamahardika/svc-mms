@@ -50,7 +50,7 @@ func (repo *repository) GetTicket(request *model.GetTicketRequest) ([]entity.Tic
 		grapari_id = "AND ticket.grapari_id IN @GrapariId"
 	}
 
-	query = fmt.Sprintf("SELECT * FROM (SELECT ticket.*, team.name as team_name, mms_category.name AS category_name, ms_area.area_name, ms_grapari.name AS grapari_name, users1.name AS user_pembuat, users2.name AS assignee FROM ticket LEFT OUTER JOIN mms_category ON (ticket.category = CAST(mms_category.id AS varchar(10))) LEFT OUTER JOIN team ON (ticket.assigned_to_team = CAST(team.id AS varchar(10))) LEFT OUTER JOIN ms_area ON (ticket.area_code = ms_area.area_code) LEFT OUTER JOIN ms_grapari ON (ticket.grapari_id = ms_grapari.grapari_id) LEFT OUTER JOIN users users1 ON (ticket.username_pembuat = CAST(users1.id AS varchar(10))) LEFT OUTER JOIN users users2 ON (ticket.assigned_to = CAST(users2.id AS varchar(10))) WHERE prioritas LIKE @Priority AND ticket.status LIKE @Status AND assigned_to LIKE @AssignedTo AND username_pembuat LIKE @UsernamePembuat %s %s %s %s AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate ORDER BY tgl_diperbarui DESC) as tbl WHERE judul LIKE @Search OR ticket_code LIKE @Search OR lokasi LIKE @Search OR terminal_id LIKE @Search OR email LIKE @Search LIMIT @PageSize OFFSET @StartIndex", category, area_code, regional, grapari_id)
+	query = fmt.Sprintf("SELECT * FROM (SELECT ticket.*, team.name as team_name, mms_category.name AS category_name, ms_area.area_name, ms_grapari.name AS grapari_name, users1.name AS user_pembuat, users2.name AS assignee FROM ticket LEFT OUTER JOIN mms_category ON (ticket.category = CAST(mms_category.id AS varchar(10))) LEFT OUTER JOIN team ON (ticket.assigned_to_team = CAST(team.id AS varchar(10))) LEFT OUTER JOIN ms_area ON (ticket.area_code = ms_area.area_code) LEFT OUTER JOIN ms_grapari ON (ticket.grapari_id = ms_grapari.grapari_id) LEFT OUTER JOIN users users1 ON (ticket.username_pembuat = CAST(users1.id AS varchar(10))) LEFT OUTER JOIN users users2 ON (ticket.assigned_to = CAST(users2.id AS varchar(10))) WHERE prioritas LIKE @Priority AND ticket.status LIKE @Status AND assigned_to LIKE @AssignedTo AND username_pembuat LIKE @UsernamePembuat AND visit_status LIKE @VisitStatus %s %s %s %s AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate ORDER BY tgl_diperbarui DESC) as tbl WHERE judul LIKE @Search OR ticket_code LIKE @Search OR lokasi LIKE @Search OR terminal_id LIKE @Search OR email LIKE @Search LIMIT @PageSize OFFSET @StartIndex", category, area_code, regional, grapari_id)
 
 	error := repo.db.Raw(query, model.GetTicketRequest{
 		AssignedTo:      "%" + request.AssignedTo + "%",
@@ -62,6 +62,7 @@ func (repo *repository) GetTicket(request *model.GetTicketRequest) ([]entity.Tic
 		Search:          "%" + request.Search + "%",
 		Status:          "%" + request.Status + "%",
 		UsernamePembuat: "%" + request.UsernamePembuat + "%",
+		VisitStatus:     "%" + request.VisitStatus + "%",
 		StartIndex:      request.StartIndex,
 		PageSize:        request.PageSize,
 		StartDate:       request.StartDate,
@@ -92,7 +93,7 @@ func (repo *repository) CountTicket(request *model.GetTicketRequest) (int, error
 		grapari_id = "AND ticket.grapari_id IN @GrapariId"
 	}
 
-	query = fmt.Sprintf("SELECT COUNT(*) as total_data FROM (SELECT * FROM ticket WHERE prioritas LIKE @Priority AND status LIKE @Status AND assigned_to LIKE @AssignedTo AND username_pembuat LIKE @UsernamePembuat %s %s %s %s AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate ORDER BY tgl_diperbarui DESC) as tbl WHERE judul LIKE @Search OR ticket_code LIKE @Search OR lokasi LIKE @Search OR terminal_id LIKE @Search OR email LIKE @Search", category, area_code, regional, grapari_id)
+	query = fmt.Sprintf("SELECT COUNT(*) as total_data FROM (SELECT * FROM ticket WHERE prioritas LIKE @Priority AND status LIKE @Status AND assigned_to LIKE @AssignedTo AND username_pembuat LIKE @UsernamePembuat AND visit_status LIKE @VisitStatus %s %s %s %s AND tgl_dibuat >= @StartDate AND tgl_dibuat <= @EndDate ORDER BY tgl_diperbarui DESC) as tbl WHERE judul LIKE @Search OR ticket_code LIKE @Search OR lokasi LIKE @Search OR terminal_id LIKE @Search OR email LIKE @Search", category, area_code, regional, grapari_id)
 
 	error := repo.db.Raw(query, model.GetTicketRequest{
 		AssignedTo:      "%" + request.AssignedTo + "%",
@@ -104,6 +105,7 @@ func (repo *repository) CountTicket(request *model.GetTicketRequest) (int, error
 		Search:          "%" + request.Search + "%",
 		Status:          "%" + request.Status + "%",
 		UsernamePembuat: "%" + request.UsernamePembuat + "%",
+		VisitStatus:     "%" + request.VisitStatus + "%",
 		StartIndex:      request.StartIndex,
 		PageSize:        request.PageSize,
 		StartDate:       request.StartDate,
