@@ -10,6 +10,7 @@ type CreateHwReplacementRequest struct {
 	OldSN       string                `json:"old_sn" form:"old_sn"`
 	NewSN       string                `json:"new_sn" form:"new_sn"`
 	Description string                `json:"description" form:"description"`
+	StatusId    string                `json:"status_id" form:"status_id"`
 	Attachment  *multipart.FileHeader `json:"attachment" form:"attachment"`
 	CreatedBy   string                `json:"created_by" form:"created_by"`
 }

@@ -62,6 +62,7 @@ func (hwReplacementService *hwReplacementService) CreateHwReplacement(request *m
 			Attachment:  attachment,
 			CreatedBy:   request.CreatedBy,
 			CreatedAt:   date_now,
+			StatusId:    request.StatusId,
 		}
 
 		_, error = hwReplacementService.hwReplacementRepository.CreateHwReplacement(new_request)
