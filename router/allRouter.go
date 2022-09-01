@@ -229,6 +229,7 @@ func AllRouter(db *gorm.DB) {
 			hw_replacement_status.GET("/get", hwReplacementStatusController.GetHwReplacementStatus)
 			hw_replacement_status.POST("/create", hwReplacementStatusController.CreateHwReplacementStatus)
 			hw_replacement_status.PUT("/update", hwReplacementStatusController.UpdateHwReplacementStatus)
+			hw_replacement_status.DELETE("/delete/:id", hwReplacementStatusController.DeleteHwReplacementStatus)
 		}
 
 	}

@@ -9,6 +9,7 @@ type HwReplacementStatusServiceInterface interface {
 	GetHwReplacementStatus() ([]entity.HwReplacementStatus, error)
 	CreateHwReplacementStatus(request *entity.HwReplacementStatus) ([]entity.HwReplacementStatus, error)
 	UpdateHwReplacementStatus(request *entity.HwReplacementStatus) ([]entity.HwReplacementStatus, error)
+	DeleteHwReplacementStatus(request *int) error
 }
 
 type hwReplacementStatusService struct {
@@ -39,4 +40,13 @@ func (hwReplacementStatusService *hwReplacementStatusService) UpdateHwReplacemen
 	status, error := hwReplacementStatusService.hwReplacementStatusRepository.UpdateHwReplacementStatus(request)
 
 	return status, error
+}
+
+func (hwReplacementStatusService *hwReplacementStatusService) DeleteHwReplacementStatus(request *int) error {
+
+	error := hwReplacementStatusService.hwReplacementStatusRepository.DeleteHwReplacementStatus(&entity.HwReplacementStatus{
+		Id: *request,
+	})
+
+	return error
 }
