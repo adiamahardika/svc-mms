@@ -162,6 +162,9 @@ func (repo *repository) CountPreventiveByStatus(request model.CountPreventiveByS
 	query := fmt.Sprintf("SELECT status, COUNT(*) AS total FROM preventive WHERE assigned_to LIKE @AssignedTo AND assigned_to_team LIKE @AssignedToTeam %s %s %s AND CAST(visit_date AS DATE) >= @StartDate AND CAST(visit_date AS DATE) <= @EndDate GROUP BY status", area_code, grapari_id, regional)
 
 	error := repo.db.Raw(query, model.CountPreventiveByStatusRequest{
+		AreaCode:       request.AreaCode,
+		Regional:       request.Regional,
+		GrapariId:      request.GrapariId,
 		AssignedTo:     "%" + request.AssignedTo + "%",
 		AssignedToTeam: "%" + request.AssignedToTeam + "%",
 		StartDate:      request.StartDate,
