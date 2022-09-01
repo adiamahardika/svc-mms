@@ -21,7 +21,7 @@ type GetTicketRequest struct {
 	UsernamePembuat string   `json:"username_pembuat"`
 	StartDate       string   `json:"start_date" binding:"required"`
 	EndDate         string   `json:"end_date" binding:"required"`
-	VisitStatus     string   `json:"visit_status"`
+	VisitStatus     []string `json:"visit_status"`
 }
 
 type CreateTicketRequest struct {
