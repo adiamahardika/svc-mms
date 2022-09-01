@@ -19,6 +19,7 @@ type TicketRepositoryInterface interface {
 	CheckTicketCode(request string) ([]model.GetTicketResponse, error)
 	GetEmailHistory(request model.GetEmailHistoryRequest) ([]model.GetEmailHistoryResponse, error)
 	UpdateTicket(request *entity.Ticket) (entity.Ticket, error)
+	UpdateVisitStatus(request *model.UpdateVisitStatusRequest) (entity.Ticket, error)
 }
 
 func (repo *repository) GetAll() ([]entity.Ticket, error) {
@@ -214,6 +215,18 @@ func (repo *repository) UpdateTicket(request *entity.Ticket) (entity.Ticket, err
 	var ticket entity.Ticket
 
 	error := repo.db.Raw("UPDATE ticket SET no_spm = @NoSPM, no_req_spm = @NoReqSPM, tgl_diperbarui = @TglDiperbarui WHERE ticket_code = @TicketCode RETURNING ticket.*", request).Find(&ticket).Error
+
+	return ticket, error
+}
+
+func (repo *repository) UpdateVisitStatus(request *model.UpdateVisitStatusRequest) (entity.Ticket, error) {
+	var ticket entity.Ticket
+
+	error := repo.db.Raw("UPDATE ticket SET visit_status = @VisitStatus, tgl_diperbarui = @UpdateAt WHERE ticket_code = @TicketCode RETURNING ticket.*", model.UpdateVisitStatusRequest{
+		TicketCode:  request.TicketCode,
+		VisitStatus: request.VisitStatus,
+		UpdateAt:    request.UpdateAt,
+	}).Find(&ticket).Error
 
 	return ticket, error
 }

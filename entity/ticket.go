@@ -37,4 +37,5 @@ type Ticket struct {
 	TeamName        string    `json:"team_name" gorm:"->"`
 	NoSPM           string    `json:"no_spm"`
 	NoReqSPM        string    `json:"no_req_spm"`
+	VisitStatus     string    `json:"visit_status"`
 }

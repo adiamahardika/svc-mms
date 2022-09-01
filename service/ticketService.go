@@ -19,6 +19,7 @@ type TicketServiceInterface interface {
 	GetDetailTicket(request string) ([]model.GetTicketResponse, error)
 	GetEmailHistory(request model.GetEmailHistoryRequest) ([]model.GetEmailHistoryResponse, error)
 	UpdateTicket(request *entity.Ticket) (entity.Ticket, error)
+	UpdateVisitStatus(request *model.UpdateVisitStatusRequest) (entity.Ticket, error)
 }
 
 type ticketService struct {
@@ -164,6 +165,17 @@ func (ticketService *ticketService) UpdateTicket(request *entity.Ticket) (entity
 	request.TglDiperbarui = date_now
 
 	ticket, error := ticketService.repository.UpdateTicket(request)
+
+	return ticket, error
+}
+
+func (ticketService *ticketService) UpdateVisitStatus(request *model.UpdateVisitStatusRequest) (entity.Ticket, error) {
+
+	date_now := time.Now()
+
+	request.UpdateAt = date_now
+
+	ticket, error := ticketService.repository.UpdateVisitStatus(request)
 
 	return ticket, error
 }

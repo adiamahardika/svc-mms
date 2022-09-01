@@ -72,3 +72,9 @@ type CountTicketByStatusRequest struct {
 type GetEmailHistoryRequest struct {
 	Search string `json:"search"`
 }
+
+type UpdateVisitStatusRequest struct {
+	TicketCode  string    `json:"ticket_code" binding:"required"`
+	VisitStatus string    `json:"visit_status" binding:"required"`
+	UpdateAt    time.Time `json:"update_at"`
+}
