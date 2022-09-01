@@ -85,6 +85,9 @@ func AllRouter(db *gorm.DB) {
 	appPermissionService := service.AppPermissionService(repository)
 	appPermissionController := controller.AppPermissonController(appPermissionService, logService)
 
+	hwReplacementStatusService := service.HwReplacementStatusService(repository)
+	hwReplacementStatusController := controller.HwReplacementStatusController(hwReplacementStatusService, logService)
+
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
@@ -218,6 +221,12 @@ func AllRouter(db *gorm.DB) {
 		{
 			app_permission.Use(service.Authentication(), authService.Authorization())
 			app_permission.GET("/get", appPermissionController.GetPermission)
+		}
+
+		hw_replacement_status := v2.Group("/hw-replacement-status")
+		{
+			hw_replacement_status.Use(service.Authentication(), authService.Authorization())
+			hw_replacement_status.GET("/get", hwReplacementStatusController.GetHwReplacementStatus)
 		}
 
 	}
