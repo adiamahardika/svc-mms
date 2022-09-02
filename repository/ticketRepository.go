@@ -204,7 +204,7 @@ func (repo *repository) UpdateTicketStatus(request model.UpdateTicketStatusReque
 func (repo *repository) CheckTicketCode(request string) ([]model.GetTicketResponse, error) {
 	var ticket []model.GetTicketResponse
 
-	error := repo.db.Raw("SELECT ticket.*, users.name as user_name, team.name as team_name, mms_category.name as category_name, ms_area.area_name, ms_grapari.name AS grapari_name, users2.name AS assignee FROM ticket LEFT OUTER JOIN users ON (ticket.assigned_to = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (ticket.assigned_to_team = CAST(team.id AS varchar(10))) LEFT OUTER JOIN mms_category ON (ticket.category = CAST(mms_category.id AS varchar(10))) LEFT OUTER JOIN ms_area ON (ticket.area_code = ms_area.area_code) LEFT OUTER JOIN ms_grapari ON (ticket.grapari_id = ms_grapari.grapari_id) LEFT OUTER JOIN users users2 ON (ticket.assigned_to = CAST(users2.id AS varchar(10))) WHERE ticket_code = @TicketCode", model.CreateTicketRequest{
+	error := repo.db.Raw("SELECT ticket.*, users.name as user_name, team.name as team_name, mms_category.name as category_name, ms_area.area_name, ms_grapari.name AS grapari_name, users2.name AS assignee FROM ticket LEFT OUTER JOIN users ON (ticket.username_pembuat = CAST(users.id AS varchar(10))) LEFT OUTER JOIN team ON (ticket.assigned_to_team = CAST(team.id AS varchar(10))) LEFT OUTER JOIN mms_category ON (ticket.category = CAST(mms_category.id AS varchar(10))) LEFT OUTER JOIN ms_area ON (ticket.area_code = ms_area.area_code) LEFT OUTER JOIN ms_grapari ON (ticket.grapari_id = ms_grapari.grapari_id) LEFT OUTER JOIN users users2 ON (ticket.assigned_to = CAST(users2.id AS varchar(10))) WHERE ticket_code = @TicketCode", model.CreateTicketRequest{
 		TicketCode: request,
 	}).Find(&ticket).Error
 
