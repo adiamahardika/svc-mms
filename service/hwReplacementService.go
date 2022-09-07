@@ -33,7 +33,8 @@ func (hwReplacementService *hwReplacementService) CreateHwReplacement(request *m
 	dir := os.Getenv("FILE_DIR")
 	path := dir + "/hw_replacement/" + request.TicketCode + "/" + date_now.Format("2006-01-02")
 	error := fmt.Errorf("error")
-	attachment := ""
+	old_attachment := ""
+	new_attachment := ""
 
 	_, check_dir_error := os.Stat(path)
 
@@ -45,24 +46,31 @@ func (hwReplacementService *hwReplacementService) CreateHwReplacement(request *m
 		}
 	}
 
-	if request.Attachment != nil {
-		attachment = request.Attachment.Filename
-		error = context.SaveUploadedFile(request.Attachment, path+"/"+attachment)
+	if request.OldAttachment != nil {
+		old_attachment = request.OldAttachment.Filename
+		error = context.SaveUploadedFile(request.OldAttachment, path+"/"+old_attachment)
+	} else {
+		error = nil
+	}
+	if request.NewAttachment != nil {
+		new_attachment = request.NewAttachment.Filename
+		error = context.SaveUploadedFile(request.NewAttachment, path+"/"+new_attachment)
 	} else {
 		error = nil
 	}
 
 	if error == nil {
 		new_request := &entity.HwReplacement{
-			TicketCode:  request.TicketCode,
-			HwId:        request.HwId,
-			OldSN:       request.OldSN,
-			NewSN:       request.NewSN,
-			Description: request.Description,
-			Attachment:  attachment,
-			CreatedBy:   request.CreatedBy,
-			CreatedAt:   date_now,
-			StatusId:    request.StatusId,
+			TicketCode:    request.TicketCode,
+			HwId:          request.HwId,
+			OldSN:         request.OldSN,
+			NewSN:         request.NewSN,
+			Description:   request.Description,
+			OldAttachment: old_attachment,
+			NewAttachment: new_attachment,
+			CreatedBy:     request.CreatedBy,
+			CreatedAt:     date_now,
+			StatusId:      request.StatusId,
 		}
 
 		_, error = hwReplacementService.hwReplacementRepository.CreateHwReplacement(new_request)
@@ -85,8 +93,15 @@ func (hwReplacementService *hwReplacementService) CreateHwReplacement(request *m
 
 			for index := range hw_replacement {
 				date := hw_replacement[index].CreatedAt.Format("2006-01-02")
-				file_name := hw_replacement[index].Attachment
-				hw_replacement[index].Attachment = url + "hw_replacement/" + request.TicketCode + "/" + date + "/" + file_name
+				path := url + "hw_replacement/" + request.TicketCode + "/" + date + "/"
+				if hw_replacement[index].OldAttachment != "" {
+					file_name1 := hw_replacement[index].OldAttachment
+					hw_replacement[index].OldAttachment = path + file_name1
+				}
+				if hw_replacement[index].NewAttachment != "" {
+					file_name2 := hw_replacement[index].NewAttachment
+					hw_replacement[index].NewAttachment = path + file_name2
+				}
 			}
 
 			if error == nil {
@@ -116,8 +131,16 @@ func (hwReplacementService *hwReplacementService) GetHwReplacement(request *mode
 
 		for index := range hw_replacement {
 			date := hw_replacement[index].CreatedAt.Format("2006-01-02")
-			file_name := hw_replacement[index].Attachment
-			hw_replacement[index].Attachment = url + "hw_replacement/" + request.TicketCode + "/" + date + "/" + file_name
+			path := url + "hw_replacement/" + request.TicketCode + "/" + date + "/"
+
+			if hw_replacement[index].OldAttachment != "" {
+				file_name1 := hw_replacement[index].OldAttachment
+				hw_replacement[index].OldAttachment = path + file_name1
+			}
+			if hw_replacement[index].NewAttachment != "" {
+				file_name2 := hw_replacement[index].NewAttachment
+				hw_replacement[index].NewAttachment = path + file_name2
+			}
 		}
 
 		if error == nil {
