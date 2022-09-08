@@ -11,9 +11,9 @@ type GetTicketRequest struct {
 	PageNo          int      `json:"page_no"`
 	PageSize        int      `json:"page_size"`
 	StartIndex      int      `json:"start_index"`
-	Priority        string   `json:"priority"`
+	Priority        []string `json:"priority"`
 	Search          string   `json:"search"`
-	Status          string   `json:"status"`
+	Status          []string `json:"status"`
 	AssignedToTeam  string   `json:"assigned_to_team"`
 	AreaCode        []string `json:"area_code"`
 	Regional        []string `json:"regional"`
