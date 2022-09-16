@@ -20,6 +20,7 @@ type TicketServiceInterface interface {
 	GetEmailHistory(request model.GetEmailHistoryRequest) ([]model.GetEmailHistoryResponse, error)
 	UpdateTicket(request *entity.Ticket) (entity.Ticket, error)
 	UpdateVisitStatus(request *model.UpdateVisitStatusRequest) (entity.Ticket, error)
+	GetTicketActivity(request *model.GetTicketActivityRequest) ([]model.GetTicketActivityResponse, error)
 }
 
 type ticketService struct {
@@ -176,6 +177,14 @@ func (ticketService *ticketService) UpdateVisitStatus(request *model.UpdateVisit
 	request.UpdateAt = date_now
 
 	ticket, error := ticketService.repository.UpdateVisitStatus(request)
+
+	return ticket, error
+}
+
+func (ticketService *ticketService) GetTicketActivity(request *model.GetTicketActivityRequest) ([]model.GetTicketActivityResponse, error) {
+
+	request.EndDate = request.EndDate + " 23:59:59"
+	ticket, error := ticketService.repository.GetTicketActivity(request)
 
 	return ticket, error
 }

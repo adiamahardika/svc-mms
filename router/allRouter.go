@@ -106,6 +106,7 @@ func AllRouter(db *gorm.DB) {
 			ticket.POST("/get-email-history", tikcetController.GetEmailHistory)
 			ticket.PUT("/update", tikcetController.UpdateTicket)
 			ticket.PUT("/update-visit-status", tikcetController.UpdateVisitStatus)
+			ticket.POST("/get-activity", tikcetController.GetTicketActivity)
 		}
 
 		task_list := v2.Group("/task-list")

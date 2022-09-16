@@ -20,6 +20,7 @@ type TicketRepositoryInterface interface {
 	GetEmailHistory(request model.GetEmailHistoryRequest) ([]model.GetEmailHistoryResponse, error)
 	UpdateTicket(request *entity.Ticket) (entity.Ticket, error)
 	UpdateVisitStatus(request *model.UpdateVisitStatusRequest) (entity.Ticket, error)
+	GetTicketActivity(request *model.GetTicketActivityRequest) ([]model.GetTicketActivityResponse, error)
 }
 
 func (repo *repository) GetAll() ([]entity.Ticket, error) {
@@ -241,4 +242,19 @@ func (repo *repository) UpdateVisitStatus(request *model.UpdateVisitStatusReques
 	}).Find(&ticket).Error
 
 	return ticket, error
+}
+
+func (repo *repository) GetTicketActivity(request *model.GetTicketActivityRequest) ([]model.GetTicketActivityResponse, error) {
+
+	var result []model.GetTicketActivityResponse
+
+	query1 := fmt.Sprintf("SELECT DATE(created_at) AS date, COUNT (*) AS unassigned, 0 AS investigated, 0 As close FROM task_list WHERE task_name = 'Create_ticket' AND created_at >= @StartDate AND created_at <= @EndDate GROUP BY DATE(created_at)")
+	query2 := fmt.Sprintf("SELECT DATE(created_at) AS date, 0 AS unassigned, COUNT (*) AS investigated, 0 AS close FROM task_list WHERE task_name = 'Start_investigate' AND created_at >= @StartDate AND created_at <= @EndDate GROUP BY DATE(created_at)")
+	query3 := fmt.Sprintf("SELECT DATE(created_at) AS date, 0 AS unassigned, 0 AS investigated, COUNT (*) AS close FROM task_list WHERE task_name = 'Ticket_finish' AND created_at >= @StartDate AND created_at <= @EndDate GROUP BY DATE(created_at)")
+
+	final_query := fmt.Sprintf("SELECT date, SUM(unassigned) AS unassigned, SUM(investigated) AS investigated, SUM(close) AS close FROM (%s UNION ALL %s UNION ALL %s) AS tbl GROUP BY date ORDER BY date ASC", query1, query2, query3)
+
+	error := repo.db.Raw(final_query, request).Find(&result).Error
+
+	return result, error
 }

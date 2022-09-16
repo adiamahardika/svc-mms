@@ -79,3 +79,8 @@ type UpdateVisitStatusRequest struct {
 	VisitStatus string    `json:"visit_status" binding:"required"`
 	UpdateAt    time.Time `json:"update_at"`
 }
+
+type GetTicketActivityRequest struct {
+	StartDate string `json:"start_date" binding:"required"`
+	EndDate   string `json:"end_date" binding:"required"`
+}

@@ -46,3 +46,10 @@ type GetTicketResponse struct {
 type GetEmailHistoryResponse struct {
 	Email string `json:"email"`
 }
+
+type GetTicketActivityResponse struct {
+	Date         time.Time `json:"date"`
+	Unassigned   int       `json:"unassigned"`
+	Investigated int       `json:"investigated"`
+	Close        int       `json:"close"`
+}
