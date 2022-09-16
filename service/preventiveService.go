@@ -16,6 +16,7 @@ type PreventiveServiceInterface interface {
 	UpdatePreventive(request *entity.Preventive) (entity.Preventive, error)
 	GetDetailPreventive(request string) ([]entity.Preventive, error)
 	CountPreventiveByStatus(request model.CountPreventiveByStatusRequest) ([]model.CountPreventiveByStatusResponse, error)
+	GetPreventiveActivity(request *model.GetPreventiveActivityRequest) ([]model.GetPreventiveActivityResponse, error)
 }
 
 type preventiveService struct {
@@ -122,4 +123,12 @@ func (preventiveService *preventiveService) CountPreventiveByStatus(request mode
 	count_preventive, error := preventiveService.repository.CountPreventiveByStatus(request)
 
 	return count_preventive, error
+}
+
+func (preventiveService *preventiveService) GetPreventiveActivity(request *model.GetPreventiveActivityRequest) ([]model.GetPreventiveActivityResponse, error) {
+
+	request.EndDate = request.EndDate + " 23:59:59"
+	ticket, error := preventiveService.repository.GetPreventiveActivity(request)
+
+	return ticket, error
 }

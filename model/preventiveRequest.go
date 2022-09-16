@@ -24,3 +24,8 @@ type CountPreventiveByStatusRequest struct {
 	StartDate      string   `json:"start_date" binding:"required"`
 	EndDate        string   `json:"end_date" binding:"required"`
 }
+
+type GetPreventiveActivityRequest struct {
+	StartDate string `json:"start_date" binding:"required"`
+	EndDate   string `json:"end_date" binding:"required"`
+}

@@ -1,6 +1,9 @@
 package model
 
-import "svc-monitoring-maintenance/entity"
+import (
+	"svc-monitoring-maintenance/entity"
+	"time"
+)
 
 type GetVisitDateResponse struct {
 	VisitDate       string `json:"visit_date"`
@@ -16,4 +19,11 @@ type GetGroupPreventiveResponse struct {
 type CountPreventiveByStatusResponse struct {
 	Status string `json:"status"`
 	Total  int    `json:"total"`
+}
+
+type GetPreventiveActivityResponse struct {
+	Date       time.Time `json:"date"`
+	Open       int       `json:"open"`
+	Incomplete int       `json:"incomplete"`
+	Close      int       `json:"close"`
 }

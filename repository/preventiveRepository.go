@@ -14,6 +14,7 @@ type PreventiveRepositoryInterface interface {
 	GetDetailPreventive(request string) ([]entity.Preventive, error)
 	GetVisitDate(request *model.GetPreventiveRequest) ([]model.GetVisitDateResponse, error)
 	CountPreventiveByStatus(request model.CountPreventiveByStatusRequest) ([]model.CountPreventiveByStatusResponse, error)
+	GetPreventiveActivity(request *model.GetPreventiveActivityRequest) ([]model.GetPreventiveActivityResponse, error)
 }
 
 func (repo *repository) CreatePreventive(request entity.Preventive) (entity.Preventive, error) {
@@ -172,4 +173,19 @@ func (repo *repository) CountPreventiveByStatus(request model.CountPreventiveByS
 	}).Find(&status).Error
 
 	return status, error
+}
+
+func (repo *repository) GetPreventiveActivity(request *model.GetPreventiveActivityRequest) ([]model.GetPreventiveActivityResponse, error) {
+
+	var result []model.GetPreventiveActivityResponse
+
+	query1 := fmt.Sprintf("SELECT DATE(created_at) AS date, COUNT (*) AS open, 0 AS incomplete, 0 As close FROM preventive WHERE created_at >= @StartDate AND created_at <= @EndDate GROUP BY DATE(created_at)")
+	query2 := fmt.Sprintf("SELECT DATE(created_at) AS date, 0 AS open, COUNT (*) AS incomplete, 0 AS close FROM task_preventive WHERE task_name = 'Check_In' AND created_at >= @StartDate AND created_at <= @EndDate GROUP BY DATE(created_at)")
+	query3 := fmt.Sprintf("SELECT DATE(updated_at) AS date, 0 AS open, 0 AS incomplete, COUNT (*) AS close FROM preventive WHERE status = 'Close' AND updated_at >= @StartDate AND updated_at <= @EndDate GROUP BY DATE(updated_at)")
+
+	final_query := fmt.Sprintf("SELECT date, SUM(open) AS open, SUM(incomplete) AS incomplete, SUM(close) AS close FROM (%s UNION ALL %s UNION ALL %s) AS tbl GROUP BY date ORDER BY date ASC", query1, query2, query3)
+
+	error := repo.db.Raw(final_query, request).Find(&result).Error
+	fmt.Println(result)
+	return result, error
 }
