@@ -186,6 +186,6 @@ func (repo *repository) GetPreventiveActivity(request *model.GetPreventiveActivi
 	final_query := fmt.Sprintf("SELECT date, SUM(open) AS open, SUM(incomplete) AS incomplete, SUM(close) AS close FROM (%s UNION ALL %s UNION ALL %s) AS tbl GROUP BY date ORDER BY date ASC", query1, query2, query3)
 
 	error := repo.db.Raw(final_query, request).Find(&result).Error
-	fmt.Println(result)
+
 	return result, error
 }
