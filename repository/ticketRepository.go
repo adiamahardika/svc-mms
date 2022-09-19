@@ -247,10 +247,31 @@ func (repo *repository) UpdateVisitStatus(request *model.UpdateVisitStatusReques
 func (repo *repository) GetTicketActivity(request *model.GetTicketActivityRequest) ([]model.GetTicketActivityResponse, error) {
 
 	var result []model.GetTicketActivityResponse
+	var area_code string
+	var regional string
+	var grapari_id string
+	var assigned_to string
+	var assigned_to_team string
 
-	query1 := fmt.Sprintf("SELECT DATE(created_at) AS date, COUNT (*) AS unassigned, 0 AS investigated, 0 As close FROM task_list WHERE task_name = 'Create_ticket' AND created_at >= @StartDate AND created_at <= @EndDate GROUP BY DATE(created_at)")
-	query2 := fmt.Sprintf("SELECT DATE(created_at) AS date, 0 AS unassigned, COUNT (*) AS investigated, 0 AS close FROM task_list WHERE task_name = 'Start_investigate' AND created_at >= @StartDate AND created_at <= @EndDate GROUP BY DATE(created_at)")
-	query3 := fmt.Sprintf("SELECT DATE(created_at) AS date, 0 AS unassigned, 0 AS investigated, COUNT (*) AS close FROM task_list WHERE task_name = 'Ticket_finish' AND created_at >= @StartDate AND created_at <= @EndDate GROUP BY DATE(created_at)")
+	if len(request.AreaCode) > 0 {
+		area_code = "AND ticket.area_code IN @AreaCode"
+	}
+	if len(request.Regional) > 0 {
+		regional = "AND ticket.regional IN @Regional"
+	}
+	if len(request.GrapariId) > 0 {
+		grapari_id = "AND ticket.grapari_id IN @GrapariId"
+	}
+	if request.AssignedTo != "" {
+		assigned_to = "AND ticket.assigned_to = @AssignedTo"
+	}
+	if request.AssignedToTeam != "" {
+		assigned_to_team = "AND ticket.assigned_to_team = @AssignedToTeam"
+	}
+
+	query1 := fmt.Sprintf("SELECT DATE(created_at) AS date, COUNT (*) AS unassigned, 0 AS investigated, 0 As close FROM task_list LEFT OUTER JOIN ticket ON (task_list.ticket_code = ticket.ticket_code) WHERE task_name = 'Create_ticket' AND task_list.created_at >= @StartDate AND task_list.created_at <= @EndDate %s %s %s %s %s GROUP BY DATE(created_at)", area_code, regional, grapari_id, assigned_to, assigned_to_team)
+	query2 := fmt.Sprintf("SELECT DATE(created_at) AS date, 0 AS unassigned, COUNT (*) AS investigated, 0 AS close FROM task_list LEFT OUTER JOIN ticket ON (task_list.ticket_code = ticket.ticket_code) WHERE task_name = 'Start_investigate' AND task_list.created_at >= @StartDate AND task_list.created_at <= @EndDate %s %s %s %s %s GROUP BY DATE(created_at)", area_code, regional, grapari_id, assigned_to, assigned_to_team)
+	query3 := fmt.Sprintf("SELECT DATE(created_at) AS date, 0 AS unassigned, 0 AS investigated, COUNT (*) AS close FROM task_list LEFT OUTER JOIN ticket ON (task_list.ticket_code = ticket.ticket_code) WHERE task_name = 'Ticket_finish' AND task_list.created_at >= @StartDate AND task_list.created_at <= @EndDate %s %s %s %s %s GROUP BY DATE(created_at)", area_code, regional, grapari_id, assigned_to, assigned_to_team)
 
 	final_query := fmt.Sprintf("SELECT date, SUM(unassigned) AS unassigned, SUM(investigated) AS investigated, SUM(close) AS close FROM (%s UNION ALL %s UNION ALL %s) AS tbl GROUP BY date ORDER BY date ASC", query1, query2, query3)
 
