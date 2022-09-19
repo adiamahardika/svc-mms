@@ -58,7 +58,7 @@ func AllRouter(db *gorm.DB) {
 	grapariService := service.GrapariService(repository)
 	grapariController := controller.GrapariController(grapariService, logService)
 
-	authService := service.AuthService(repository, repository)
+	authService := service.AuthService(repository, repository, repository)
 	authController := controller.AuthController(authService, logService)
 
 	hwReplacementService := service.HwReplacementService(repository, repository)

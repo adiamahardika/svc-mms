@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -25,10 +26,11 @@ type AuthServiceInterface interface {
 type authService struct {
 	userRepository repository.UserRepositoryInterface
 	authRepository repository.AuthRepositoryInterface
+	roleRepository repository.RoleRepositoryInteface
 }
 
-func AuthService(userRepository repository.UserRepositoryInterface, authRepository repository.AuthRepositoryInterface) *authService {
-	return &authService{userRepository, authRepository}
+func AuthService(userRepository repository.UserRepositoryInterface, authRepository repository.AuthRepositoryInterface, roleRepository repository.RoleRepositoryInteface) *authService {
+	return &authService{userRepository, authRepository, roleRepository}
 }
 
 func Authentication() gin.HandlerFunc {
@@ -118,6 +120,8 @@ func (authService *authService) Login(request *model.LoginRequest) (model.GetUse
 	var user_response model.GetUserResponse
 	var login_response model.LoginResponse
 	var key_hp string
+	var parse_role []*model.GetRoleResponse
+	var role []entity.Role
 	user, error := authService.userRepository.CheckUsername(request.Username)
 
 	if len(user) < 1 {
@@ -128,10 +132,30 @@ func (authService *authService) Login(request *model.LoginRequest) (model.GetUse
 		if error_check_pass != nil {
 			error = fmt.Errorf("Password Not Match")
 		}
+		if error == nil {
+
+			role_id, _ := strconv.Atoi(user[0].Role)
+			role, error = authService.roleRepository.GetDetailRole(&role_id)
+
+			for _, value := range role {
+				var web_permission []*entity.MmsWebPermission
+				var app_permission []*entity.MmsAppPermission
+				json.Unmarshal([]byte(value.WebPermission), &web_permission)
+				json.Unmarshal([]byte(value.AppPermission), &app_permission)
+
+				parse_role = append(parse_role, &model.GetRoleResponse{
+					Id:            value.Id,
+					Name:          value.Name,
+					WebPermission: web_permission,
+					AppPermission: app_permission,
+				})
+			}
+		}
 		key_hp = user[0].KeyHp
 		if request.KeyHp != "" {
 			key_hp, error = authService.userRepository.UpdateKeyHp(request)
 		}
+
 		user_response = model.GetUserResponse{
 			Id:         user[0].Id,
 			Name:       user[0].Name,
@@ -139,7 +163,7 @@ func (authService *authService) Login(request *model.LoginRequest) (model.GetUse
 			Email:      user[0].Email,
 			Team:       user[0].Team,
 			TeamName:   user[0].TeamName,
-			Role:       user[0].Role,
+			Role:       parse_role,
 			RoleName:   user[0].RoleName,
 			KeyHp:      key_hp,
 			Nik:        user[0].Nik,
