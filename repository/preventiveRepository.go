@@ -178,10 +178,31 @@ func (repo *repository) CountPreventiveByStatus(request model.CountPreventiveByS
 func (repo *repository) GetPreventiveActivity(request *model.GetPreventiveActivityRequest) ([]model.GetPreventiveActivityResponse, error) {
 
 	var result []model.GetPreventiveActivityResponse
+	var area_code string
+	var regional string
+	var grapari_id string
+	var assigned_to string
+	var assigned_to_team string
 
-	query1 := fmt.Sprintf("SELECT DATE(created_at) AS date, COUNT (*) AS open, 0 AS incomplete, 0 As close FROM preventive WHERE created_at >= @StartDate AND created_at <= @EndDate GROUP BY DATE(created_at)")
-	query2 := fmt.Sprintf("SELECT DATE(created_at) AS date, 0 AS open, COUNT (*) AS incomplete, 0 AS close FROM task_preventive WHERE task_name = 'Check_In' AND created_at >= @StartDate AND created_at <= @EndDate GROUP BY DATE(created_at)")
-	query3 := fmt.Sprintf("SELECT DATE(updated_at) AS date, 0 AS open, 0 AS incomplete, COUNT (*) AS close FROM preventive WHERE status = 'Close' AND updated_at >= @StartDate AND updated_at <= @EndDate GROUP BY DATE(updated_at)")
+	if len(request.AreaCode) > 0 {
+		area_code = "AND preventive.area_code IN @AreaCode"
+	}
+	if len(request.Regional) > 0 {
+		regional = "AND preventive.regional IN @Regional"
+	}
+	if len(request.GrapariId) > 0 {
+		grapari_id = "AND preventive.grapari_id IN @GrapariId"
+	}
+	if request.AssignedTo != "" {
+		assigned_to = "AND preventive.assigned_to = @AssignedTo"
+	}
+	if request.AssignedToTeam != "" {
+		assigned_to_team = "AND preventive.assigned_to_team = @AssignedToTeam"
+	}
+
+	query1 := fmt.Sprintf("SELECT DATE(created_at) AS date, COUNT (*) AS open, 0 AS incomplete, 0 As close FROM preventive WHERE created_at >= @StartDate AND created_at <= @EndDate %s %s %s %s %s GROUP BY DATE(created_at)", area_code, regional, grapari_id, assigned_to, assigned_to_team)
+	query2 := fmt.Sprintf("SELECT DATE(task_preventive.created_at) AS date, 0 AS open, COUNT (*) AS incomplete, 0 AS close FROM task_preventive LEFT OUTER JOIN preventive ON (task_preventive.prev_code = preventive.prev_code) WHERE task_name = 'Check_In' AND task_preventive.created_at >= @StartDate AND task_preventive.created_at <= @EndDate %s %s %s %s %s GROUP BY DATE(task_preventive.created_at)", area_code, regional, grapari_id, assigned_to, assigned_to_team)
+	query3 := fmt.Sprintf("SELECT DATE(updated_at) AS date, 0 AS open, 0 AS incomplete, COUNT (*) AS close FROM preventive WHERE status = 'Close' AND updated_at >= @StartDate AND updated_at <= @EndDate %s %s %s %s %s GROUP BY DATE(updated_at)", area_code, regional, grapari_id, assigned_to, assigned_to_team)
 
 	final_query := fmt.Sprintf("SELECT date, SUM(open) AS open, SUM(incomplete) AS incomplete, SUM(close) AS close FROM (%s UNION ALL %s UNION ALL %s) AS tbl GROUP BY date ORDER BY date ASC", query1, query2, query3)
 
