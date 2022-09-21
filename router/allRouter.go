@@ -241,6 +241,7 @@ func AllRouter(db *gorm.DB) {
 		{
 			ms_checklist_hw.Use(service.Authentication(), authService.Authorization())
 			ms_checklist_hw.POST("/create", msChecklistHwController.CreateMsChecklistHw)
+			ms_checklist_hw.GET("/get", msChecklistHwController.GetMsChecklistHw)
 		}
 	}
 

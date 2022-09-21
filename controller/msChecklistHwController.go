@@ -89,3 +89,47 @@ func (controller *msChecklistHwController) CreateMsChecklistHw(context *gin.Cont
 	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_result))
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
 }
+
+func (controller *msChecklistHwController) GetMsChecklistHw(context *gin.Context) {
+
+	description := []string{}
+	http_status := http.StatusOK
+	var status *model.StandardResponse
+
+	response, error := controller.msChecklistHwService.GetMsChecklistHw()
+
+	if error == nil {
+
+		description = append(description, "Success")
+
+		status = &model.StandardResponse{
+			HttpStatus:  http.StatusOK,
+			StatusCode:  general.SuccessStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusOK, gin.H{
+			"status": status,
+			"result": response,
+		})
+
+	} else {
+
+		description = append(description, error.Error())
+		http_status = http.StatusBadRequest
+
+		status = &model.StandardResponse{
+			HttpStatus:  http.StatusBadRequest,
+			StatusCode:  general.ErrorStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusBadRequest, gin.H{
+			"status": status,
+		})
+
+	}
+
+	parse_status, _ := json.Marshal(status)
+	parse_result, _ := json.Marshal(response)
+	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_result))
+	controller.logService.CreateLog(context, "", result, time.Now(), http_status)
+}

@@ -8,6 +8,7 @@ import (
 
 type MsChecklistHwServiceInterface interface {
 	CreateMsChecklistHw(request *entity.MsChecklistHw) ([]entity.MsChecklistHw, error)
+	GetMsChecklistHw() ([]entity.MsChecklistHw, error)
 }
 
 type msChecklistHwService struct {
@@ -22,6 +23,13 @@ func (msChecklistHwService *msChecklistHwService) CreateMsChecklistHw(request *e
 
 	request.CreatedAt = time.Now()
 	ms_checklist_hw, error := msChecklistHwService.msChecklistHwRepository.CreateMsChecklistHw(request)
+
+	return ms_checklist_hw, error
+}
+
+func (msChecklistHwService *msChecklistHwService) GetMsChecklistHw() ([]entity.MsChecklistHw, error) {
+
+	ms_checklist_hw, error := msChecklistHwService.msChecklistHwRepository.GetMsChecklistHw()
 
 	return ms_checklist_hw, error
 }
