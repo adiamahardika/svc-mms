@@ -88,8 +88,8 @@ func AllRouter(db *gorm.DB) {
 	hwReplacementStatusService := service.HwReplacementStatusService(repository)
 	hwReplacementStatusController := controller.HwReplacementStatusController(hwReplacementStatusService, logService)
 
-	msChecklistHwService := service.MsChecklistHwService(repository)
-	msChecklistHwController := controller.MsChecklistHwController(msChecklistHwService, logService)
+	itemsChecklistHwService := service.ItemsChecklistHwService(repository)
+	itemsChecklistHwController := controller.ItemsChecklistHwController(itemsChecklistHwService, logService)
 
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
@@ -237,11 +237,11 @@ func AllRouter(db *gorm.DB) {
 			hw_replacement_status.DELETE("/delete/:id", hwReplacementStatusController.DeleteHwReplacementStatus)
 		}
 
-		ms_checklist_hw := v2.Group("/ms-checklist-hw")
+		items_checklist_hw := v2.Group("/items-checklist-hw")
 		{
-			ms_checklist_hw.Use(service.Authentication(), authService.Authorization())
-			ms_checklist_hw.POST("/create", msChecklistHwController.CreateMsChecklistHw)
-			ms_checklist_hw.GET("/get", msChecklistHwController.GetMsChecklistHw)
+			items_checklist_hw.Use(service.Authentication(), authService.Authorization())
+			items_checklist_hw.POST("/create", itemsChecklistHwController.CreateItemsChecklistHw)
+			items_checklist_hw.GET("/get", itemsChecklistHwController.GetItemsChecklistHw)
 		}
 	}
 
