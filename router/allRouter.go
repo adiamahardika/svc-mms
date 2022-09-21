@@ -88,6 +88,9 @@ func AllRouter(db *gorm.DB) {
 	hwReplacementStatusService := service.HwReplacementStatusService(repository)
 	hwReplacementStatusController := controller.HwReplacementStatusController(hwReplacementStatusService, logService)
 
+	msChecklistHwService := service.MsChecklistHwService(repository)
+	msChecklistHwController := controller.MsChecklistHwController(msChecklistHwService, logService)
+
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
@@ -234,6 +237,11 @@ func AllRouter(db *gorm.DB) {
 			hw_replacement_status.DELETE("/delete/:id", hwReplacementStatusController.DeleteHwReplacementStatus)
 		}
 
+		ms_checklist_hw := v2.Group("/ms-checklist-hw")
+		{
+			ms_checklist_hw.Use(service.Authentication(), authService.Authorization())
+			ms_checklist_hw.POST("/create", msChecklistHwController.CreateMsChecklistHw)
+		}
 	}
 
 	router.Run(os.Getenv("PORT"))
