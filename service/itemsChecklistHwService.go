@@ -9,6 +9,7 @@ import (
 type ItemsChecklistHwServiceInterface interface {
 	CreateItemsChecklistHw(request *entity.ItemsChecklistHw) ([]entity.ItemsChecklistHw, error)
 	GetItemsChecklistHw() ([]entity.ItemsChecklistHw, error)
+	UpdateItemsChecklistHw(request *entity.ItemsChecklistHw) (entity.ItemsChecklistHw, error)
 }
 
 type itemsChecklistHwService struct {
@@ -30,6 +31,13 @@ func (itemsChecklistHwService *itemsChecklistHwService) CreateItemsChecklistHw(r
 func (itemsChecklistHwService *itemsChecklistHwService) GetItemsChecklistHw() ([]entity.ItemsChecklistHw, error) {
 
 	items_checklist_hw, error := itemsChecklistHwService.itemsChecklistHwRepository.GetItemsChecklistHw()
+
+	return items_checklist_hw, error
+}
+
+func (itemsChecklistHwService *itemsChecklistHwService) UpdateItemsChecklistHw(request *entity.ItemsChecklistHw) (entity.ItemsChecklistHw, error) {
+
+	items_checklist_hw, error := itemsChecklistHwService.itemsChecklistHwRepository.UpdateItemsChecklistHw(request)
 
 	return items_checklist_hw, error
 }

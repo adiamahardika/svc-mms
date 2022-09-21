@@ -242,6 +242,7 @@ func AllRouter(db *gorm.DB) {
 			items_checklist_hw.Use(service.Authentication(), authService.Authorization())
 			items_checklist_hw.POST("/create", itemsChecklistHwController.CreateItemsChecklistHw)
 			items_checklist_hw.GET("/get", itemsChecklistHwController.GetItemsChecklistHw)
+			items_checklist_hw.PUT("/update", itemsChecklistHwController.UpdateItemsChecklistHw)
 		}
 	}
 
