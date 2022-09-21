@@ -243,6 +243,7 @@ func AllRouter(db *gorm.DB) {
 			items_checklist_hw.POST("/create", itemsChecklistHwController.CreateItemsChecklistHw)
 			items_checklist_hw.GET("/get", itemsChecklistHwController.GetItemsChecklistHw)
 			items_checklist_hw.PUT("/update", itemsChecklistHwController.UpdateItemsChecklistHw)
+			items_checklist_hw.DELETE("/delete/:id", itemsChecklistHwController.DeleteItemsChecklistHw)
 		}
 	}
 

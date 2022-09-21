@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/general"
 	"svc-monitoring-maintenance/model"
@@ -199,4 +200,47 @@ func (controller *itemsChecklistHwController) UpdateItemsChecklistHw(context *gi
 	parse_result, _ := json.Marshal(response)
 	var result = fmt.Sprintf("{\"status\": %s, \"result\": %s}", string(parse_status), string(parse_result))
 	controller.logService.CreateLog(context, string(parse_request), result, time.Now(), http_status)
+}
+
+func (controller *itemsChecklistHwController) DeleteItemsChecklistHw(context *gin.Context) {
+
+	id, error := strconv.Atoi(context.Param("id"))
+
+	description := []string{}
+	http_status := http.StatusOK
+	var status *model.StandardResponse
+
+	error = controller.itemsChecklistHwService.DeleteItemsChecklistHw(&entity.ItemsChecklistHw{Id: id})
+
+	if error == nil {
+
+		description = append(description, "Success")
+
+		status = &model.StandardResponse{
+			HttpStatus:  http.StatusOK,
+			StatusCode:  general.SuccessStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusOK, gin.H{
+			"status": status,
+		})
+
+	} else {
+
+		description = append(description, error.Error())
+		http_status = http.StatusBadRequest
+
+		status = &model.StandardResponse{
+			HttpStatus:  http.StatusBadRequest,
+			StatusCode:  general.ErrorStatusCode,
+			Description: description,
+		}
+		context.JSON(http.StatusBadRequest, gin.H{
+			"status": status,
+		})
+
+	}
+	parse_status, _ := json.Marshal(status)
+	var result = fmt.Sprintf("{\"status\": %s}", string(parse_status))
+	controller.logService.CreateLog(context, "", result, time.Now(), http_status)
 }

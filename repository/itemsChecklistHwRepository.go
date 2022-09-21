@@ -6,6 +6,7 @@ type ItemsChecklistHwRepositoryInterface interface {
 	CreateItemsChecklistHw(request *entity.ItemsChecklistHw) ([]entity.ItemsChecklistHw, error)
 	GetItemsChecklistHw() ([]entity.ItemsChecklistHw, error)
 	UpdateItemsChecklistHw(request *entity.ItemsChecklistHw) (entity.ItemsChecklistHw, error)
+	DeleteItemsChecklistHw(request *entity.ItemsChecklistHw) error
 }
 
 func (repo *repository) CreateItemsChecklistHw(request *entity.ItemsChecklistHw) ([]entity.ItemsChecklistHw, error) {
@@ -30,4 +31,11 @@ func (repo *repository) UpdateItemsChecklistHw(request *entity.ItemsChecklistHw)
 	error := repo.db.Table("items_checklist_hw").Model(&request).Updates(request).Find(&itemsChecklistHw).Error
 
 	return itemsChecklistHw, error
+}
+
+func (repo *repository) DeleteItemsChecklistHw(request *entity.ItemsChecklistHw) error {
+
+	error := repo.db.Table("items_checklist_hw").Delete(&request).Error
+
+	return error
 }

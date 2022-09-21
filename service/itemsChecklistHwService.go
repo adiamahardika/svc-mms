@@ -10,6 +10,7 @@ type ItemsChecklistHwServiceInterface interface {
 	CreateItemsChecklistHw(request *entity.ItemsChecklistHw) ([]entity.ItemsChecklistHw, error)
 	GetItemsChecklistHw() ([]entity.ItemsChecklistHw, error)
 	UpdateItemsChecklistHw(request *entity.ItemsChecklistHw) (entity.ItemsChecklistHw, error)
+	DeleteItemsChecklistHw(request *entity.ItemsChecklistHw) error
 }
 
 type itemsChecklistHwService struct {
@@ -40,4 +41,11 @@ func (itemsChecklistHwService *itemsChecklistHwService) UpdateItemsChecklistHw(r
 	items_checklist_hw, error := itemsChecklistHwService.itemsChecklistHwRepository.UpdateItemsChecklistHw(request)
 
 	return items_checklist_hw, error
+}
+
+func (itemsChecklistHwService *itemsChecklistHwService) DeleteItemsChecklistHw(request *entity.ItemsChecklistHw) error {
+
+	error := itemsChecklistHwService.itemsChecklistHwRepository.DeleteItemsChecklistHw(request)
+
+	return error
 }
