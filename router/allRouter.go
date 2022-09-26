@@ -253,6 +253,7 @@ func AllRouter(db *gorm.DB) {
 		{
 			checklist_preventive.Use(service.Authentication(), authService.Authorization())
 			checklist_preventive.POST("/create", checklistPreventiveController.CreateChecklistPreventiveController)
+			checklist_preventive.GET("/get/:prev-code", checklistPreventiveController.GetChecklistPreventive)
 		}
 	}
 

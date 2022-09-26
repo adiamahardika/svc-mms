@@ -13,7 +13,8 @@ import (
 )
 
 type ChecklistPreventiveServiceInterface interface {
-	CreateChecklistPreventive(request *model.CreateChecklistPreventiveRequest, context *gin.Context) (model.ChecklistPreventiveResponse, error)
+	CreateChecklistPreventive(request *model.CreateChecklistPreventiveRequest, context *gin.Context) (model.CreateChecklistPreventiveResponse, error)
+	GetChecklistPreventive(request *string) (model.GetChecklistPreventiveResponse, error)
 }
 
 type checklistPreventiveService struct {
@@ -26,8 +27,8 @@ func ChecklistPreventiveService(checklistHwRepository repository.ChecklistHwRepo
 	return &checklistPreventiveService{checklistHwRepository, headerPreventiveRepository, userChecklistPreventiveRepository}
 }
 
-func (checklistPreventiveService *checklistPreventiveService) CreateChecklistPreventive(request *model.CreateChecklistPreventiveRequest, context *gin.Context) (model.ChecklistPreventiveResponse, error) {
-	var response model.ChecklistPreventiveResponse
+func (checklistPreventiveService *checklistPreventiveService) CreateChecklistPreventive(request *model.CreateChecklistPreventiveRequest, context *gin.Context) (model.CreateChecklistPreventiveResponse, error) {
+	var response model.CreateChecklistPreventiveResponse
 	var header_req *entity.HeaderChecklistPreventive
 	var items_req []*entity.ChecklistHw
 	var user_trilogi_req *entity.UserChecklistPreventive
@@ -115,4 +116,39 @@ func (checklistPreventiveService *checklistPreventiveService) CreateChecklistPre
 
 	return response, error
 
+}
+
+func (checklistPreventiveService *checklistPreventiveService) GetChecklistPreventive(request *string) (model.GetChecklistPreventiveResponse, error) {
+	var response model.GetChecklistPreventiveResponse
+	var header_res entity.HeaderChecklistPreventive
+	var items_res []entity.ChecklistHw
+	var user_res []entity.UserChecklistPreventive
+	error := fmt.Errorf("error")
+
+	header_res, error = checklistPreventiveService.headerPreventiveRepository.GetHeaderChecklistPreventive(request)
+
+	if error == nil {
+		items_res, error = checklistPreventiveService.checklistHwRepository.GetChecklistHw(request)
+	}
+
+	if error == nil {
+		user_res, error = checklistPreventiveService.userChecklistPreventiveRepository.GetUserChecklistPreventive(request)
+		url := os.Getenv("FILE_URL")
+		for index := range user_res {
+			date := user_res[index].CreatedAt.Format("2006-01-02")
+			path := url + "signature/" + *request + "/" + date + "/"
+			if user_res[index].Signature != "" {
+				file_name := user_res[index].Signature
+				user_res[index].Signature = path + file_name
+			}
+		}
+	}
+
+	if error == nil {
+		response.Header = header_res
+		response.Items = items_res
+		response.User = user_res
+	}
+
+	return response, error
 }
