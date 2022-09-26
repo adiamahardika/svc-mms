@@ -91,6 +91,9 @@ func AllRouter(db *gorm.DB) {
 	itemsChecklistHwService := service.ItemsChecklistHwService(repository)
 	itemsChecklistHwController := controller.ItemsChecklistHwController(itemsChecklistHwService, logService)
 
+	checklistPreventiveService := service.ChecklistPreventiveService(repository, repository, repository)
+	checklistPreventiveController := controller.ChecklistPreventiveController(checklistPreventiveService, logService)
+
 	dir := os.Getenv("FILE_DIR")
 	router.Static("/assets", dir)
 
@@ -244,6 +247,12 @@ func AllRouter(db *gorm.DB) {
 			items_checklist_hw.GET("/get", itemsChecklistHwController.GetItemsChecklistHw)
 			items_checklist_hw.PUT("/update", itemsChecklistHwController.UpdateItemsChecklistHw)
 			items_checklist_hw.DELETE("/delete/:id", itemsChecklistHwController.DeleteItemsChecklistHw)
+		}
+
+		checklist_preventive := v2.Group("/checklist-preventive")
+		{
+			checklist_preventive.Use(service.Authentication(), authService.Authorization())
+			checklist_preventive.POST("/create", checklistPreventiveController.CreateChecklistPreventiveController)
 		}
 	}
 
