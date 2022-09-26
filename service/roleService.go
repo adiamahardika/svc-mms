@@ -10,7 +10,7 @@ import (
 type RoleServiceInterface interface {
 	GetRole(request *model.GetRoleRequest) ([]model.GetRoleResponse, error)
 	CreateRole(request *model.CreateRoleRequest) ([]entity.Role, error)
-	UpdateRole(request *model.GetRoleResponse) ([]model.GetRoleResponse, error)
+	UpdateRole(request *model.UpdateRoleRequest) ([]model.GetRoleResponse, error)
 	DeleteRole(id *int) error
 	GetDetailRole(id *int) ([]model.GetRoleResponse, error)
 }
@@ -72,7 +72,7 @@ func (roleService *roleService) CreateRole(request *model.CreateRoleRequest) ([]
 	return role, error
 }
 
-func (roleService *roleService) UpdateRole(request *model.GetRoleResponse) ([]model.GetRoleResponse, error) {
+func (roleService *roleService) UpdateRole(request *model.UpdateRoleRequest) ([]model.GetRoleResponse, error) {
 	var rhwp_request []*model.CreateRoleHasWebPermissionRequest
 	var rhap_request []*model.CreateRoleHasAppPermissionRequest
 	var response []model.GetRoleResponse
@@ -97,26 +97,28 @@ func (roleService *roleService) UpdateRole(request *model.GetRoleResponse) ([]mo
 		error = roleService.rhapRepository.DeleteRoleHasAppPermission(&request.Id)
 
 		if error == nil {
-			for _, value := range request.WebPermission {
+			for _, value := range request.AppPermission {
 				rhap_request = append(rhap_request, &model.CreateRoleHasAppPermissionRequest{IdRole: request.Id, IdPermission: value.Id})
 			}
 			error = roleService.rhapRepository.CreateRoleHasAppPermission(rhap_request)
 		}
 	}
 
-	role, error = roleService.roleRepository.GetDetailRole(&request.Id)
-	for _, value := range role {
-		var web_permission []*entity.MmsWebPermission
-		var app_permission []*entity.MmsAppPermission
-		json.Unmarshal([]byte(value.WebPermission), &web_permission)
-		json.Unmarshal([]byte(value.AppPermission), &app_permission)
+	if error == nil {
+		role, error = roleService.roleRepository.GetDetailRole(&request.Id)
+		for _, value := range role {
+			var web_permission []*entity.MmsWebPermission
+			var app_permission []*entity.MmsAppPermission
+			json.Unmarshal([]byte(value.WebPermission), &web_permission)
+			json.Unmarshal([]byte(value.AppPermission), &app_permission)
 
-		response = append(response, model.GetRoleResponse{
-			Name:          value.Name,
-			Id:            value.Id,
-			WebPermission: web_permission,
-			AppPermission: app_permission,
-		})
+			response = append(response, model.GetRoleResponse{
+				Name:          value.Name,
+				Id:            value.Id,
+				WebPermission: web_permission,
+				AppPermission: app_permission,
+			})
+		}
 	}
 
 	return response, error

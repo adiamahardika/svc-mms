@@ -149,7 +149,7 @@ func (controller *roleController) CreateRole(context *gin.Context) {
 }
 
 func (controller *roleController) UpdateRole(context *gin.Context) {
-	var request *model.GetRoleResponse
+	var request *model.UpdateRoleRequest
 
 	error := context.ShouldBindJSON(&request)
 	description := []string{}

@@ -152,7 +152,7 @@ func (authService *authService) Login(request *model.LoginRequest) (model.GetUse
 			}
 		}
 		key_hp = user[0].KeyHp
-		if request.KeyHp != "" {
+		if error == nil && request.KeyHp != "" {
 			key_hp, error = authService.userRepository.UpdateKeyHp(request)
 		}
 
