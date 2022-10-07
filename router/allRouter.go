@@ -1,19 +1,31 @@
 package router
 
 import (
+	"io"
 	"os"
 	"svc-monitoring-maintenance/controller"
 	"svc-monitoring-maintenance/repository"
 	"svc-monitoring-maintenance/service"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
+func writeLog() {
+	log_dir := os.Getenv("LOG_DIR")
+	date_now := time.Now()
+	path := log_dir + date_now.Format("2006-01-02") + "-log.log"
+
+	file, _ := os.OpenFile(path, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0755)
+	gin.DefaultWriter = io.MultiWriter(file, os.Stdout)
+}
+
 func AllRouter(db *gorm.DB) {
 
-	// gin.SetMode(gin.ReleaseMode)
+	writeLog()
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
