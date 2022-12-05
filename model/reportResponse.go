@@ -35,6 +35,8 @@ type GetReportCorrectiveResponse struct {
 	TeamName        string `json:"team_name" gorm:"->"`
 	NoSPM           string `json:"no_spm"`
 	NoReqSPM        string `json:"no_req_spm"`
+	CheckInTime     string `json:"check_in_time"`
+	CheckOutTime    string `json:"check_out_time"`
 }
 
 type GetReportPreventiveResponse struct {
@@ -63,4 +65,6 @@ type GetReportPreventiveResponse struct {
 	TeamName       string `json:"team_name"`
 	NoSPM          string `json:"no_spm"`
 	NoReqSPM       string `json:"no_req_spm"`
+	CheckInTime    string `json:"check_in_time"`
+	CheckOutTime   string `json:"check_out_time"`
 }
