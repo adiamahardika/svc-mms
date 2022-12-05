@@ -38,4 +38,6 @@ type Ticket struct {
 	NoSPM           string    `json:"no_spm"`
 	NoReqSPM        string    `json:"no_req_spm"`
 	VisitStatus     string    `json:"visit_status"`
+	CheckInTime     string    `json:"check_in_time" gorm:"->"`
+	CheckOutTime    string    `json:"check_out_time" gorm:"->"`
 }

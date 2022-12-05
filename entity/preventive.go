@@ -28,4 +28,6 @@ type Preventive struct {
 	Note           string    `json:"note"`
 	Judul          string    `json:"judul"`
 	Email          string    `json:"email"`
+	CheckInTime    string    `json:"check_in_time" gorm:"->"`
+	CheckOutTime   string    `json:"check_out_time" gorm:"->"`
 }
