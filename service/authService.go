@@ -157,20 +157,22 @@ func (authService *authService) Login(request *model.LoginRequest) (model.GetUse
 		}
 
 		user_response = model.GetUserResponse{
-			Id:         user[0].Id,
-			Name:       user[0].Name,
-			Username:   user[0].Username,
-			Email:      user[0].Email,
-			Team:       user[0].Team,
-			TeamName:   user[0].TeamName,
-			Role:       parse_role,
-			RoleName:   user[0].RoleName,
-			KeyHp:      key_hp,
-			Nik:        user[0].Nik,
-			Position:   user[0].Position,
-			Department: user[0].Department,
-			UpdatedAt:  user[0].UpdatedAt,
-			CreatedAt:  user[0].CreatedAt,
+			Id:               user[0].Id,
+			Name:             user[0].Name,
+			Username:         user[0].Username,
+			Email:            user[0].Email,
+			Team:             user[0].Team,
+			TeamName:         user[0].TeamName,
+			Role:             parse_role,
+			RoleName:         user[0].RoleName,
+			KeyHp:            key_hp,
+			Nik:              user[0].Nik,
+			Position:         user[0].Position,
+			Department:       user[0].Department,
+			IsActive:         user[0].IsActive,
+			EmploymentStatus: user[0].EmploymentStatus,
+			UpdatedAt:        user[0].UpdatedAt,
+			CreatedAt:        user[0].CreatedAt,
 		}
 
 		token_lifespan, _ := strconv.Atoi(os.Getenv("TOKEN_LIFESPAN"))
@@ -218,6 +220,7 @@ func (authService *authService) Register(request model.RegisterRequest) (entity.
 			request.UpdatedAt = date_now
 			request.Password = string(new_pass)
 			request.Changepass = "0"
+			request.IsActive = "true"
 
 			_, error = authService.authRepository.Register(request)
 			users, error = authService.userRepository.CheckUsername(request.Username)

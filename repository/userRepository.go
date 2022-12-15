@@ -16,9 +16,10 @@ type UserRepositoryInterface interface {
 func (repo *repository) GetUser(request model.GetUserRequest) ([]model.GetUserResponse, error) {
 	var user []model.GetUserResponse
 
-	error := repo.db.Raw("SELECT users.*, role.name as role_name, team.name as team_name FROM users LEFT OUTER JOIN role ON (users.role = CAST(role.id AS varchar(10))) LEFT OUTER JOIN team ON (users.team = CAST(team.id AS varchar(10))) WHERE users.role LIKE @Role AND users.team LIKE @Team ORDER BY users.name", model.GetUserRequest{
-		Team: "%" + request.Team + "%",
-		Role: "%" + request.Role + "%",
+	error := repo.db.Raw("SELECT users.*, role.name as role_name, team.name as team_name FROM users LEFT OUTER JOIN role ON (users.role = CAST(role.id AS varchar(10))) LEFT OUTER JOIN team ON (users.team = CAST(team.id AS varchar(10))) WHERE users.role LIKE @Role AND users.team LIKE @Team AND users.employment_status ILIKE @EmploymentStatus AND users.is_active = 'true' ORDER BY users.name", model.GetUserRequest{
+		Team:             "%" + request.Team + "%",
+		Role:             "%" + request.Role + "%",
+		EmploymentStatus: "%" + request.EmploymentStatus + "%",
 	}).Find(&user).Error
 
 	return user, error
