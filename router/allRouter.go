@@ -145,6 +145,7 @@ func AllRouter(db *gorm.DB) {
 			user.POST("/change-pass", userController.ChangePassword)
 			user.POST("/reset-pass", userController.ResetPassword)
 			user.PUT("/update-key-hp", userController.UpdateKeyHp)
+			user.PUT("/update", userController.UpdateUser)
 		}
 
 		team := v2.Group("/team")

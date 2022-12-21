@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"strconv"
+	"svc-monitoring-maintenance/entity"
 	"svc-monitoring-maintenance/model"
 	"svc-monitoring-maintenance/repository"
 	"time"
@@ -16,6 +17,7 @@ type UserServiceInterface interface {
 	ResetPassword(request model.ResetPassword) (model.GetUserResponse, error)
 	GetDetailUser(request string) ([]model.GetUserResponse, error)
 	UpdateKeyHp(request *model.UpdateKeyHpRequest) (model.UpdateKeyHpRequest, error)
+	UpdateUser(request *entity.User) (entity.User, error)
 }
 
 type userService struct {
@@ -110,4 +112,13 @@ func (userService *userService) UpdateKeyHp(request *model.UpdateKeyHpRequest) (
 	request.KeyHp = key_hp
 
 	return *request, error
+}
+
+func (userService *userService) UpdateUser(request *entity.User) (entity.User, error) {
+
+	request.UpdatedAt = time.Now()
+
+	user, error := userService.repository.UpdateUser(request)
+
+	return user, error
 }

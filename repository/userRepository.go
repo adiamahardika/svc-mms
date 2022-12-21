@@ -11,6 +11,7 @@ type UserRepositoryInterface interface {
 	ChangePassword(request model.ChangePassRequest) (model.GetUserResponse, error)
 	GetDetailUser(request int) ([]model.GetUserResponse, error)
 	UpdateKeyHp(request *model.LoginRequest) (string, error)
+	UpdateUser(request *entity.User) (entity.User, error)
 }
 
 func (repo *repository) GetUser(request model.GetUserRequest) ([]model.GetUserResponse, error) {
@@ -66,4 +67,12 @@ func (repo *repository) UpdateKeyHp(request *model.LoginRequest) (string, error)
 	}).Find(&user).Error
 
 	return user.KeyHp, error
+}
+
+func (repo *repository) UpdateUser(request *entity.User) (entity.User, error) {
+	var user entity.User
+
+	error := repo.db.Raw("UPDATE users SET email = @Email, role = @Role, team = @Team, name = @Name, updated_at = @UpdatedAt, is_active = @IsActive WHERE id = @Id RETURNING users.*", request).Find(&user).Error
+
+	return user, error
 }
